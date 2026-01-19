@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mounjaro | Japan Clinic Comparison</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;500;600;700&family=Lato:wght@300;400;700&family=Noto+Serif+TC:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- React & Babel -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', '"Noto Serif TC"', 'serif'],
+                        display: ['"Cinzel"', 'serif'],
+                        sans: ['"Lato"', '"Noto Serif TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        gold: {
+                            100: '#F9F1D8',
+                            200: '#EAD8A3',
+                            400: '#D4AF37', 
+                            500: '#C5A028',
+                            600: '#B08D22',
+                            800: '#8A6D1C',
+                        },
+                        stone: {
+                            50: '#FAFAF9',
+                            100: '#F5F5F4',
+                            200: '#E7E5E4',
+                            300: '#D6D3D1',
+                            400: '#A8A29E',
+                            500: '#78716C',
+                            600: '#57534E',
+                            800: '#292524',
+                            900: '#1C1917',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FAFAF9;
+            color: #1C1917;
+            -webkit-font-smoothing: antialiased;
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .rank-badge {
+            transition: all 0.3s ease;
+        }
+        .group:hover .rank-badge {
+            transform: scale(1.1);
+        }
+        
+        /* Language Button Styles */
+        .lang-btn {
+            position: relative;
+            padding-bottom: 4px;
+            font-family: "Cormorant Garamond", "Noto Serif TC", serif;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            font-size: 0.9rem;
+            color: #A8A29E; /* stone-400 */
+            transition: all 0.3s ease;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            color: #1C1917; /* stone-900 */
+        }
+        .lang-btn.active::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: #D4AF37; /* gold */
+        }
+
+        /* Custom Select Styles */
+        .custom-select-wrapper {
+            position: relative;
+        }
+        .custom-select-wrapper::after {
+            content: "↓";
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            font-size: 0.8rem;
+            color: #A8A29E;
+            pointer-events: none;
+            font-family: sans-serif;
+        }
+        .custom-select {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 100%;
+            background-color: #FFFFFF;
+            border: 1px solid #E7E5E4;
+            padding: 10px 32px 10px 16px;
+            border-radius: 8px;
+            font-family: "Noto Serif TC", serif;
+            color: #1C1917;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .custom-select:hover {
+            border-color: #D4AF37;
+        }
+        .custom-select:focus {
+            outline: none;
+            border-color: #D4AF37;
+            ring: 1px solid #D4AF37;
+        }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+    </style>
+</head>
+<body class="min-h-screen font-serif selection:bg-gold-200 selection:text-stone-900">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Icons
+        const Icons = {
+            ExternalLink: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>,
+            Info: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
+            Truck: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>,
+            Sort: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>,
+            Calc: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg>,
+            Grid: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>,
+            Alert: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>,
+            Star: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+            User: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        };
+
+        // Exchange Rates
+        const EXCHANGE_RATES = {
+            TWD: 0.2022, // JPY to TWD
+            USD: 0.0065  // JPY to USD
+        };
+
+        const TEXTS = {
+            zh: {
+                subtitle: '實體 & 線上診所精選',
+                allPlans: '全部方案',
+                month: '個月',
+                months: '個月',
+                disclaimer: '顯示價格包含',
+                disclaimerHighlight: '藥費 + 掛號費 + 運費',
+                meds: '藥費',
+                regFee: '掛號費',
+                shipFee: '運費',
+                total: '總計',
+                monthlyAvg: '平均月費',
+                est: '推算',
+                bestValue: 'CP值最高',
+                shippingIncluded: '含運費',
+                shippingExtra: '運費另計',
+                regFeeLabel: '初診費',
+                freeReg: '免掛號費',
+                footerNote: '價格僅供參考，匯率換算基準日: 2025/12/05。',
+                sortNote: '已按價格由低至高排序',
+                modeStandard: '標準比價',
+                modeCalculator: '自由組合計算機',
+                calcIntro: '輸入您需要的各劑量月份數，系統將自動計算最佳組合總價。',
+                calcDisclaimer: '注意: 若選擇「初診」，計算機可能會將初回限定價格納入計算。實際上初回價格通常每人限購一次。',
+                calcTotal: '總金額',
+                reset: '重置',
+                monthsCount: '個月分',
+                dosage: '劑量',
+                combo2550: '2.5mg + 5mg',
+                combo5075: '5mg + 7.5mg',
+                combo75100: '7.5mg + 10mg',
+                combo100125: '10mg + 12.5mg',
+                combo125150: '12.5mg + 15mg',
+                transitPlan: '轉換方案',
+                firstTime: '初回限定',
+                regularPrice: '通常價格',
+                noData: '目前無診所提供此特定組合的方案。如需自行搭配，請使用「自由組合計算機」。',
+                totalSelected: '目前選擇總月數',
+                maxLimitMsg: '處方上限 6 個月',
+                bundleApplied: '已套用優惠組合',
+                userTypeLabel: '身分',
+                userNew: '初診 (New)',
+                userReturning: '複診 (Returning)',
+                filterLabel: '篩選',
+                filterAll: '全部診所',
+                filterChinese: '中文服務',
+                langLabel: '語言',
+                modeLabel: '模式',
+                dosageLabel: '劑量選擇',
+                durationLabel: '方案時長',
+                calcNotes: {
+                    base3x2: '基於3個月方案 x 2',
+                    base2x3: '基於2個月方案 x 3',
+                    base1x6: '基於1個月方案 x 6',
+                    base1x3: '基於1個月方案 x 3',
+                    base1x2: '基於1個月方案 x 2',
+                    mixed: '混合劑量計算 (各1個月)',
+                },
+                labels: {
+                    trial: '少量 (2支/各1支)',
+                    m1: '1個月',
+                    m2: '2個月',
+                    m3: '3個月',
+                    m6: '6個月',
+                }
+            },
+            en: {
+                subtitle: 'Offline & Online Clinic Selection',
+                allPlans: 'All Plans',
+                month: 'Mo.',
+                months: 'Mos.',
+                disclaimer: 'Prices include',
+                disclaimerHighlight: 'Meds + Reg. Fee + Shipping',
+                meds: 'Meds',
+                regFee: 'Reg. Fee',
+                shipFee: 'Shipping',
+                total: 'Total',
+                monthlyAvg: 'Monthly Avg',
+                est: 'Est.',
+                bestValue: 'Best Value',
+                shippingIncluded: 'Shipping Included',
+                shippingExtra: 'Shipping Extra',
+                regFeeLabel: 'Reg.',
+                freeReg: 'Free Reg.',
+                footerNote: 'Prices are for reference only. Rates as of 2025/12/05.',
+                sortNote: 'Sorted by Price (Low to High)',
+                modeStandard: 'Standard Mode',
+                modeCalculator: 'Custom Calculator',
+                calcIntro: 'Enter duration for each dosage. System auto-applies bundle prices if available.',
+                calcDisclaimer: 'Note: If "New" is selected, calculator might use first-time prices. These are usually valid only once.',
+                calcTotal: 'Grand Total',
+                reset: 'Reset',
+                monthsCount: 'Mos.',
+                dosage: 'Dosage',
+                combo2550: '2.5mg + 5mg',
+                combo5075: '5mg + 7.5mg',
+                combo75100: '7.5mg + 10mg',
+                combo100125: '10mg + 12.5mg',
+                combo125150: '12.5mg + 15mg',
+                transitPlan: 'Transit Plan',
+                firstTime: 'First Time Only',
+                regularPrice: 'Regular Price',
+                noData: 'No clinics found listing this specific plan. Use "Custom Calculator" to mix manually.',
+                totalSelected: 'Total Months Selected',
+                maxLimitMsg: 'Max Prescription 6 Mos.',
+                bundleApplied: 'Bundle Applied',
+                userTypeLabel: 'Status',
+                userNew: 'New (First Time)',
+                userReturning: 'Returning',
+                filterLabel: 'Filter',
+                filterAll: 'All Clinics',
+                filterChinese: 'Chinese Support',
+                langLabel: 'Lang',
+                modeLabel: 'Mode',
+                dosageLabel: 'Dosage',
+                durationLabel: 'Duration',
+                calcNotes: {
+                    base3x2: 'Based on 3-Month Plan x 2',
+                    base2x3: 'Based on 2-Month Plan x 3',
+                    base1x6: 'Based on 1-Month Plan x 6',
+                    base1x3: 'Based on 1-Month Plan x 3',
+                    base1x2: 'Based on 1-Month Plan x 2',
+                    mixed: 'Mixed Dosage (1 Mo. each)',
+                },
+                labels: {
+                    trial: 'Trial (2 Pens/1 ea)',
+                    m1: '1 Month',
+                    m2: '2 Months',
+                    m3: '3 Months',
+                    m6: '6 Months',
+                }
+            }
+        };
+
+        const MounjaroBoutique = () => {
+            const [lang, setLang] = React.useState('zh');
+            const [mode, setMode] = React.useState('standard'); 
+            const [activeDosage, setActiveDosage] = React.useState('2.5mg');
+            const [activeDuration, setActiveDuration] = React.useState('all');
+            const [userType, setUserType] = React.useState('new'); // 'new' or 'returning'
+            const [chineseFilter, setChineseFilter] = React.useState(false); // false = all, true = chinese only
+            const [cart, setCart] = React.useState({
+                '2.5mg': 0, '5mg': 0, '7.5mg': 0, '10mg': 0, '12.5mg': 0, '15mg': 0
+            });
+
+            const t = TEXTS[lang];
+
+            // Currency Helper
+            const formatCurrency = (price) => {
+                if (lang === 'zh') {
+                    const twd = Math.round(price * EXCHANGE_RATES.TWD).toLocaleString();
+                    return <span><span className="text-xs text-stone-400">NT$</span> {twd} <span className="text-xs text-stone-500 font-normal ml-1">(¥{price.toLocaleString()})</span></span>;
+                } else if (lang === 'en') {
+                    const usd = (price * EXCHANGE_RATES.USD).toFixed(2);
+                    return <span><span className="text-xs text-stone-400">$</span> {usd} <span className="text-xs text-stone-500 font-normal ml-1">(¥{price.toLocaleString()})</span></span>;
+                } else {
+                    return `¥${price.toLocaleString()}`;
+                }
+            };
+
+            const getLabel = (months) => {
+                if (months === 0.5) return t.labels.trial;
+                if (months === 1) return t.labels.m1;
+                if (months === 2) return t.labels.m2;
+                if (months === 3) return t.labels.m3;
+                if (months === 6) return t.labels.m6;
+                return `${months} ${t.months}`;
+            };
+
+            // --- Data ---
+             const clinics = [
+                {
+                    id: 'ikegami',
+                    name: { zh: '池上陽光診所', en: 'Ikegami Ohisama Clinic' },
+                    tags: [
+                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
+			{ zh: '主治醫師怪怪的,自行斟酌', en: 'Doc has some personality' }
+                    ],
+                    link: 'https://x.com/Ikegami_ohisama', 
+                    fees: { initialNum: 0, shippingNum: 1500, note: { zh: '初診0元+運費1500', en: 'Reg 0 + Ship 1500' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [
+                            { price: 14000, months: 1, type: 'initial' },
+                            { price: 18000, months: 1, type: 'regular' }
+                        ],
+                        '5mg': [
+                            { price: 21000, months: 1, type: 'initial' },
+                            { price: 25000, months: 1, type: 'regular' }
+                        ],
+                        '7.5mg': [
+                            { price: 29000, months: 1, type: 'initial' },
+                            { price: 33000, months: 1, type: 'regular' }
+                        ],
+                        '10mg': [
+                            { price: 37000, months: 1, type: 'initial' },
+                            { price: 41000, months: 1, type: 'regular' }
+                        ],
+                        '12.5mg': [
+                            { price: 44000, months: 1, type: 'initial' },
+                            { price: 48000, months: 1, type: 'regular' }
+                        ]
+                    }
+                },
+     {
+                    id: 'tkevery',
+                    name: { zh: 'TK Every', en: 'TK Every Clinic' },
+                    tags: [
+                        { zh: '中文服務', en: 'Chinese Support'},
+                        { zh: '線下/線上', en: 'Offline/Online'},
+                        { zh: '線上需另加1100使用費+自付運費', en: 'Shipping fee/Online fee extra' }
+                    ],
+                    link: 'https://threads.com/@tk.every', 
+                    fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需另加1100使用費+自付運費', en: 'Shipping fee/Online fee extra' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 13100, months: 1 }],
+                        '5mg':   [{ price: 26300, months: 1 }],
+                        '7.5mg': [{ price: 39500, months: 1 }],
+                        '10mg':  [{ price: 52700, months: 1 }],
+                    }
+                },
+                {
+                    id: 'pococlinic',
+                    name: { zh: '狸貓診所 (Poco)', en: 'Poco Clinic' },
+                    tags: [
+                        { zh: '用Zoom線上診療', en: 'Online Clinic Via Zoom' },
+			 { zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' },
+	                { zh: '預約須日本門號', en: 'Need JP Phone#' }
+                    ],
+                    link: 'https://x.com/poco_clinic?t=J1lyy3oqNA6Ozcv3lpg18A&s=09',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費/含運', en: 'Free Reg/Ship' } },
+                    freeShipping: true,
+                    prices: {
+                        '2.5mg': [{ price: 13500, months: 1 }, { price: 26000, months: 2 }, { price: 36000, months: 3 }],
+                        '5mg': [{ price: 23500, months: 1 }, { price: 45500, months: 2 }, { price: 64000, months: 3 }],
+                        '7.5mg': [{ price: 36000, months: 1 }, { price: 66000, months: 2 }, { price: 88000, months: 3 }],
+                        '10mg': [{ price: 42000, months: 1 }, { price: 81500, months: 2 }, { price: 116000, months: 3 }],
+                        '12.5mg': [{ price: 51000, months: 1 }, { price: 100000, months: 2 }, { price: 144000, months: 3 }],
+                        '15mg': [{ price: 58000, months: 1 }, { price: 114500, months: 2 }, { price: 165000, months: 3 }],
+                        '2.5mg+5mg': [{ price: 18500, months: 1 }, { price: 35750, months: 2 }],
+                        '5mg+7.5mg': [{ price: 29750, months: 1 }, { price: 55750, months: 2 }],
+                        '7.5mg+10mg': [{ price: 39000, months: 1 }, { price: 73750, months: 2 }],
+                        '10mg+12.5mg': [{ price: 46500, months: 1 }, { price: 90750, months: 2 }],
+                        '12.5mg+15mg': [{ price: 54500, months: 1 }, { price: 107250, months: 2 }]
+                    }
+                },
+                {
+                    id: 'osaka-light',
+                    name: { zh: 'Light Clinic (大阪/東京/名古屋)', en: 'Light Clinic (Osaka/Tokyo/Nagoya)' },
+                    tags: [
+                        { zh: '用Zoom線上診療', en: 'Online Clinic Via Zoom' },
+            		{ zh: '需冷藏配送須事先告知', en: 'Chilled Delivery: Need to Notify Clinic' },
+			{ zh: '無盒給藥,介意者自行斟酌', en: 'Box removed upon issuance' }
+                    ],
+                    link: 'https://x.com/OsakaLight?t=AMGZj7ZfXqaGQ4T9Fz7-Kg&s=09',
+                    fees: { initialNum: 0, shippingNum: 2200, note: { zh: '免掛號費+運費¥2,200', en: 'Free Reg + Ship ¥2,200' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 14000, months: 1 }],
+                        '5mg':   [{ price: 21000, months: 1 }],
+                        '7.5mg': [{ price: 29000, months: 1 }],
+                        '10mg':  [{ price: 37000, months: 1 }],
+                        '12.5mg':[{ price: 44000, months: 1 }],
+                        '15mg':  [{ price: 52000, months: 1 }]
+                    }
+                },
+                {
+                    id: 'noname',
+                    name: { zh: 'Noname醫美線上診所', en: 'Noname Beauty Clinic' },
+                    tags: [
+                         { zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' },
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' }
+                    ],
+                    link: 'https://t.co/wzT0jScIqw',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    freeShipping: true,
+                    prices: {
+                         '2.5mg': [{ price: 13000, months: 1 }, { price: 25500, months: 2 }, { price: 35000, months: 3 }],
+                        '5mg': [{ price: 22850, months: 1 }, { price: 45500, months: 2 }, { price: 63000, months: 3 }],
+                        '7.5mg': [{ price: 34000, months: 1 }, { price: 65000, months: 2 }, { price: 96000, months: 3 }]
+                    }
+                },
+                {
+                    id: 'Yoroshii',
+                    name: { zh: '優樂喜醫', en: 'Yoroshii Medical', jp: 'yoroshii_medical' },
+                    tags: [
+                        { zh: '中文服務', en: 'Chinese Support'},
+            { zh: '線下/線上', en: 'Offline/Online'}
+                    ],
+                    link: 'https://www.threads.net/@yoroshii_medical',
+                    fees: { initialNum: 5500, shippingNum: 1800, note: { zh: '含掛號¥5,500+運費¥1,800', en: 'Incl Reg + Ship' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 18000, months: 1 },{ price: 45000, months: 3 },{ price: 90000, months: 6 }],
+                        '5mg':   [{ price: 21000, months: 1 },{ price: 81000, months: 3 },{ price: 162000, months: 6 }],
+                    }
+                },
+                {
+                    id: 'light',
+                    name: { zh: 'Light Mental Clinic', en: 'Light Mental Clinic' },
+                    tags: [
+                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '第17支後送一次CBT', en: 'Free CBT upon 17th pen' },
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' }
+                    ],
+                    link: 'https://light-clinic.com/',
+                    fees: { initialNum: 1100, shippingNum: 1100, note: { zh: '含掛號¥1,100+運費¥1,100', en: 'Incl Reg & Ship' } },
+                    freeShipping: false, 
+                    prices: {
+                        '2.5mg': [{ price: 12000, months: 1 }, { price: 36000, months: 3 }, { price: 69000, months: 6 }],
+                        '5mg':   [{ price: 22000, months: 1 }, { price: 66000, months: 3 }, { price: 126000, months: 6 }]
+                    }
+                },
+                {
+                    id: 'Wakeari',
+                    name: { zh: 'Wakeari診所', en: 'Wakeari Clinic' },
+                    tags: [
+                        { zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' },
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' }
+                    ],
+                    link: 'https://wakeari-diet.com/',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    freeShipping: true, 
+                    prices: {
+                        '2.5mg': [{ price: 7700, months: 0.5, type: 'initial' }, { price: 13200, months: 1 }, { price: 25700, months: 2 }, { price: 35200, months: 3 }],
+                        '5mg':   [{ price: 13600, months: 0.5, type: 'initial' }, { price: 23050, months: 1 }, { price: 45700, months: 2 }, { price: 63200, months: 3 }],
+                        '7.5mg': [{ price: 34400, months: 1 }, { price: 65200, months: 2 }, { price: 88200, months: 3 }],
+                        '10mg':  [{ price: 42200, months: 1 }, { price: 81700, months: 2 }, { price: 116200, months: 3 }],
+                        '12.5mg':[{ price: 53800, months: 1 }, { price: 99160, months: 2 }, { price: 132640, months: 3 }],
+                        '15mg':  [{ price: 62800, months: 1 }, { price: 115720, months: 2 }, { price: 154780, months: 3 }],
+                         '2.5mg+5mg': [{ price: 10650, months: 0.5 }, { price: 18125, months: 1 }, { price: 35700, months: 2 }, { price: 49200, months: 3 }],
+                        '5mg+7.5mg': [{ price: 28725, months: 1 }, { price: 55450, months: 2 }],
+                        '7.5mg+10mg': [{ price: 38300, months: 1 }, { price: 73450, months: 2 }],
+                        '10mg+12.5mg': [{ price: 48000, months: 1 }, { price: 90430, months: 2 }],
+                        '12.5mg+15mg': [{ price: 58300, months: 1 }, { price: 107440, months: 2 }]
+                    }
+                },
+                {
+                    id: 'shibuya',
+                    name: { zh: '澀谷 Kimura 診所', en: 'Shibuya Kimura Clinic' },
+                    tags: [
+                        { zh: '中文服務', en: 'Chinese Support' },
+                        { zh: '線下/線上', en: 'Offline/Online' }
+                    ],
+                    link: 'https://www.threads.net/@shibuyakimura_clinic',
+                    fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需自付運費', en: 'Shipping fee extra' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 13200, months: 1 }],
+                        '5mg':   [{ price: 26400, months: 1 }],
+                        '7.5mg': [{ price: 39600, months: 1 }],
+                        '10mg':  [{ price: 52800, months: 1 }]
+                    }
+                },
+                {
+                    id: 'marugoto',
+                    name: { zh: 'Marugoto Beauty', en: 'Marugoto Beauty' },
+                    tags: [
+                          { zh: '線上診療', en: 'Online Clinic' },
+                          { zh: '預約須日本門號', en: 'Need JP Phone#' }
+                    ],
+                    link: 'https://x.com/marugotobeauty?t=4jUN_IPyV_luK3c4nkS4Ag&s=09',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    freeShipping: true,
+                    prices: {
+                        '2.5mg': [{ price: 8400, months: 0.5 }, { price: 15900, months: 1 }, { price: 29820, months: 2 }, { price: 40800, months: 3 }, { price: 76800, months: 6 }],
+                        '5mg': [{ price: 14400, months: 0.5 }, { price: 27800, months: 1 }, { price: 53680, months: 2 }, { price: 73500, months: 3 }, { price: 137400, months: 6 }],
+                        '7.5mg': [{ price: 20500, months: 0.5 }, { price: 39000, months: 1 }, { price: 99900, months: 3 }],
+                        '10mg': [{ price: 23000, months: 0.5 }, { price: 44000, months: 1 }, { price: 118500, months: 3 }],
+                        '12.5mg':[{ price: 26200, months: 0.5 }, { price: 50000, months: 1 }],
+                        '15mg':  [{ price: 89000, months: 1 }],
+                        '2.5mg+5mg': [{ price: 22000, months: 1 }],
+                        '5mg+7.5mg': [{ price: 33900, months: 1 }],
+            '7.5mg+10mg': [{ price: 41500, months: 1 }],
+            '10mg+12.5mg': [{ price: 47000, months: 1 }],
+            '12.5mg+15mg': [{ price: 89000, months: 1 }]
+                    }
+                },
+                {
+                    id: 'shinjuku',
+                    name: { zh: '新宿站前診所', en: 'Shinjuku Station Clinic' },
+                    tags: [
+                        { zh: '到院門診限定', en: 'Visit Only' },
+                        { zh: '免預約', en: 'No Appt Needed' }
+                    ],
+                    link: 'https://x.com/ShinjukuCIinic?t=IK7B4EISNXdiBcoE81lpLQ&s=09',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    freeShipping: false, 
+                    prices: {
+                        '2.5mg': [{ price: 16000, months: 1 }],
+                        '5mg':   [{ price: 28000, months: 1 }],
+                        '7.5mg': [{ price: 36000, months: 1 }],
+                        '10mg':  [{ price: 44000, months: 1 }]
+                    }
+                },
+                {
+                    id: 'owl',
+                    name: { zh: '貓頭鷹線上診所', en: 'OWL Online Clinic' },
+                    tags: [
+                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '中文服務', en: 'Chinese Support' },
+			{ zh: '會給處方籤', en: 'Issues Prescription for Custom use' },
+                    ],
+                    link: 'https://line.me/R/ti/p/@885omndd',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    freeShipping: true,
+                    prices: {
+                        '2.5mg': [{ price: 15800, months: 1 }, { price: 40500, months: 3 }, { price: 76200, months: 6 }],
+                        '5mg': [{ price: 27700, months: 1 }, { price: 73200, months: 3 }, { price: 136800, months: 6 }],
+                        '7.5mg': [{ price: 38900, months: 1 }, { price: 98700, months: 3 }, { price: 195000, months: 6 }],
+                        '10mg': [{ price: 43900, months: 1 }, { price: 118200, months: 3 }, { price: 234000, months: 6 }]
+                    }
+                },
+                {
+                    id: 'pokekuri',
+                    name: { zh: 'Pokekuri', en: 'Pokekuri' },
+                    tags: [
+                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' }
+                    ],
+                    link: 'https://x.com/pokekuri?t=v44jYexZkPzy-bYR1k8chA&s=09',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    freeShipping: true,
+                    prices: {
+                        '2.5mg': [{ price: 15800, months: 1 }, { price: 29600, months: 2 }, { price: 40500, months: 3 }],
+                        '5mg': [{ price: 27700, months: 1 }, { price: 52000, months: 2 }, { price: 73200, months: 3 }],
+                        '7.5mg': [{ price: 38900, months: 1 }, { price: 72000, months: 2 }, { price: 98700, months: 3 }],
+                        '2.5mg+5mg': [{ price: 22200, months: 1 }, { price: 41500, months: 2 }]
+                    }
+                }
+            ];
+
+            const getRegFee = (clinic) => {
+                if (userType === 'new') return clinic.fees.initialNum;
+                // If returning fee is not defined, default to initial fee (assuming same price)
+                return clinic.fees.returningNum !== undefined ? clinic.fees.returningNum : clinic.fees.initialNum;
+            };
+
+            const filterPricesByUserType = (prices) => {
+                if (!prices) return [];
+                if (userType === 'returning') {
+                    // Returning users cannot see initial prices
+                    return prices.filter(p => p.type !== 'initial');
+                } else {
+                    // New users:
+                    // If there is an 'initial' price for a specific month, use it and hide the 'regular' price for SAME duration.
+                    // This prevents showing "1 Month (14000)" AND "1 Month (18000)" side-by-side.
+                    const initialMonths = prices.filter(p => p.type === 'initial').map(p => p.months);
+                    return prices.filter(p => {
+                        // Keep if it's initial
+                        if (p.type === 'initial') return true;
+                        // Keep if it's regular BUT only if there is no initial price for this duration
+                        if (initialMonths.includes(p.months)) return false; 
+                        return true;
+                    });
+                }
+            };
+
+            // Logic Helpers
+            const getPriceForDosageMonths = (clinic, dosage, targetMonths) => {
+                // For calculator, we use the raw prices but we should filter based on userType first
+                let prices = clinic.prices[dosage];
+                if (!prices) return null;
+                
+                prices = filterPricesByUserType(prices);
+                if (prices.length === 0) return null;
+
+                const exactMatch = prices.find(p => p.months === targetMonths);
+                if (exactMatch) return exactMatch.price;
+                // ... rest of logic uses filtered prices, so it will respect the rule
+                
+                // Fallback logic for combinations
+                // Note: Filter has already removed 'regular' if 'initial' exists for same month.
+                
+                if (targetMonths === 2) {
+                    const p2 = prices.find(p => p.months === 2);
+                    if (p2) return p2.price;
+                    const p1 = prices.find(p => p.months === 1);
+                    if (p1) return p1.price * 2;
+                }
+                
+                if (targetMonths === 1) {
+                    const p1 = prices.find(p => p.months === 1);
+                    if (p1) return p1.price;
+                }
+
+                const p1 = prices.find(p => p.months === 1);
+                if (p1) return p1.price * targetMonths;
+
+                return null;
+            };
+
+            const getSmartPrices = (clinic, dosage, targetDuration) => {
+                let prices = clinic.prices[dosage];
+                if (!prices) return [];
+                
+                // Apply User Type Filter
+                prices = filterPricesByUserType(prices);
+                if (prices.length === 0) return [];
+
+                // Check if it's ANY combo dosage (contains '+')
+                if (dosage.includes('+')) {
+                    const calculateTotal = (drugPrice) => drugPrice + getRegFee(clinic) + clinic.fees.shippingNum;
+                    const formatData = (p) => ({
+                        ...p,
+                        label: getLabel(p.months),
+                        totalPrice: calculateTotal(p.price),
+                        drugPriceOnly: p.price,
+                        isCalculated: false,
+                        calculationNote: t.calcNotes.mixed
+                    });
+
+                    if (targetDuration === 'all') return prices.map(formatData);
+                    
+                    const exactMatch = prices.find(p => p.months === targetDuration);
+                    if (exactMatch) return [formatData(exactMatch)];
+                    
+                    return []; // Return empty if filtering by specific duration and no match found
+                }
+
+                const calculateTotal = (drugPrice) => drugPrice + getRegFee(clinic) + clinic.fees.shippingNum;
+                const formatData = (p) => ({
+                    ...p,
+                    label: getLabel(p.months),
+                    totalPrice: calculateTotal(p.price),
+                    drugPriceOnly: p.price,
+                    isCalculated: false
+                });
+
+                if (targetDuration === 'all') return prices.map(formatData);
+
+                const exactMatch = prices.find(p => p.months === targetDuration);
+                if (exactMatch) return [formatData(exactMatch)];
+
+                let calculatedDrugPrice = null;
+                let calcNoteKey = '';
+
+                if (targetDuration === 6) {
+                    const price3mo = prices.find(p => p.months === 3);
+                    const price2mo = prices.find(p => p.months === 2);
+                    const price1mo = prices.find(p => p.months === 1);
+                    if (price3mo) { calculatedDrugPrice = price3mo.price * 2; calcNoteKey = 'base3x2'; }
+                    else if (price2mo) { calculatedDrugPrice = price2mo.price * 3; calcNoteKey = 'base2x3'; }
+                    else if (price1mo) { calculatedDrugPrice = price1mo.price * 6; calcNoteKey = 'base1x6'; }
+                } else if (targetDuration === 3) {
+                    const price1mo = prices.find(p => p.months === 1);
+                    if (price1mo) { calculatedDrugPrice = price1mo.price * 3; calcNoteKey = 'base1x3'; }
+                } else if (targetDuration === 2) {
+                    const price1mo = prices.find(p => p.months === 1);
+                    if (price1mo) { calculatedDrugPrice = price1mo.price * 2; calcNoteKey = 'base1x2'; }
+                }
+
+                if (calculatedDrugPrice !== null) {
+                    return [{
+                        label: `${targetDuration} ${t.months} (${t.est})`,
+                        price: calculatedDrugPrice,
+                        totalPrice: calculateTotal(calculatedDrugPrice),
+                        drugPriceOnly: calculatedDrugPrice,
+                        months: targetDuration,
+                        isCalculated: true,
+                        calculationNote: t.calcNotes[calcNoteKey]
+                    }];
+                }
+                return [];
+            };
+
+            const getBestPrice = (dosage, duration) => {
+                let best = Infinity;
+                clinics.forEach(clinic => {
+                    const displayPrices = getSmartPrices(clinic, dosage, duration);
+                    displayPrices.forEach(item => {
+                        if (duration === 'all') {
+                            const monthlyAvg = item.totalPrice / item.months;
+                            if (monthlyAvg < best) best = monthlyAvg;
+                        } else {
+                            if (item.totalPrice < best) best = item.totalPrice;
+                        }
+                    });
+                });
+                return best;
+            };
+
+            const bestPrice = getBestPrice(activeDosage, activeDuration);
+
+            const getClinicSortValue = (clinic) => {
+                const displayPrices = getSmartPrices(clinic, activeDosage, activeDuration);
+                if (displayPrices.length === 0) return Infinity; 
+                let bestMetricForClinic = Infinity;
+                displayPrices.forEach(item => {
+                    const metric = activeDuration === 'all' ? (item.totalPrice / item.months) : item.totalPrice;
+                    if (metric < bestMetricForClinic) bestMetricForClinic = metric;
+                });
+                return bestMetricForClinic;
+            };
+
+            // Chinese Filter Logic
+            const filteredClinics = clinics.filter(c => {
+                if (chineseFilter) {
+                    return c.tags.some(tag => tag.en === 'Chinese Support');
+                }
+                return true;
+            });
+
+            const sortedClinics = filteredClinics
+                .filter(c => getSmartPrices(c, activeDosage, activeDuration).length > 0)
+                .sort((a, b) => getClinicSortValue(a) - getClinicSortValue(b));
+
+            const totalSelectedMonths = Object.values(cart).reduce((sum, val) => sum + val, 0);
+
+            // New Helper: Calculate cheapest combination for target months using DP
+            const calculateOptimalCombination = (clinic, dosage, targetMonths) => {
+                let plans = clinic.prices[dosage];
+                if (!plans) return null;
+                
+                // IMPORTANT: Filter plans by user type for the calculator too!
+                plans = filterPricesByUserType(plans);
+                if (plans.length === 0) return null;
+
+                // Max months is 6. Working in 0.5 steps to support trial plans.
+                // targetMonths is integer from input, but let's be safe.
+                const maxUnits = Math.round(targetMonths * 2);
+                const dp = new Array(maxUnits + 1).fill(null);
+                
+                // Base case: 0 cost for 0 months
+                dp[0] = { cost: 0, plans: [] };
+
+                for (let i = 1; i <= maxUnits; i++) {
+                    for (let plan of plans) {
+                        const planUnits = Math.round(plan.months * 2);
+                        if (planUnits <= i) {
+                            const remainder = i - planUnits;
+                            if (dp[remainder]) {
+                                const newCost = dp[remainder].cost + plan.price;
+                                if (!dp[i] || newCost < dp[i].cost) {
+                                    dp[i] = {
+                                        cost: newCost,
+                                        plans: [...dp[remainder].plans, plan]
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return dp[maxUnits];
+            };
+
+            const getCalculatorResults = () => {
+                const results = [];
+                const hasItems = totalSelectedMonths > 0;
+                if (!hasItems) return [];
+
+                // Filter clinics first
+                const targetClinics = clinics.filter(c => {
+                    if (chineseFilter) return c.tags.some(tag => tag.en === 'Chinese Support');
+                    return true;
+                });
+
+                targetClinics.forEach(clinic => {
+                    let totalMeds = 0;
+                    let possible = true;
+                    let breakdown = [];
+                    let bundleApplied = false;
+
+                    let tempCart = {...cart};
+                    
+                    const COMBO_KEYS = [
+                        ['2.5mg', '5mg', '2.5mg+5mg', t.combo2550],
+                        ['5mg', '7.5mg', '5mg+7.5mg', t.combo5075],
+                        ['7.5mg', '10mg', '7.5mg+10mg', t.combo75100],
+                        ['10mg', '12.5mg', '10mg+12.5mg', t.combo100125],
+                        ['12.5mg', '15mg', '12.5mg+15mg', t.combo125150]
+                    ];
+
+                    COMBO_KEYS.forEach(([doseA, doseB, comboKey, label]) => {
+                        if (tempCart[doseA] >= 1 && tempCart[doseB] >= 1) {
+                            // Check if this clinic supports the combo plan for current user type
+                            let comboData = clinic.prices[comboKey];
+                            if (comboData) {
+                                comboData = filterPricesByUserType(comboData); // Check visibility
+                                const twoMonthCombo = comboData.find(p => p.months === 2);
+                                
+                                if (twoMonthCombo) {
+                                    const pairs = Math.min(tempCart[doseA], tempCart[doseB]);
+                                    
+                                    // Use new function for single month cost (uses filtered prices)
+                                    const optA = calculateOptimalCombination(clinic, doseA, 1);
+                                    const optB = calculateOptimalCombination(clinic, doseB, 1);
+                                    
+                                    if (optA && optB) {
+                                        const indivTotal = (optA.cost + optB.cost) * pairs;
+                                        const bundleTotal = twoMonthCombo.price * pairs;
+                                        
+                                        if (bundleTotal < indivTotal) {
+                                            totalMeds += bundleTotal;
+                                            breakdown.push(`${label} x ${pairs}`);
+                                            bundleApplied = true;
+                                            tempCart[doseA] -= pairs;
+                                            tempCart[doseB] -= pairs;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    Object.entries(tempCart).forEach(([dosage, months]) => {
+                        if (months > 0) {
+                            const optimal = calculateOptimalCombination(clinic, dosage, months);
+                            if (optimal) {
+                                totalMeds += optimal.cost;
+                                
+                                // Helper to format the breakdown nicely
+                                const counts = {};
+                                optimal.plans.forEach(p => {
+                                    counts[p.months] = (counts[p.months] || 0) + 1;
+                                });
+                                const parts = Object.keys(counts).sort((a,b) => parseFloat(b) - parseFloat(a)).map(m => {
+                                    const c = counts[m];
+                                    let label = getLabel(parseFloat(m));
+                                    // Add indication if using initial price
+                                    const plan = optimal.plans.find(p => p.months === parseFloat(m));
+                                    if (plan && plan.type === 'initial') label += ` (${t.firstTime})`;
+                                    return c > 1 ? `${label} x${c}` : label;
+                                });
+                                
+                                breakdown.push(`${dosage} [${parts.join(' + ')}]`);
+                            } else {
+                                possible = false;
+                            }
+                        }
+                    });
+
+                    if (possible) {
+                        results.push({
+                            clinic: clinic,
+                            meds: totalMeds,
+                            total: totalMeds + getRegFee(clinic) + clinic.fees.shippingNum,
+                            breakdown: breakdown.join(', '),
+                            isBundle: bundleApplied
+                        });
+                    }
+                });
+
+                return results.sort((a, b) => a.total - b.total);
+            };
+
+            const calcResults = getCalculatorResults();
+
+            return (
+                <div className="max-w-5xl mx-auto px-6 py-10 md:py-16">
+                    {/* Header & Main Controls */}
+                    <div className="flex flex-col-reverse md:flex-row justify-between items-center mb-8 gap-6 relative z-40">
+                        {/* Mode Switcher (Left) */}
+                        <div className="flex gap-2">
+                            <button onClick={() => setMode('standard')} className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full text-sm font-sans transition-all shadow-sm ${mode === 'standard' ? 'bg-stone-900 text-white' : 'bg-white border border-stone-200 text-stone-500 hover:bg-stone-50'}`}>
+                                <Icons.Grid /> {t.modeStandard}
+                            </button>
+                            <button onClick={() => setMode('calculator')} className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full text-sm font-sans transition-all shadow-sm ${mode === 'calculator' ? 'bg-gold-500 text-white' : 'bg-white border border-stone-200 text-stone-500 hover:bg-stone-50'}`}>
+                                <Icons.Calc /> {t.modeCalculator}
+                            </button>
+                        </div>
+
+                        {/* Language Switcher (Right) */}
+                        <div className="flex gap-4 items-center">
+                            <button onClick={() => setLang('zh')} className={`lang-btn ${lang === 'zh' ? 'active' : ''}`}>中文</button>
+                            <button onClick={() => setLang('en')} className={`lang-btn ${lang === 'en' ? 'active' : ''}`}>EN</button>
+                        </div>
+                    </div>
+
+                    <header className="text-center mb-10">
+                        <h1 className="font-display text-2xl md:text-3xl tracking-widest text-stone-900 uppercase mb-2">Mounjaro</h1>
+                        <p className="font-serif text-xs text-stone-500 italic">{t.subtitle}</p>
+                    </header>
+
+                    {/* Standard Mode - Sticky Bar */}
+                    {mode === 'standard' && (
+                        <div className="mb-12 sticky top-0 z-30 bg-[#FAFAF9]/95 backdrop-blur-sm py-4 border-b border-stone-200 transition-all shadow-sm max-w-5xl mx-auto">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-1">
+                                <div className="custom-select-wrapper">
+                                    <select 
+                                        className="custom-select" 
+                                        value={userType} 
+                                        onChange={(e) => setUserType(e.target.value)}
+                                    >
+                                        <option value="new">{t.userNew}</option>
+                                        <option value="returning">{t.userReturning}</option>
+                                    </select>
+                                </div>
+                                <div className="custom-select-wrapper">
+                                    <select 
+                                        className="custom-select" 
+                                        value={chineseFilter ? 'chinese' : 'all'} 
+                                        onChange={(e) => setChineseFilter(e.target.value === 'chinese')}
+                                    >
+                                        <option value="all">{t.filterAll}</option>
+                                        <option value="chinese">{t.filterChinese}</option>
+                                    </select>
+                                </div>
+                                <div className="custom-select-wrapper">
+                                    <select 
+                                        className="custom-select" 
+                                        value={activeDosage} 
+                                        onChange={(e) => setActiveDosage(e.target.value)}
+                                    >
+                                        <optgroup label={t.dosageLabel}>
+                                            {['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg'].map(d => (
+                                                <option key={d} value={d}>{d}</option>
+                                            ))}
+                                        </optgroup>
+                                        <optgroup label={t.transitPlan}>
+                                            {['2.5mg+5mg', '5mg+7.5mg', '7.5mg+10mg', '10mg+12.5mg', '12.5mg+15mg'].map(combo => (
+                                                <option key={combo} value={combo}>
+                                                    {combo === '2.5mg+5mg' ? t.combo2550 : combo === '5mg+7.5mg' ? t.combo5075 : combo === '7.5mg+10mg' ? t.combo75100 : combo === '10mg+12.5mg' ? t.combo100125 : t.combo125150}
+                                                </option>
+                                            ))}
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div className="custom-select-wrapper">
+                                    <select 
+                                        className="custom-select" 
+                                        value={activeDuration} 
+                                        onChange={(e) => setActiveDuration(e.target.value === 'all' ? 'all' : parseFloat(e.target.value))}
+                                    >
+                                        <option value="all">{t.allPlans}</option>
+                                        <option value="0.5">0.5 {t.month}</option>
+                                        <option value="1">1 {t.month}</option>
+                                        <option value="2">2 {t.months}</option>
+                                        <option value="3">3 {t.months}</option>
+                                        <option value="6">6 {t.months}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Calculator Mode - Controls */}
+                    {mode === 'calculator' && (
+                        <div className="mb-8 max-w-5xl mx-auto">
+                            <div className="flex gap-4 justify-center md:justify-start bg-white p-3 rounded-lg border border-stone-100 shadow-sm">
+                                <div className="custom-select-wrapper w-full md:w-auto">
+                                    <select 
+                                        className="custom-select" 
+                                        value={userType} 
+                                        onChange={(e) => setUserType(e.target.value)}
+                                    >
+                                        <option value="new">{t.userNew}</option>
+                                        <option value="returning">{t.userReturning}</option>
+                                    </select>
+                                </div>
+                                <div className="custom-select-wrapper w-full md:w-auto">
+                                    <select 
+                                        className="custom-select" 
+                                        value={chineseFilter ? 'chinese' : 'all'} 
+                                        onChange={(e) => setChineseFilter(e.target.value === 'chinese')}
+                                    >
+                                        <option value="all">{t.filterAll}</option>
+                                        <option value="chinese">{t.filterChinese}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Content - Calculator */}
+                    {mode === 'calculator' && (
+                        <div className="animate-fade-up">
+                            <div className="bg-white border border-gold-200 rounded-xl p-6 md:p-8 shadow-sm mb-12">
+                                <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-8 gap-6">
+                                    <div className="order-1">
+                                        <h3 className="font-serif text-xl text-stone-800 mb-2 flex items-center gap-2">
+                                            <Icons.Calc /> {t.modeCalculator}
+                                        </h3>
+                                        <div className="md:hidden mt-4 mb-4">
+                                            <div className={`text-sm font-bold flex items-center justify-between gap-2 ${totalSelectedMonths >= 6 ? 'text-red-500' : 'text-stone-600'}`}>
+                                                <span className="text-xs uppercase text-stone-400 tracking-wider">{t.totalSelected}</span>
+                                                <span>{totalSelectedMonths} / 6</span>
+                                            </div>
+                                            <div className="w-full h-2 bg-stone-100 rounded-full mt-2 overflow-hidden">
+                                                <div className={`h-full transition-all duration-500 ${totalSelectedMonths >= 6 ? 'bg-red-400' : 'bg-gold-400'}`} style={{width: `${Math.min(totalSelectedMonths/6 * 100, 100)}%`}}></div>
+                                            </div>
+                                            {totalSelectedMonths >= 6 && <div className="text-right text-[10px] text-red-400 mt-1 font-sans flex items-center justify-end gap-1"><Icons.Alert size={10}/> {t.maxLimitMsg}</div>}
+                                        </div>
+                                        <p className="text-stone-500 text-sm font-sans leading-relaxed">{t.calcIntro}</p>
+                                        {userType === 'new' && <p className="text-gold-600 text-xs mt-2 font-bold bg-gold-50 p-2 rounded border border-gold-100 inline-block">{t.calcDisclaimer}</p>}
+                                    </div>
+                                    <div className="hidden md:flex flex-col items-end order-2">
+                                        <div className={`text-sm font-bold flex items-center gap-2 ${totalSelectedMonths >= 6 ? 'text-red-500' : 'text-stone-600'}`}>
+                                            {totalSelectedMonths >= 6 && <Icons.Alert size={16}/>}
+                                            {t.totalSelected}: {totalSelectedMonths} / 6
+                                        </div>
+                                        {totalSelectedMonths >= 6 && <span className="text-[10px] text-red-400 mt-1 font-sans">{t.maxLimitMsg}</span>}
+                                        <div className="w-48 h-2 bg-stone-100 rounded-full mt-2 overflow-hidden">
+                                            <div className={`h-full transition-all duration-500 ${totalSelectedMonths >= 6 ? 'bg-red-400' : 'bg-gold-400'}`} style={{width: `${Math.min(totalSelectedMonths/6 * 100, 100)}%`}}></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                                    {Object.keys(cart).map(dosage => (
+                                        <div key={dosage} className="flex flex-col">
+                                            <label className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">{dosage}</label>
+                                            <div className={`flex items-center border rounded-lg overflow-hidden transition-colors h-12 ${totalSelectedMonths >= 6 && cart[dosage] === 0 ? 'bg-stone-50 border-stone-100 opacity-50 cursor-not-allowed' : 'bg-stone-50 border-stone-200'}`}>
+                                                <input type="number" min="0" max="6" value={cart[dosage]} onChange={(e) => {
+                                                        let val = parseInt(e.target.value) || 0;
+                                                        if (val < 0) val = 0;
+                                                        const currentTotal = Object.entries(cart).filter(([key]) => key !== dosage).reduce((sum, [, v]) => sum + v, 0);
+                                                        if (currentTotal + val > 6) val = 6 - currentTotal;
+                                                        setCart({...cart, [dosage]: val});
+                                                    }}
+                                                    className="w-full p-2 text-center text-stone-900 font-sans font-bold bg-transparent outline-none text-lg"
+                                                />
+                                                <span className="pr-3 text-xs text-stone-400 select-none whitespace-nowrap">{t.monthsCount}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex justify-end border-t border-stone-100 pt-4">
+                                    <button onClick={() => setCart({'2.5mg': 0, '5mg': 0, '7.5mg': 0, '10mg': 0, '12.5mg': 0, '15mg': 0})} className="text-xs text-stone-400 hover:text-red-500 font-sans border-b border-transparent hover:border-red-500 transition-all">{t.reset}</button>
+                                </div>
+                            </div>
+                            <div className="grid gap-6">
+                                {calcResults.map((res, idx) => (
+                                    <div key={res.clinic.id} className="bg-white border border-stone-100 rounded-lg p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all">
+                                        {idx === 0 && <div className="absolute top-0 left-0 w-1 h-full bg-gold-400"></div>}
+                                        <div className="flex-1 w-full">
+                                            <div className="flex items-center justify-between md:justify-start gap-3 mb-2">
+                                                <h3 className="font-serif text-xl text-stone-900">{res.clinic.name[lang]}</h3>
+                                                {idx === 0 && <span className="bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">{t.bestValue}</span>}
+                                                {res.isBundle && <span className="bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 flex items-center gap-1"><Icons.Star size={10}/> {t.bundleApplied}</span>}
+                                            </div>
+                                            <p className="text-sm text-stone-500 font-sans mb-3 flex items-center gap-2"><span className="bg-stone-100 px-2 py-1 rounded text-xs break-all">{res.breakdown}</span></p>
+                                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-400 font-sans">
+                                                <span>{t.meds}: {formatCurrency(res.meds)}</span>
+                                                {getRegFee(res.clinic) > 0 && <span>+ {t.regFee}: {formatCurrency(getRegFee(res.clinic))}</span>}
+                                                {res.clinic.fees.shippingNum > 0 && <span>+ {t.shipFee}: {formatCurrency(res.clinic.fees.shippingNum)}</span>}
+                                            </div>
+                                        </div>
+                                        <div className="text-right w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0 mt-2 md:mt-0">
+                                            <span className="text-xs text-stone-400 uppercase block mb-1">{t.calcTotal}</span>
+                                            <span className={`text-3xl font-sans font-light tracking-tight ${idx === 0 ? 'text-stone-900' : 'text-stone-600'}`}>
+                                                {formatCurrency(res.total)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                                {calcResults.length === 0 && (
+                                    <div className="text-center py-12 text-stone-400 font-serif italic bg-white rounded-xl border border-dashed border-stone-200">{t.noData}</div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Content - Standard */}
+                    {mode === 'standard' && (
+                        <div className="animate-fade-up">
+                            <div className="flex flex-col items-center mb-12 gap-2">
+                                <div className="bg-white border border-stone-200 px-6 py-3 flex items-center gap-3 shadow-sm rounded-full">
+                                    <div className="text-stone-400"><Icons.Info /></div>
+                                    <p className="text-xs text-stone-500 uppercase tracking-wider font-sans">{t.disclaimer} <span className="text-stone-900 font-bold border-b border-stone-300">{t.disclaimerHighlight}</span>.</p>
+                                </div>
+                                <div className="flex items-center gap-1 text-xs text-stone-400 font-sans tracking-wide animate-pulse"><Icons.Sort size={12} /> {t.sortNote}</div>
+                            </div>
+                            {sortedClinics.length === 0 && (
+                                <div className="text-center py-20 animate-fade-up">
+                                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-stone-100 text-stone-400 mb-4"><Icons.Info size={24} /></div>
+                                    <p className="text-stone-500 font-serif italic max-w-md mx-auto">{t.noData}</p>
+                                </div>
+                            )}
+                            <div className="grid gap-8 md:gap-10">
+                                {sortedClinics.map((clinic, clinicIndex) => {
+                                    const displayPrices = getSmartPrices(clinic, activeDosage, activeDuration);
+                                    let rankColor = '';
+                                    if (clinicIndex === 0) rankColor = 'bg-gold-400 text-white';
+                                    else if (clinicIndex === 1) rankColor = 'bg-stone-400 text-white';
+                                    else if (clinicIndex === 2) rankColor = 'bg-stone-300 text-white';
+                                    
+                                    return (
+                                        <div key={clinic.id} className="group animate-fade-up bg-white shadow-sm border border-stone-100 hover:shadow-md transition-all duration-500 relative">
+                                            {rankColor && <div className={`absolute -top-3 -left-3 ${rankColor} w-8 h-8 flex items-center justify-center font-display font-bold shadow-md z-10 rank-badge rounded-sm`}>{clinicIndex + 1}</div>}
+                                            <div className="flex flex-col md:flex-row md:items-center justify-between p-6 md:p-8 border-b border-stone-100">
+                                                <div>
+                                                    <div className="flex items-baseline gap-3 mb-2">
+                                                        <h2 className="font-serif text-xl md:text-2xl text-stone-900">{clinic.name[lang]}</h2>
+                                                        <a href={clinic.link} target="_blank" className="text-stone-300 hover:text-gold-400 transition-colors"><Icons.ExternalLink /></a>
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {clinic.freeShipping ? <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-600 px-2 py-1 flex items-center gap-1 font-sans bg-stone-50/50"><Icons.Truck size={10}/> {t.shippingIncluded}</span> : <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 flex items-center gap-1 font-sans"><Icons.Truck size={10}/> {t.shippingExtra}</span>}
+                                                        <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 font-sans">{t.regFeeLabel}: {formatCurrency(getRegFee(clinic))}</span>
+                                                        {clinic.tags.map((tagObj, idx) => <span key={idx} className="text-[10px] uppercase tracking-widest bg-stone-50 text-stone-400 px-2 py-1 font-sans">{tagObj[lang]}</span>)}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                {displayPrices.map((item, idx) => {
+                                                    let isBestPrice = false;
+                                                    const monthlyAvg = item.totalPrice / item.months;
+                                                    if (activeDuration === 'all') isBestPrice = Math.abs(monthlyAvg - bestPrice) < 10;
+                                                    else isBestPrice = Math.abs(item.totalPrice - bestPrice) < 10;
+
+                                                    return (
+                                                        <div key={idx} className={`relative p-6 transition-all duration-300 flex flex-col justify-between rounded-sm ${isBestPrice ? 'bg-stone-50 border border-gold-200' : 'bg-white border border-stone-100 opacity-80 hover:opacity-100 hover:border-stone-300'}`}>
+                                                            {isBestPrice && <div className="absolute top-0 right-0 bg-gold-400 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 font-sans rounded-bl-sm">{t.bestValue}</div>}
+                                                            <div className="mb-6">
+                                                                <div className="flex justify-between items-start mb-2">
+                                                                    <span className="font-serif italic text-stone-600 text-lg">{item.label}</span>
+                                                                    <div className="flex flex-col items-end gap-1">
+                                                                        {item.isCalculated && <span className="text-[10px] uppercase text-stone-300 border border-stone-200 px-1 font-sans">{t.est}</span>}
+                                                                        {item.months === 0.5 && <span className="text-[10px] text-red-400 border border-red-200 bg-red-50 px-1 font-sans">{t.firstTime}</span>}
+                                                                        {item.type === 'initial' && <span className="text-[10px] text-gold-600 border border-gold-200 bg-gold-50 px-1 font-sans">{t.firstTime}</span>}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-baseline gap-1">
+                                                                    <span className={`text-3xl font-light tracking-tight font-sans ${isBestPrice ? 'text-stone-900' : 'text-stone-600'}`}>{formatCurrency(item.totalPrice)}</span>
+                                                                    <span className="text-xs text-stone-400 uppercase font-sans">{t.total}</span>
+                                                                </div>
+                                                                <div className="mt-2 pt-2 border-t border-stone-100 text-[10px] text-stone-400 flex flex-col gap-0.5 font-sans">
+                                                                    <div className="flex justify-between"><span>{t.meds}</span><span>{formatCurrency(item.drugPriceOnly)}</span></div>
+                                                                    {getRegFee(clinic) > 0 && <div className="flex justify-between"><span>{t.regFee}</span><span>+ {formatCurrency(getRegFee(clinic))}</span></div>}
+                                                                    {clinic.fees.shippingNum > 0 && <div className="flex justify-between"><span>{t.shipFee}</span><span>+ {formatCurrency(clinic.fees.shippingNum)}</span></div>}
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-end justify-between">
+                                                                {item.months !== 1 && activeDuration === 'all' ? (
+                                                                    <div className="text-right w-full">
+                                                                        <p className="text-[10px] uppercase text-stone-400 tracking-widest mb-1 font-sans">{t.monthlyAvg}</p>
+                                                                        <p className={`font-sans font-bold ${isBestPrice ? 'text-gold-600' : 'text-stone-500'}`}>{formatCurrency(monthlyAvg)}</p>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="w-full">
+                                                                        {item.isCalculated && <p className="text-[10px] text-stone-400 italic text-right font-serif">* {item.calculationNote}</p>}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+                    <footer className="mt-20 pt-10 border-t border-stone-200 text-center text-stone-400">
+                        <p className="font-serif italic text-sm mb-2">{t.footerNote}</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<MounjaroBoutique />);
+    </script>
+</body>
+</html>
