@@ -161,7 +161,8 @@
             Grid: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>,
             Alert: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>,
             Star: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
-            User: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            User: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>,
+            MapPin: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
         };
 
         // Exchange Rates
@@ -169,6 +170,21 @@
             TWD: 0.2022, // JPY to TWD
             USD: 0.0065  // JPY to USD
         };
+
+        const REGIONS = [
+            { id: 'all', zh: '全部地區 (All)', en: 'All Regions' },
+            { id: 'hokkaido', zh: '北海道', en: 'Hokkaido' },
+            { id: 'tohoku', zh: '東北 (Tohoku)', en: 'Tohoku' },
+            { id: 'kanto', zh: '關東 (Kanto/Tokyo)', en: 'Kanto' },
+            { id: 'shinetsu', zh: '信越 (Shinetsu)', en: 'Shinetsu' },
+            { id: 'hokuriku', zh: '北陸 (Hokuriku)', en: 'Hokuriku' },
+            { id: 'chubu', zh: '中部 (Chubu/Nagoya)', en: 'Chubu' },
+            { id: 'kansai', zh: '關西 (Kansai/Osaka)', en: 'Kansai' },
+            { id: 'chugoku', zh: '中國 (Chugoku)', en: 'Chugoku' },
+            { id: 'shikoku', zh: '四國 (Shikoku)', en: 'Shikoku' },
+            { id: 'kyushu', zh: '九州 (Kyushu)', en: 'Kyushu' },
+            { id: 'okinawa', zh: '沖繩 (Okinawa)', en: 'Okinawa' },
+        ];
 
         const TEXTS = {
             zh: {
@@ -187,6 +203,7 @@
                 bestValue: 'CP值最高',
                 shippingIncluded: '含運費',
                 shippingExtra: '運費另計',
+                shippingOffline: '線下免運',
                 regFeeLabel: '初診費',
                 freeReg: '免掛號費',
                 footerNote: '價格僅供參考，匯率換算基準日: 2025/12/05。',
@@ -221,6 +238,7 @@
                 modeLabel: '模式',
                 dosageLabel: '劑量選擇',
                 durationLabel: '方案時長',
+                regionLabel: '居住地區',
                 calcNotes: {
                     base3x2: '基於3個月方案 x 2',
                     base2x3: '基於2個月方案 x 3',
@@ -253,6 +271,7 @@
                 bestValue: 'Best Value',
                 shippingIncluded: 'Shipping Included',
                 shippingExtra: 'Shipping Extra',
+                shippingOffline: 'Offline Free Ship',
                 regFeeLabel: 'Reg.',
                 freeReg: 'Free Reg.',
                 footerNote: 'Prices are for reference only. Rates as of 2025/12/05.',
@@ -287,6 +306,7 @@
                 modeLabel: 'Mode',
                 dosageLabel: 'Dosage',
                 durationLabel: 'Duration',
+                regionLabel: 'Your Region',
                 calcNotes: {
                     base3x2: 'Based on 3-Month Plan x 2',
                     base2x3: 'Based on 2-Month Plan x 3',
@@ -310,8 +330,9 @@
             const [mode, setMode] = React.useState('standard'); 
             const [activeDosage, setActiveDosage] = React.useState('2.5mg');
             const [activeDuration, setActiveDuration] = React.useState('all');
-            const [userType, setUserType] = React.useState('new'); // 'new' or 'returning'
-            const [chineseFilter, setChineseFilter] = React.useState(false); // false = all, true = chinese only
+            const [userType, setUserType] = React.useState('new'); 
+            const [chineseFilter, setChineseFilter] = React.useState(false); 
+            const [region, setRegion] = React.useState('all'); // Region filter state
             const [cart, setCart] = React.useState({
                 '2.5mg': 0, '5mg': 0, '7.5mg': 0, '10mg': 0, '12.5mg': 0, '15mg': 0
             });
@@ -343,14 +364,40 @@
             // --- Data ---
              const clinics = [
                 {
+                    id: 'ikegawa',
+                    name: { zh: '池川内科', en: 'Ikegawa Internal Medicine' },
+                    tags: [
+                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' }
+                    ],
+                    link: 'https://lin.ee/AX891RZ',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } }, // Shipping calculated dynamically
+                    locations: ['kansai'], // Assumed offline location based on cheapest shipping
+                    freeShipping: false,
+                    shipping_rules: {
+                        'hokkaido': 2500,
+                        'tohoku': 1500, 'kanto': 1500, 'shinetsu': 1500,
+                        'kansai': 1000, 'chubu': 1000, 'hokuriku': 1000, 'shikoku': 1000, 'chugoku': 1000, 'kyushu': 1000,
+                        'okinawa': 2000,
+                        'default': 1500 // Fallback
+                    },
+                    prices: {
+                        '2.5mg': [{ price: 12500, months: 1 }, { price: 6250, months: 0.5 }], // 0.5 month = 2 pens (minimum)
+                        '5mg': [{ price: 24500, months: 1 }, { price: 12250, months: 0.5 }],
+                        '7.5mg': [{ price: 37500, months: 1 }, { price: 18750, months: 0.5 }],
+                        '10mg': [{ price: 42000, months: 1 }, { price: 21000, months: 0.5 }],
+                        '12.5mg': [{ price: 55000, months: 1 }, { price: 27500, months: 0.5 }],
+                        '15mg': [{ price: 80000, months: 1 }, { price: 40000, months: 0.5 }]
+                    }
+                },
+                {
                     id: 'ikegami',
                     name: { zh: '池上陽光診所', en: 'Ikegami Ohisama Clinic' },
                     tags: [
                         { zh: '線上診療', en: 'Online Clinic' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-			{ zh: '主治醫師怪怪的,自行斟酌', en: 'Doc has some personality' }
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' }
                     ],
-                    link: 'https://x.com/Ikegami_ohisama', 
+                    link: 'https://ikegamiohisama.jp/', 
+                    locations: ['kanto'],
                     fees: { initialNum: 0, shippingNum: 1500, note: { zh: '初診0元+運費1500', en: 'Reg 0 + Ship 1500' } },
                     freeShipping: false,
                     prices: {
@@ -376,7 +423,7 @@
                         ]
                     }
                 },
-     {
+                {
                     id: 'tkevery',
                     name: { zh: 'TK Every', en: 'TK Every Clinic' },
                     tags: [
@@ -384,6 +431,7 @@
                         { zh: '線下/線上', en: 'Offline/Online'},
                         { zh: '線上需另加1100使用費+自付運費', en: 'Shipping fee/Online fee extra' }
                     ],
+                    locations: ['kanto'],
                     link: 'https://threads.com/@tk.every', 
                     fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需另加1100使用費+自付運費', en: 'Shipping fee/Online fee extra' } },
                     freeShipping: false,
@@ -399,11 +447,11 @@
                     name: { zh: '狸貓診所 (Poco)', en: 'Poco Clinic' },
                     tags: [
                         { zh: '用Zoom線上診療', en: 'Online Clinic Via Zoom' },
-			 { zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' },
-	                { zh: '預約須日本門號', en: 'Need JP Phone#' },
-						{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     link: 'https://x.com/poco_clinic?t=J1lyy3oqNA6Ozcv3lpg18A&s=09',
+                    locations: [], // Online focused
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費/含運', en: 'Free Reg/Ship' } },
                     freeShipping: true,
                     prices: {
@@ -422,13 +470,13 @@
                 },
                 {
                     id: 'osaka-light',
-                    name: { zh: 'Light Clinic (大阪/東京/名古屋)', en: 'Light Clinic (Osaka/Tokyo/Nagoya)' },
+                    name: { zh: 'Light Clinic', en: 'Light Clinic' },
                     tags: [
                         { zh: '用Zoom線上診療', en: 'Online Clinic Via Zoom' },
-            		{ zh: '需冷藏配送須事先告知', en: 'Chilled Delivery: Need to Notify Clinic' },
-			{ zh: '無盒給藥,介意者自行斟酌', en: 'Box removed upon issuance' },
-						{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                        { zh: '需冷藏配送須事先告知', en: 'Chilled Delivery: Need to Notify Clinic' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
+                    locations: [], // Online only now
                     link: 'https://x.com/OsakaLight?t=AMGZj7ZfXqaGQ4T9Fz7-Kg&s=09',
                     fees: { initialNum: 0, shippingNum: 2200, note: { zh: '免掛號費+運費¥2,200', en: 'Free Reg + Ship ¥2,200' } },
                     freeShipping: false,
@@ -445,10 +493,11 @@
                     id: 'noname',
                     name: { zh: 'Noname醫美線上診所', en: 'Noname Beauty Clinic' },
                     tags: [
-                         { zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' },
+                        { zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' },
                         { zh: '預約須日本門號', en: 'Need JP Phone#' },
-						{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
+                    locations: [],
                     link: 'https://t.co/wzT0jScIqw',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true,
@@ -463,8 +512,9 @@
                     name: { zh: '優樂喜醫', en: 'Yoroshii Medical', jp: 'yoroshii_medical' },
                     tags: [
                         { zh: '中文服務', en: 'Chinese Support'},
-            { zh: '線下/線上', en: 'Offline/Online'}
+                        { zh: '線下/線上', en: 'Offline/Online'}
                     ],
+                    locations: ['kanto'],
                     link: 'https://www.threads.net/@yoroshii_medical',
                     fees: { initialNum: 5500, shippingNum: 1800, note: { zh: '含掛號¥5,500+運費¥1,800', en: 'Incl Reg + Ship' } },
                     freeShipping: false,
@@ -473,22 +523,23 @@
                         '5mg':   [{ price: 21000, months: 1 },{ price: 81000, months: 3 },{ price: 162000, months: 6 }],
                     }
                 },
-				  {
+                {
                     id: 'kirei',
                     name: { zh: 'Kirei Repo 線上診所', en: 'Kirei Repo Online Clinic' },
                     tags: [
                         { zh: '線下/線上', en: 'Offline/Online'},
                         { zh: '預約須日本門號', en: 'Need JP Phone#' },
-						{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
+                    locations: [], // Online only
                     link: 'https://t.co/hB691i5o7C',
                     fees: { initialNum: 2000, shippingNum: 0, note: { zh: '含掛號+運費¥2,000', en: 'Incl Reg + Ship' } },
                     freeShipping: false,
                     prices: {
                         '2.5mg': [{ price: 12000, months: 1, type: 'regular' },{ price: 33900, months: 3, type: 'initial' },{ price: 34920, months: 3, type: 'regular' },{ price: 66000, months: 6, type: 'initial' }, { price: 67680, months: 6, type: 'regular' }],
                         '5mg':   [{ price: 25000, months: 1, type: 'initial' },{ price: 27000, months: 1, type: 'regular' },{ price: 74000, months: 3, type: 'initial' },{ price: 78570, months: 3, type: 'regular' },{ price: 135000, months: 6, type: 'initial' }, { price: 152280, months: 6, type: 'regular' }],
-						'7.5mg':   [{ price: 36000, months: 1, type: 'initial' },{ price: 38000, months: 1, type: 'regular' },{ price: 107000, months: 3, type: 'initial' },{ price: 110500, months: 3, type: 'regular' },{ price: 198000, months: 6, type: 'initial' }, { price: 214320, months: 6, type: 'regular' }],
-						'10mg':   [{ price: 45000, months: 1, type: 'initial' },{ price: 47000, months: 1, type: 'regular' },{ price: 131000, months: 3, type: 'initial' },{ price: 136700, months: 3, type: 'regular' }]
+                        '7.5mg':   [{ price: 36000, months: 1, type: 'initial' },{ price: 38000, months: 1, type: 'regular' },{ price: 107000, months: 3, type: 'initial' },{ price: 110500, months: 3, type: 'regular' },{ price: 198000, months: 6, type: 'initial' }, { price: 214320, months: 6, type: 'regular' }],
+                        '10mg':   [{ price: 45000, months: 1, type: 'initial' },{ price: 47000, months: 1, type: 'regular' },{ price: 131000, months: 3, type: 'initial' },{ price: 136700, months: 3, type: 'regular' }]
                     }
                 },
                 {
@@ -498,8 +549,9 @@
                         { zh: '線上診療', en: 'Online Clinic' },
                         { zh: '第17支後送一次CBT', en: 'Free CBT upon 17th pen' },
                         { zh: '預約須日本門號', en: 'Need JP Phone#' },
-						{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
+                    locations: ['kanto'],
                     link: 'https://light-clinic.com/',
                     fees: { initialNum: 1100, shippingNum: 1100, note: { zh: '含掛號¥1,100+運費¥1,100', en: 'Incl Reg & Ship' } },
                     freeShipping: false, 
@@ -514,8 +566,9 @@
                     tags: [
                         { zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' },
                         { zh: '預約須日本門號', en: 'Need JP Phone#' },
-						{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
+                    locations: [],
                     link: 'https://wakeari-diet.com/',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true, 
@@ -540,6 +593,8 @@
                         { zh: '中文服務', en: 'Chinese Support' },
                         { zh: '線下/線上', en: 'Offline/Online' }
                     ],
+                    locations: ['kanto'],
+                    offlineOnly: true, // Mark as offline only
                     link: 'https://www.threads.net/@shibuyakimura_clinic',
                     fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需自付運費', en: 'Shipping fee extra' } },
                     freeShipping: false,
@@ -557,6 +612,7 @@
                           { zh: '線上診療', en: 'Online Clinic' },
                           { zh: '預約須日本門號', en: 'Need JP Phone#' }
                     ],
+                    locations: [],
                     link: 'https://x.com/marugotobeauty?t=4jUN_IPyV_luK3c4nkS4Ag&s=09',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true,
@@ -581,6 +637,8 @@
                         { zh: '到院門診限定', en: 'Visit Only' },
                         { zh: '免預約', en: 'No Appt Needed' }
                     ],
+                    locations: ['kanto'],
+                    offlineOnly: true, // Mark as offline only
                     link: 'https://x.com/ShinjukuCIinic?t=IK7B4EISNXdiBcoE81lpLQ&s=09',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: false, 
@@ -596,9 +654,10 @@
                     name: { zh: 'CKK線上診所', en: 'CKK Online Clinic' },
                     tags: [
                         { zh: '線上Line診療', en: 'Online Clinic Thru Line' },
-						{ zh: '預約須日本門號', en: 'Need JP Phone#' },
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
+                    locations: [],
                     link: 'https://lin.ee/ujGjFmKU',
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費+運費2000', en: 'No Reg. Fee, Shipping 2000' } },
                     freeShipping: false,
@@ -610,7 +669,7 @@
                         '2.5mg+5mg': [{ price: 16900, months: 1 }],
                     }
                 },
-{
+                {
                     id: 'imazu',
                     name: { zh: '醫療法人近江今津站前精神科診所', en: 'Oumi Imazu Station Front Clinic' },
                     tags: [
@@ -619,6 +678,7 @@
                         { zh: '預約須日本門號', en: 'Need JP Phone#' },
                         { zh: '線下再折2000円', en: '2000Yen Off for Offline' }
                     ],
+                    locations: ['kansai'], // Shiga
                     link: 'https://jrsandaaga.com/',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true,
@@ -632,12 +692,31 @@
                     }
                 },
                 {
+                    id: 'owl',
+                    name: { zh: '貓頭鷹線上診所', en: 'OWL Online Clinic' },
+                    tags: [
+                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '中文服務', en: 'Chinese Support' }
+                    ],
+                    locations: ['kanto'],
+                    link: 'https://line.me/R/ti/p/@885omndd',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    freeShipping: true,
+                    prices: {
+                        '2.5mg': [{ price: 15800, months: 1 }, { price: 40500, months: 3 }, { price: 76200, months: 6 }],
+                        '5mg': [{ price: 27700, months: 1 }, { price: 73200, months: 3 }, { price: 136800, months: 6 }],
+                        '7.5mg': [{ price: 38900, months: 1 }, { price: 98700, months: 3 }, { price: 195000, months: 6 }],
+                        '10mg': [{ price: 43900, months: 1 }, { price: 118200, months: 3 }, { price: 234000, months: 6 }]
+                    }
+                },
+                {
                     id: 'pokekuri',
                     name: { zh: 'Pokekuri', en: 'Pokekuri' },
                     tags: [
                         { zh: '線上診療', en: 'Online Clinic' },
                         { zh: '預約須日本門號', en: 'Need JP Phone#' }
                     ],
+                    locations: [],
                     link: 'https://x.com/pokekuri?t=v44jYexZkPzy-bYR1k8chA&s=09',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true,
@@ -656,20 +735,42 @@
                 return clinic.fees.returningNum !== undefined ? clinic.fees.returningNum : clinic.fees.initialNum;
             };
 
+            const getShippingFee = (clinic, userRegion, months) => {
+                // If region is not selected, fallback to default logic
+                if (userRegion === 'all') {
+                    if (clinic.shipping_rules && clinic.shipping_rules.default) return clinic.shipping_rules.default;
+                    return clinic.fees.shippingNum;
+                }
+
+                // Check for Offline availability (Free Shipping)
+                if (clinic.locations && clinic.locations.includes(userRegion)) {
+                    return 0; // User goes to clinic
+                }
+
+                // Calculate shipping based on region
+                let baseShipping = clinic.fees.shippingNum;
+                if (clinic.shipping_rules) {
+                    baseShipping = clinic.shipping_rules[userRegion] || clinic.shipping_rules.default || baseShipping;
+                }
+
+                // Ikegawa Special Rule: +500 for >= 3 months
+                if (clinic.id === 'ikegawa' && months >= 3) {
+                    baseShipping += 500;
+                }
+
+                return baseShipping;
+            };
+
             const filterPricesByUserType = (prices) => {
                 if (!prices) return [];
                 if (userType === 'returning') {
                     // Returning users cannot see initial prices
                     return prices.filter(p => p.type !== 'initial');
                 } else {
-                    // New users:
-                    // If there is an 'initial' price for a specific month, use it and hide the 'regular' price for SAME duration.
-                    // This prevents showing "1 Month (14000)" AND "1 Month (18000)" side-by-side.
+                    // New users logic...
                     const initialMonths = prices.filter(p => p.type === 'initial').map(p => p.months);
                     return prices.filter(p => {
-                        // Keep if it's initial
                         if (p.type === 'initial') return true;
-                        // Keep if it's regular BUT only if there is no initial price for this duration
                         if (initialMonths.includes(p.months)) return false; 
                         return true;
                     });
@@ -678,7 +779,6 @@
 
             // Logic Helpers
             const getPriceForDosageMonths = (clinic, dosage, targetMonths) => {
-                // For calculator, we use the raw prices but we should filter based on userType first
                 let prices = clinic.prices[dosage];
                 if (!prices) return null;
                 
@@ -687,11 +787,8 @@
 
                 const exactMatch = prices.find(p => p.months === targetMonths);
                 if (exactMatch) return exactMatch.price;
-                // ... rest of logic uses filtered prices, so it will respect the rule
                 
-                // Fallback logic for combinations
-                // Note: Filter has already removed 'regular' if 'initial' exists for same month.
-                
+                // Fallbacks...
                 if (targetMonths === 2) {
                     const p2 = prices.find(p => p.months === 2);
                     if (p2) return p2.price;
@@ -714,17 +811,20 @@
                 let prices = clinic.prices[dosage];
                 if (!prices) return [];
                 
-                // Apply User Type Filter
                 prices = filterPricesByUserType(prices);
                 if (prices.length === 0) return [];
 
+                // Function to calc total with dynamic shipping
+                const calculateTotal = (drugPrice, duration) => {
+                    return drugPrice + getRegFee(clinic) + getShippingFee(clinic, region, duration);
+                };
+
                 // Check if it's ANY combo dosage (contains '+')
                 if (dosage.includes('+')) {
-                    const calculateTotal = (drugPrice) => drugPrice + getRegFee(clinic) + clinic.fees.shippingNum;
                     const formatData = (p) => ({
                         ...p,
                         label: getLabel(p.months),
-                        totalPrice: calculateTotal(p.price),
+                        totalPrice: calculateTotal(p.price, p.months),
                         drugPriceOnly: p.price,
                         isCalculated: false,
                         calculationNote: t.calcNotes.mixed
@@ -735,14 +835,13 @@
                     const exactMatch = prices.find(p => p.months === targetDuration);
                     if (exactMatch) return [formatData(exactMatch)];
                     
-                    return []; // Return empty if filtering by specific duration and no match found
+                    return []; 
                 }
 
-                const calculateTotal = (drugPrice) => drugPrice + getRegFee(clinic) + clinic.fees.shippingNum;
                 const formatData = (p) => ({
                     ...p,
                     label: getLabel(p.months),
-                    totalPrice: calculateTotal(p.price),
+                    totalPrice: calculateTotal(p.price, p.months),
                     drugPriceOnly: p.price,
                     isCalculated: false
                 });
@@ -752,6 +851,7 @@
                 const exactMatch = prices.find(p => p.months === targetDuration);
                 if (exactMatch) return [formatData(exactMatch)];
 
+                // Calculation logic for estimated months
                 let calculatedDrugPrice = null;
                 let calcNoteKey = '';
 
@@ -774,7 +874,7 @@
                     return [{
                         label: `${targetDuration} ${t.months} (${t.est})`,
                         price: calculatedDrugPrice,
-                        totalPrice: calculateTotal(calculatedDrugPrice),
+                        totalPrice: calculateTotal(calculatedDrugPrice, targetDuration),
                         drugPriceOnly: calculatedDrugPrice,
                         months: targetDuration,
                         isCalculated: true,
@@ -815,9 +915,21 @@
 
             // Chinese Filter Logic
             const filteredClinics = clinics.filter(c => {
-                if (chineseFilter) {
-                    return c.tags.some(tag => tag.en === 'Chinese Support');
+                // Chinese Filter
+                if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) {
+                    return false;
                 }
+
+                // Region Filter for Offline-Only Clinics
+                // If a clinic is offline only, and the user selects a specific region
+                // that is NOT in the clinic's locations, then hide it.
+                // If user selects 'all', show it (assuming they might travel).
+                if (c.offlineOnly && region !== 'all') {
+                    if (!c.locations || !c.locations.includes(region)) {
+                        return false;
+                    }
+                }
+
                 return true;
             });
 
@@ -872,7 +984,18 @@
 
                 // Filter clinics first
                 const targetClinics = clinics.filter(c => {
-                    if (chineseFilter) return c.tags.some(tag => tag.en === 'Chinese Support');
+                    // Chinese Filter
+                    if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) {
+                        return false;
+                    }
+
+                    // Region Filter for Offline-Only Clinics
+                    if (c.offlineOnly && region !== 'all') {
+                        if (!c.locations || !c.locations.includes(region)) {
+                            return false;
+                        }
+                    }
+                    
                     return true;
                 });
 
@@ -894,16 +1017,14 @@
 
                     COMBO_KEYS.forEach(([doseA, doseB, comboKey, label]) => {
                         if (tempCart[doseA] >= 1 && tempCart[doseB] >= 1) {
-                            // Check if this clinic supports the combo plan for current user type
                             let comboData = clinic.prices[comboKey];
                             if (comboData) {
-                                comboData = filterPricesByUserType(comboData); // Check visibility
+                                comboData = filterPricesByUserType(comboData); 
                                 const twoMonthCombo = comboData.find(p => p.months === 2);
                                 
                                 if (twoMonthCombo) {
                                     const pairs = Math.min(tempCart[doseA], tempCart[doseB]);
                                     
-                                    // Use new function for single month cost (uses filtered prices)
                                     const optA = calculateOptimalCombination(clinic, doseA, 1);
                                     const optB = calculateOptimalCombination(clinic, doseB, 1);
                                     
@@ -930,7 +1051,6 @@
                             if (optimal) {
                                 totalMeds += optimal.cost;
                                 
-                                // Helper to format the breakdown nicely
                                 const counts = {};
                                 optimal.plans.forEach(p => {
                                     counts[p.months] = (counts[p.months] || 0) + 1;
@@ -938,7 +1058,6 @@
                                 const parts = Object.keys(counts).sort((a,b) => parseFloat(b) - parseFloat(a)).map(m => {
                                     const c = counts[m];
                                     let label = getLabel(parseFloat(m));
-                                    // Add indication if using initial price
                                     const plan = optimal.plans.find(p => p.months === parseFloat(m));
                                     if (plan && plan.type === 'initial') label += ` (${t.firstTime})`;
                                     return c > 1 ? `${label} x${c}` : label;
@@ -955,7 +1074,7 @@
                         results.push({
                             clinic: clinic,
                             meds: totalMeds,
-                            total: totalMeds + getRegFee(clinic) + clinic.fees.shippingNum,
+                            total: totalMeds + getRegFee(clinic) + getShippingFee(clinic, region, totalSelectedMonths),
                             breakdown: breakdown.join(', '),
                             isBundle: bundleApplied
                         });
@@ -996,7 +1115,7 @@
                     {/* Standard Mode - Sticky Bar */}
                     {mode === 'standard' && (
                         <div className="mb-12 sticky top-0 z-30 bg-[#FAFAF9]/95 backdrop-blur-sm py-4 border-b border-stone-200 transition-all shadow-sm max-w-5xl mx-auto">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-1">
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 px-1">
                                 <div className="custom-select-wrapper">
                                     <select 
                                         className="custom-select" 
@@ -1015,6 +1134,17 @@
                                     >
                                         <option value="all">{t.filterAll}</option>
                                         <option value="chinese">{t.filterChinese}</option>
+                                    </select>
+                                </div>
+                                <div className="custom-select-wrapper">
+                                    <select 
+                                        className="custom-select bg-gold-100/30 border-gold-200 text-stone-700" 
+                                        value={region} 
+                                        onChange={(e) => setRegion(e.target.value)}
+                                    >
+                                        {REGIONS.map(r => (
+                                            <option key={r.id} value={r.id}>{lang === 'zh' ? r.zh : r.en}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="custom-select-wrapper">
@@ -1058,25 +1188,38 @@
                     {/* Calculator Mode - Controls */}
                     {mode === 'calculator' && (
                         <div className="mb-8 max-w-5xl mx-auto">
-                            <div className="flex gap-4 justify-center md:justify-start bg-white p-3 rounded-lg border border-stone-100 shadow-sm">
-                                <div className="custom-select-wrapper w-full md:w-auto">
-                                    <select 
-                                        className="custom-select" 
-                                        value={userType} 
-                                        onChange={(e) => setUserType(e.target.value)}
-                                    >
-                                        <option value="new">{t.userNew}</option>
-                                        <option value="returning">{t.userReturning}</option>
-                                    </select>
+                            <div className="flex flex-col md:flex-row gap-4 justify-center md:justify-start bg-white p-3 rounded-lg border border-stone-100 shadow-sm">
+                                <div className="flex gap-4 w-full md:w-auto">
+                                    <div className="custom-select-wrapper w-full md:w-auto">
+                                        <select 
+                                            className="custom-select" 
+                                            value={userType} 
+                                            onChange={(e) => setUserType(e.target.value)}
+                                        >
+                                            <option value="new">{t.userNew}</option>
+                                            <option value="returning">{t.userReturning}</option>
+                                        </select>
+                                    </div>
+                                    <div className="custom-select-wrapper w-full md:w-auto">
+                                        <select 
+                                            className="custom-select" 
+                                            value={chineseFilter ? 'chinese' : 'all'} 
+                                            onChange={(e) => setChineseFilter(e.target.value === 'chinese')}
+                                        >
+                                            <option value="all">{t.filterAll}</option>
+                                            <option value="chinese">{t.filterChinese}</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="custom-select-wrapper w-full md:w-auto">
                                     <select 
-                                        className="custom-select" 
-                                        value={chineseFilter ? 'chinese' : 'all'} 
-                                        onChange={(e) => setChineseFilter(e.target.value === 'chinese')}
+                                        className="custom-select bg-gold-100/30 border-gold-200 text-stone-700" 
+                                        value={region} 
+                                        onChange={(e) => setRegion(e.target.value)}
                                     >
-                                        <option value="all">{t.filterAll}</option>
-                                        <option value="chinese">{t.filterChinese}</option>
+                                        {REGIONS.map(r => (
+                                            <option key={r.id} value={r.id}>{lang === 'zh' ? r.zh : r.en}</option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>
@@ -1140,30 +1283,38 @@
                                 </div>
                             </div>
                             <div className="grid gap-6">
-                                {calcResults.map((res, idx) => (
-                                    <div key={res.clinic.id} className="bg-white border border-stone-100 rounded-lg p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all">
-                                        {idx === 0 && <div className="absolute top-0 left-0 w-1 h-full bg-gold-400"></div>}
-                                        <div className="flex-1 w-full">
-                                            <div className="flex items-center justify-between md:justify-start gap-3 mb-2">
-                                                <h3 className="font-serif text-xl text-stone-900">{res.clinic.name[lang]}</h3>
-                                                {idx === 0 && <span className="bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">{t.bestValue}</span>}
-                                                {res.isBundle && <span className="bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 flex items-center gap-1"><Icons.Star size={10}/> {t.bundleApplied}</span>}
+                                {calcResults.map((res, idx) => {
+                                    const shippingCost = getShippingFee(res.clinic, region, totalSelectedMonths);
+                                    const isOffline = shippingCost === 0 && res.clinic.locations && res.clinic.locations.includes(region);
+                                    return (
+                                        <div key={res.clinic.id} className="bg-white border border-stone-100 rounded-lg p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all">
+                                            {idx === 0 && <div className="absolute top-0 left-0 w-1 h-full bg-gold-400"></div>}
+                                            <div className="flex-1 w-full">
+                                                <div className="flex items-center justify-between md:justify-start gap-3 mb-2">
+                                                    <h3 className="font-serif text-xl text-stone-900">{res.clinic.name[lang]}</h3>
+                                                    {idx === 0 && <span className="bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">{t.bestValue}</span>}
+                                                    {res.isBundle && <span className="bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 flex items-center gap-1"><Icons.Star size={10}/> {t.bundleApplied}</span>}
+                                                </div>
+                                                <p className="text-sm text-stone-500 font-sans mb-3 flex items-center gap-2"><span className="bg-stone-100 px-2 py-1 rounded text-xs break-all">{res.breakdown}</span></p>
+                                                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-400 font-sans">
+                                                    <span>{t.meds}: {formatCurrency(res.meds)}</span>
+                                                    {getRegFee(res.clinic) > 0 && <span>+ {t.regFee}: {formatCurrency(getRegFee(res.clinic))}</span>}
+                                                    {shippingCost > 0 ? (
+                                                        <span>+ {t.shipFee}: {formatCurrency(shippingCost)}</span>
+                                                    ) : (
+                                                        isOffline && <span className="text-gold-600 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.shippingOffline}</span>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <p className="text-sm text-stone-500 font-sans mb-3 flex items-center gap-2"><span className="bg-stone-100 px-2 py-1 rounded text-xs break-all">{res.breakdown}</span></p>
-                                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-400 font-sans">
-                                                <span>{t.meds}: {formatCurrency(res.meds)}</span>
-                                                {getRegFee(res.clinic) > 0 && <span>+ {t.regFee}: {formatCurrency(getRegFee(res.clinic))}</span>}
-                                                {res.clinic.fees.shippingNum > 0 && <span>+ {t.shipFee}: {formatCurrency(res.clinic.fees.shippingNum)}</span>}
+                                            <div className="text-right w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0 mt-2 md:mt-0">
+                                                <span className="text-xs text-stone-400 uppercase block mb-1">{t.calcTotal}</span>
+                                                <span className={`text-3xl font-sans font-light tracking-tight ${idx === 0 ? 'text-stone-900' : 'text-stone-600'}`}>
+                                                    {formatCurrency(res.total)}
+                                                </span>
                                             </div>
                                         </div>
-                                        <div className="text-right w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0 mt-2 md:mt-0">
-                                            <span className="text-xs text-stone-400 uppercase block mb-1">{t.calcTotal}</span>
-                                            <span className={`text-3xl font-sans font-light tracking-tight ${idx === 0 ? 'text-stone-900' : 'text-stone-600'}`}>
-                                                {formatCurrency(res.total)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                                 {calcResults.length === 0 && (
                                     <div className="text-center py-12 text-stone-400 font-serif italic bg-white rounded-xl border border-dashed border-stone-200">{t.noData}</div>
                                 )}
@@ -1218,6 +1369,9 @@
                                                     if (activeDuration === 'all') isBestPrice = Math.abs(monthlyAvg - bestPrice) < 10;
                                                     else isBestPrice = Math.abs(item.totalPrice - bestPrice) < 10;
 
+                                                    const shippingCost = getShippingFee(clinic, region, item.months);
+                                                    const isOffline = shippingCost === 0 && clinic.locations && clinic.locations.includes(region);
+
                                                     return (
                                                         <div key={idx} className={`relative p-6 transition-all duration-300 flex flex-col justify-between rounded-sm ${isBestPrice ? 'bg-stone-50 border border-gold-200' : 'bg-white border border-stone-100 opacity-80 hover:opacity-100 hover:border-stone-300'}`}>
                                                             {isBestPrice && <div className="absolute top-0 right-0 bg-gold-400 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 font-sans rounded-bl-sm">{t.bestValue}</div>}
@@ -1237,7 +1391,11 @@
                                                                 <div className="mt-2 pt-2 border-t border-stone-100 text-[10px] text-stone-400 flex flex-col gap-0.5 font-sans">
                                                                     <div className="flex justify-between"><span>{t.meds}</span><span>{formatCurrency(item.drugPriceOnly)}</span></div>
                                                                     {getRegFee(clinic) > 0 && <div className="flex justify-between"><span>{t.regFee}</span><span>+ {formatCurrency(getRegFee(clinic))}</span></div>}
-                                                                    {clinic.fees.shippingNum > 0 && <div className="flex justify-between"><span>{t.shipFee}</span><span>+ {formatCurrency(clinic.fees.shippingNum)}</span></div>}
+                                                                    {shippingCost > 0 ? (
+                                                                        <div className="flex justify-between"><span>{t.shipFee}</span><span>+ {formatCurrency(shippingCost)}</span></div>
+                                                                    ) : (
+                                                                        isOffline && <div className="flex justify-end text-gold-600 font-bold"><Icons.MapPin size={10} className="mr-1"/>{t.shippingOffline}</div>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                             <div className="flex items-end justify-between">
@@ -1274,8 +1432,4 @@
         root.render(<MounjaroBoutique />);
     </script>
 </body>
-
 </html>
-
-
-
