@@ -174,16 +174,16 @@
         const REGIONS = [
             { id: 'all', zh: '全部地區 (All)', en: 'All Regions' },
             { id: 'hokkaido', zh: '北海道', en: 'Hokkaido' },
-            { id: 'tohoku', zh: '東北 (Tohoku)', en: 'Tohoku' },
-            { id: 'kanto', zh: '關東 (Kanto/Tokyo)', en: 'Kanto' },
-            { id: 'shinetsu', zh: '信越 (Shinetsu)', en: 'Shinetsu' },
-            { id: 'hokuriku', zh: '北陸 (Hokuriku)', en: 'Hokuriku' },
-            { id: 'chubu', zh: '中部 (Chubu/Nagoya)', en: 'Chubu' },
-            { id: 'kansai', zh: '關西 (Kansai/Osaka)', en: 'Kansai' },
-            { id: 'chugoku', zh: '中國 (Chugoku)', en: 'Chugoku' },
-            { id: 'shikoku', zh: '四國 (Shikoku)', en: 'Shikoku' },
-            { id: 'kyushu', zh: '九州 (Kyushu)', en: 'Kyushu' },
-            { id: 'okinawa', zh: '沖繩 (Okinawa)', en: 'Okinawa' },
+            { id: 'tohoku', zh: '東北', en: 'Tohoku' },
+            { id: 'kanto', zh: '關東', en: 'Kanto' },
+            { id: 'shinetsu', zh: '信越', en: 'Shinetsu' },
+            { id: 'hokuriku', zh: '北陸', en: 'Hokuriku' },
+            { id: 'chubu', zh: '中部', en: 'Chubu' },
+            { id: 'kansai', zh: '關西 ', en: 'Kansai' },
+            { id: 'chugoku', zh: '中國', en: 'Chugoku' },
+            { id: 'shikoku', zh: '四國', en: 'Shikoku' },
+            { id: 'kyushu', zh: '九州', en: 'Kyushu' },
+            { id: 'okinawa', zh: '沖繩', en: 'Okinawa' },
         ];
 
         const TEXTS = {
@@ -364,10 +364,52 @@
             // --- Data ---
              const clinics = [
                 {
+                    id: 'tokyosilk',
+                    name: { zh: '東京Silk診所', en: 'Tokyo Silk Clinic' },
+                    tags: [
+                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '全國配送', en: 'Nationwide Delivery' },
+                        { zh: '總量需買滿3個月', en: 'Min Purchase: 3 Months' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                    ],
+                    locations: [], // Online
+                    link: 'https://x.com/tokyosilkclinic',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
+                    freeShipping: true,
+                    minTotalMonths: 3,
+                    prices: {
+                        '2.5mg': [{ price: 12000, months: 1 }],
+                        '5mg': [{ price: 21500, months: 1 }],
+                        '7.5mg': [{ price: 31500, months: 1 }]
+                    }
+                },
+                  {
+                    id: 'Lafee',
+                    name: { zh: 'La Fee醫美診所(e-life shop特惠)', en: 'La Fee Clinic (Special Deal on e-life shop)' },
+                    tags: [
+                        { zh: '線下診療', en: 'Offline Clinic' },
+                        { zh: '需通日文', en: 'Japanese Speakers only' },
+                        { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' },
+                    ],
+                    locations: [Kanto], 
+                    offlineOnly: true, // Mark as offline only
+                    link: 'https://shop.elife.clinic/search?q=%E3%83%9E%E3%83%B3%E3%82%B8%E3%83%A3%E3%83%AD&options%5Bprefix%5D=last',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 9980, months: 1 }],
+                        '5mg': [{ price: 17980, months: 1 }],
+                        '7.5mg': [{ price: 26980, months: 1 }],
+                        '10mg': [{ price: 35980, months: 1 }],
+                        '12.5mg': [{ price: 51980, months: 1 }]
+                    }
+                },
+                {
                     id: 'ikegawa',
                     name: { zh: '池川内科', en: 'Ikegawa Internal Medicine' },
                     tags: [
-                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' }
+                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     link: 'https://lin.ee/AX891RZ',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } }, // Shipping calculated dynamically
@@ -474,7 +516,8 @@
                     tags: [
                         { zh: '用Zoom線上診療', en: 'Online Clinic Via Zoom' },
                         { zh: '需冷藏配送須事先告知', en: 'Chilled Delivery: Need to Notify Clinic' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' },
+                        { zh: '拆盒給藥', en: 'No exterior box packaging' }
                     ],
                     locations: [], // Online only now
                     link: 'https://x.com/OsakaLight?t=AMGZj7ZfXqaGQ4T9Fz7-Kg&s=09',
@@ -551,10 +594,15 @@
                         { zh: '預約須日本門號', en: 'Need JP Phone#' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
-                    locations: ['kanto'],
+                    locations: [], // Online only
                     link: 'https://light-clinic.com/',
-                    fees: { initialNum: 1100, shippingNum: 1100, note: { zh: '含掛號¥1,100+運費¥1,100', en: 'Incl Reg & Ship' } },
+                    fees: { initialNum: 1100, shippingNum: 1100, note: { zh: '含掛號¥1,100+運費(離島¥2,200)', en: 'Reg 1100 + Ship (Islands 2200)' } },
                     freeShipping: false, 
+                    shipping_rules: {
+                        'okinawa': 2200,
+                        'hokkaido': 2200,
+                        'default': 1100
+                    },
                     prices: {
                         '2.5mg': [{ price: 12000, months: 1 }, { price: 36000, months: 3 }, { price: 69000, months: 6 }],
                         '5mg':   [{ price: 22000, months: 1 }, { price: 66000, months: 3 }, { price: 126000, months: 6 }]
@@ -610,7 +658,8 @@
                     name: { zh: 'Marugoto Beauty', en: 'Marugoto Beauty' },
                     tags: [
                           { zh: '線上診療', en: 'Online Clinic' },
-                          { zh: '預約須日本門號', en: 'Need JP Phone#' }
+                          { zh: '預約須日本門號', en: 'Need JP Phone#' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [],
                     link: 'https://x.com/marugotobeauty?t=4jUN_IPyV_luK3c4nkS4Ag&s=09',
@@ -635,7 +684,8 @@
                     name: { zh: '新宿站前診所', en: 'Shinjuku Station Clinic' },
                     tags: [
                         { zh: '到院門診限定', en: 'Visit Only' },
-                        { zh: '免預約', en: 'No Appt Needed' }
+                        { zh: '免預約', en: 'No Appt Needed' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kanto'],
                     offlineOnly: true, // Mark as offline only
@@ -736,29 +786,36 @@
             };
 
             const getShippingFee = (clinic, userRegion, months) => {
-                // If region is not selected, fallback to default logic
+                let shippingCost = 0;
+
+                // 1. Determine Base Shipping
                 if (userRegion === 'all') {
-                    if (clinic.shipping_rules && clinic.shipping_rules.default) return clinic.shipping_rules.default;
-                    return clinic.fees.shippingNum;
+                    if (clinic.shipping_rules && clinic.shipping_rules.default) {
+                        shippingCost = clinic.shipping_rules.default;
+                    } else {
+                        shippingCost = clinic.fees.shippingNum;
+                    }
+                } else {
+                    // Specific Region Logic
+                    // Check for Offline availability (Free Shipping)
+                    if (clinic.locations && clinic.locations.includes(userRegion)) {
+                        return 0; // User goes to clinic, so 0 immediately.
+                    }
+
+                    // Calculate shipping based on region
+                    if (clinic.shipping_rules) {
+                        shippingCost = clinic.shipping_rules[userRegion] || clinic.shipping_rules.default || clinic.fees.shippingNum;
+                    } else {
+                        shippingCost = clinic.fees.shippingNum;
+                    }
                 }
 
-                // Check for Offline availability (Free Shipping)
-                if (clinic.locations && clinic.locations.includes(userRegion)) {
-                    return 0; // User goes to clinic
-                }
-
-                // Calculate shipping based on region
-                let baseShipping = clinic.fees.shippingNum;
-                if (clinic.shipping_rules) {
-                    baseShipping = clinic.shipping_rules[userRegion] || clinic.shipping_rules.default || baseShipping;
-                }
-
-                // Ikegawa Special Rule: +500 for >= 3 months
+                // 2. Apply Surcharges (Ikegawa Special Rule)
                 if (clinic.id === 'ikegawa' && months >= 3) {
-                    baseShipping += 500;
+                    shippingCost += 500;
                 }
 
-                return baseShipping;
+                return shippingCost;
             };
 
             const filterPricesByUserType = (prices) => {
@@ -830,10 +887,52 @@
                         calculationNote: t.calcNotes.mixed
                     });
 
-                    if (targetDuration === 'all') return prices.map(formatData);
+                    if (targetDuration === 'all') {
+                        // Apply Min Month Constraint Logic for All
+                        if (clinic.minTotalMonths) {
+                             const minMonths = clinic.minTotalMonths;
+                             // We need to synthesize based on mixed dosage logic, which is complex here.
+                             // For simplicity in Standard Mode with Combo dosage + Min months:
+                             // We might just skip showing it in 'All' if we can't easily synthesize a combo price without base units.
+                             // But since combo prices are usually defined explicitly (e.g. 1 month), we can synthesize.
+                             
+                             const oneMonthCombo = prices.find(p => p.months === 1);
+                             if (oneMonthCombo) {
+                                 const items = [];
+                                 // Min Package
+                                 items.push({
+                                     ...oneMonthCombo,
+                                     months: minMonths,
+                                     price: oneMonthCombo.price * minMonths,
+                                     label: `${minMonths} ${t.months} (Min)`,
+                                     totalPrice: calculateTotal(oneMonthCombo.price * minMonths, minMonths),
+                                     drugPriceOnly: oneMonthCombo.price * minMonths,
+                                     isCalculated: true,
+                                     calculationNote: `Minimum ${minMonths} months required`
+                                 });
+                                 // 6 Months
+                                 items.push({
+                                     ...oneMonthCombo,
+                                     months: 6,
+                                     price: oneMonthCombo.price * 6,
+                                     label: `6 ${t.months}`,
+                                     totalPrice: calculateTotal(oneMonthCombo.price * 6, 6),
+                                     drugPriceOnly: oneMonthCombo.price * 6,
+                                     isCalculated: true,
+                                     calculationNote: t.calcNotes.base1x6
+                                 });
+                                 return items;
+                             }
+                             return [];
+                        }
+                        return prices.map(formatData);
+                    }
                     
                     const exactMatch = prices.find(p => p.months === targetDuration);
-                    if (exactMatch) return [formatData(exactMatch)];
+                    if (exactMatch) {
+                         if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
+                         return [formatData(exactMatch)];
+                    }
                     
                     return []; 
                 }
@@ -846,10 +945,49 @@
                     isCalculated: false
                 });
 
-                if (targetDuration === 'all') return prices.map(formatData);
+                if (targetDuration === 'all') {
+                    // Logic to handle Min Total Months for 'All' view
+                    if (clinic.minTotalMonths) {
+                        const oneMonth = prices.find(p => p.months === 1);
+                        if (oneMonth) {
+                             const minMonths = clinic.minTotalMonths;
+                             const items = [];
+                             
+                             // Synthesize Min Month Entry
+                             items.push({
+                                 ...oneMonth,
+                                 months: minMonths,
+                                 price: oneMonth.price * minMonths,
+                                 label: `${minMonths} ${t.months} (Min Order)`,
+                                 totalPrice: calculateTotal(oneMonth.price * minMonths, minMonths),
+                                 drugPriceOnly: oneMonth.price * minMonths,
+                                 isCalculated: true,
+                                 calculationNote: `Minimum ${minMonths} months required`
+                             });
+
+                             // Synthesize 6 Month Entry (Standard comparison point)
+                             items.push({
+                                 ...oneMonth,
+                                 months: 6,
+                                 price: oneMonth.price * 6,
+                                 label: `6 ${t.months}`,
+                                 totalPrice: calculateTotal(oneMonth.price * 6, 6),
+                                 drugPriceOnly: oneMonth.price * 6,
+                                 isCalculated: true,
+                                 calculationNote: t.calcNotes.base1x6
+                             });
+                             return items;
+                        }
+                        // If no 1 month price found, falls through (unlikely for this clinic)
+                    }
+                    return prices.map(formatData);
+                }
 
                 const exactMatch = prices.find(p => p.months === targetDuration);
-                if (exactMatch) return [formatData(exactMatch)];
+                if (exactMatch) {
+                    if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
+                    return [formatData(exactMatch)];
+                }
 
                 // Calculation logic for estimated months
                 let calculatedDrugPrice = null;
@@ -871,6 +1009,9 @@
                 }
 
                 if (calculatedDrugPrice !== null) {
+                    // Check Min Month Constraint for calculated prices
+                    if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
+
                     return [{
                         label: `${targetDuration} ${t.months} (${t.est})`,
                         price: calculatedDrugPrice,
@@ -921,9 +1062,6 @@
                 }
 
                 // Region Filter for Offline-Only Clinics
-                // If a clinic is offline only, and the user selects a specific region
-                // that is NOT in the clinic's locations, then hide it.
-                // If user selects 'all', show it (assuming they might travel).
                 if (c.offlineOnly && region !== 'all') {
                     if (!c.locations || !c.locations.includes(region)) {
                         return false;
@@ -1000,6 +1138,11 @@
                 });
 
                 targetClinics.forEach(clinic => {
+                    // Min Total Months Check for Calculator
+                    if (clinic.minTotalMonths && totalSelectedMonths < clinic.minTotalMonths) {
+                        return; // Skip this clinic
+                    }
+
                     let totalMeds = 0;
                     let possible = true;
                     let breakdown = [];
