@@ -144,27 +144,60 @@
             -webkit-appearance: none; 
             margin: 0; 
         }
+        
+        /* Loading Skeleton */
+        .skeleton {
+            background: #e5e5e5;
+            background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+            border-radius: 5px;
+            background-size: 200% 100%;
+            animation: 1.5s shine linear infinite;
+        }
+        @keyframes shine {
+            to { background-position-x: -200%; }
+        }
     </style>
 </head>
 <body class="min-h-screen font-serif selection:bg-gold-200 selection:text-stone-900">
 
     <div id="root"></div>
 
-    <script type="text/babel">
-        // Icons
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import React from "https://esm.sh/react@18";
+        import ReactDOM from "https://esm.sh/react-dom@18";
+
+        // --- Firebase Initialization ---
+        const firebaseConfig = {
+  apiKey: "AIzaSyBAJHidheRJbj2EdX2Tjn7AVgYBtdkdFGY",
+  authDomain: "mounjarojp.firebaseapp.com",
+  projectId: "mounjarojp",
+  storageBucket: "mounjarojp.firebasestorage.app",
+  messagingSenderId: "759300377829",
+  measurementId: "G-SVR2D7JYS6"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);
+
+        // --- Icons ---
         const Icons = {
-            ExternalLink: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>,
-            Info: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
-            Truck: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>,
-            Sort: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>,
-            Calc: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg>,
-            Grid: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>,
-            Alert: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>,
-            Star: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
-            User: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>,
-            MapPin: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>,
-            Filter: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>,
-            X: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            ExternalLink: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"1.5", strokeLinecap:"square", strokeLinejoin:"miter", className:className}, React.createElement("path", {d:"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"}), React.createElement("polyline", {points:"15 3 21 3 21 9"}), React.createElement("line", {x1:"10", y1:"14", x2:"21", y2:"3"})),
+            Info: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"1.5", strokeLinecap:"square", strokeLinejoin:"miter", className:className}, React.createElement("circle", {cx:"12", cy:"12", r:"10"}), React.createElement("line", {x1:"12", y1:"16", x2:"12", y2:"12"}), React.createElement("line", {x1:"12", y1:"8", x2:"12.01", y2:"8"})),
+            Truck: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"1.5", strokeLinecap:"square", strokeLinejoin:"miter", className:className}, React.createElement("rect", {x:"1", y:"3", width:"15", height:"13"}), React.createElement("polygon", {points:"16 8 20 8 23 11 23 16 16 16 16 8"}), React.createElement("circle", {cx:"5.5", cy:"18.5", r:"2.5"}), React.createElement("circle", {cx:"18.5", cy:"18.5", r:"2.5"})),
+            Sort: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"1.5", strokeLinecap:"square", strokeLinejoin:"miter", className:className}, React.createElement("line", {x1:"12", y1:"5", x2:"12", y2:"19"}), React.createElement("polyline", {points:"19 12 12 19 5 12"})),
+            Calc: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"1.5", strokeLinecap:"square", strokeLinejoin:"miter", className:className}, React.createElement("rect", {x:"4", y:"2", width:"16", height:"20", rx:"2", ry:"2"}), React.createElement("line", {x1:"8", y1:"6", x2:"16", y2:"6"}), React.createElement("line", {x1:"16", y1:"14", x2:"16", y2:"18"}), React.createElement("path", {d:"M16 10h.01"}), React.createElement("path", {d:"M12 10h.01"}), React.createElement("path", {d:"M8 10h.01"}), React.createElement("path", {d:"M12 14h.01"}), React.createElement("path", {d:"M8 14h.01"}), React.createElement("path", {d:"M12 18h.01"}), React.createElement("path", {d:"M8 18h.01"})),
+            Grid: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"1.5", strokeLinecap:"square", strokeLinejoin:"miter", className:className}, React.createElement("rect", {x:"3", y:"3", width:"7", height:"7"}), React.createElement("rect", {x:"14", y:"3", width:"7", height:"7"}), React.createElement("rect", {x:"14", y:"14", width:"7", height:"7"}), React.createElement("rect", {x:"3", y:"14", width:"7", height:"7"})),
+            Alert: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"1.5", strokeLinecap:"square", strokeLinejoin:"miter", className:className}, React.createElement("circle", {cx:"12", cy:"12", r:"10"}), React.createElement("line", {x1:"12", y1:"8", x2:"12", y2:"12"}), React.createElement("line", {x1:"12", y1:"16", x2:"12.01", y2:"16"})),
+            Star: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"currentColor", stroke:"none", className:className}, React.createElement("polygon", {points:"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"})),
+            User: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"1.5", strokeLinecap:"square", strokeLinejoin:"miter", className:className}, React.createElement("path", {d:"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"}), React.createElement("circle", {cx:"12", cy:"7", r:"4"})),
+            MapPin: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"1.5", strokeLinecap:"square", strokeLinejoin:"miter", className:className}, React.createElement("path", {d:"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"}), React.createElement("circle", {cx:"12", cy:"10", r:"3"})),
+            Filter: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"1.5", strokeLinecap:"square", strokeLinejoin:"miter", className:className}, React.createElement("polygon", {points:"22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"})),
+            X: ({size=14, className=""}) => React.createElement("svg", {xmlns:"http://www.w3.org/2000/svg", width:size, height:size, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"1.5", strokeLinecap:"square", strokeLinejoin:"miter", className:className}, React.createElement("line", {x1:"18", y1:"6", x2:"6", y2:"18"}), React.createElement("line", {x1:"6", y1:"6", x2:"18", y2:"18"}))
         };
 
         // Fallback Exchange Rates
@@ -174,18 +207,18 @@
         };
 
         const REGIONS = [
-            { id: 'all', zh: '全部地區', en: 'All Regions' },
-            { id: 'hokkaido', zh: '北海道(札幌/函館)', en: 'Hokkaido' },
-            { id: 'tohoku', zh: '東北 (仙台/青森/福島)', en: 'Tohoku' },
-            { id: 'kanto', zh: '關東 (東京/橫濱)', en: 'Kanto' },
-            { id: 'shinetsu', zh: '信越 (新瀉/湯澤)', en: 'Shinetsu' },
-            { id: 'hokuriku', zh: '北陸 (金澤/福井)', en: 'Hokuriku' },
-            { id: 'chubu', zh: '中部 (名古屋/靜岡)', en: 'Chubu' },
-            { id: 'kansai', zh: '關西 (京阪神)', en: 'Kansai' },
-            { id: 'chugoku', zh: '中國 (廣島/岡山/鳥取)', en: 'Chugoku' },
-            { id: 'shikoku', zh: '四國 (高松/德島)', en: 'Shikoku' },
-            { id: 'kyushu', zh: '九州 (福岡/長崎/熊本)', en: 'Kyushu' },
-            { id: 'okinawa', zh: '沖繩 (那霸)', en: 'Okinawa' },
+            { id: 'all', zh: '全部地區 (All)', en: 'All Regions' },
+            { id: 'hokkaido', zh: '北海道', en: 'Hokkaido' },
+            { id: 'tohoku', zh: '東北 (Tohoku)', en: 'Tohoku' },
+            { id: 'kanto', zh: '關東 (Kanto/Tokyo)', en: 'Kanto' },
+            { id: 'shinetsu', zh: '信越 (Shinetsu)', en: 'Shinetsu' },
+            { id: 'hokuriku', zh: '北陸 (Hokuriku)', en: 'Hokuriku' },
+            { id: 'chubu', zh: '中部 (Chubu/Nagoya)', en: 'Chubu' },
+            { id: 'kansai', zh: '關西 (Kansai/Osaka)', en: 'Kansai' },
+            { id: 'chugoku', zh: '中國 (Chugoku)', en: 'Chugoku' },
+            { id: 'shikoku', zh: '四國 (Shikoku)', en: 'Shikoku' },
+            { id: 'kyushu', zh: '九州 (Kyushu)', en: 'Kyushu' },
+            { id: 'okinawa', zh: '沖繩 (Okinawa)', en: 'Okinawa' },
         ];
 
         const TEXTS = {
@@ -344,15 +377,50 @@
             const [activeDuration, setActiveDuration] = React.useState('all');
             const [userType, setUserType] = React.useState('new'); 
             const [chineseFilter, setChineseFilter] = React.useState(false); 
-            const [region, setRegion] = React.useState('all'); // Region filter state
+            const [region, setRegion] = React.useState('all'); 
             const [cart, setCart] = React.useState({
                 '2.5mg': 0, '5mg': 0, '7.5mg': 0, '10mg': 0, '12.5mg': 0, '15mg': 0
             });
             const [exchangeRates, setExchangeRates] = React.useState(FALLBACK_RATES);
             const [rateDate, setRateDate] = React.useState('');
             const [showMobileFilters, setShowMobileFilters] = React.useState(false);
+            const [clinics, setClinics] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
+            const [user, setUser] = React.useState(null);
 
             const t = TEXTS[lang];
+
+            // --- Firebase Auth & Data Fetching ---
+            React.useEffect(() => {
+                const initAuth = async () => {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                };
+                initAuth();
+                const unsubscribe = onAuthStateChanged(auth, (u) => {
+                    setUser(u);
+                });
+                return () => unsubscribe();
+            }, []);
+
+            React.useEffect(() => {
+                if (!user) return;
+                // Query Rule: Use simple collection query
+                const q = collection(db, 'clinics');
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    const loadedClinics = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    setClinics(loadedClinics);
+                    setLoading(false);
+                }, (error) => {
+                    console.error("Data fetch error:", error);
+                    setLoading(false);
+                });
+                return () => unsubscribe();
+            }, [user]);
+
 
             // Fetch Exchange Rates
             React.useEffect(() => {
@@ -367,13 +435,11 @@
                                 TWD: data.rates.TWD,
                                 USD: data.rates.USD
                             });
-                            // Convert epoch to date string or use data.date
                             const dateStr = data.date || new Date().toLocaleDateString();
                             setRateDate(dateStr);
                         }
                     } catch (error) {
-                        console.warn("Using fallback rates due to API error:", error);
-                        // Fallback is already initial state
+                        console.warn("Using fallback rates:", error);
                         setRateDate('2025/12/05 (Est.)');
                     }
                 };
@@ -384,10 +450,10 @@
             const formatCurrency = (price) => {
                 if (lang === 'zh') {
                     const twd = Math.round(price * exchangeRates.TWD).toLocaleString();
-                    return <span><span className="text-xs text-stone-400">NT$</span> {twd} <span className="text-xs text-stone-500 font-normal ml-1">(¥{price.toLocaleString()})</span></span>;
+                    return React.createElement("span", null, React.createElement("span", {className:"text-xs text-stone-400"}, "NT$"), " ", twd, " ", React.createElement("span", {className:"text-xs text-stone-500 font-normal ml-1"}, "(¥", price.toLocaleString(), ")"));
                 } else if (lang === 'en') {
                     const usd = (price * exchangeRates.USD).toFixed(2);
-                    return <span><span className="text-xs text-stone-400">$</span> {usd} <span className="text-xs text-stone-500 font-normal ml-1">(¥{price.toLocaleString()})</span></span>;
+                    return React.createElement("span", null, React.createElement("span", {className:"text-xs text-stone-400"}, "$"), " ", usd, " ", React.createElement("span", {className:"text-xs text-stone-500 font-normal ml-1"}, "(¥", price.toLocaleString(), ")"));
                 } else {
                     return `¥${price.toLocaleString()}`;
                 }
@@ -402,428 +468,14 @@
                 return `${months} ${t.months}`;
             };
 
-            // --- Data ---
-             const clinics = [
-                {
-                    id: 'Lafee',
-                    name: { zh: 'La Fee醫美診所(e-life shop特惠)', en: 'La Fee Clinic (Special Deal on e-life shop)' },
-                    tags: [
-                        { zh: '線下診療', en: 'Offline Clinic' },
-                        { zh: '需通日文', en: 'Japanese Speakers only' },
-                        { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' },
-                    ],
-                    locations: ['kanto'], 
-                    offlineOnly: true, // Mark as offline only
-                    link: 'https://shop.elife.clinic/search?q=%E3%83%9E%E3%83%B3%E3%82%B8%E3%83%A3%E3%83%AD&options%5Bprefix%5D=last',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [{ price: 9980, months: 1 }],
-                        '5mg': [{ price: 17980, months: 1 }],
-                        '7.5mg': [{ price: 26980, months: 1 }],
-                        '10mg': [{ price: 35980, months: 1 }],
-                        '12.5mg': [{ price: 51980, months: 1 }]
-                    }
-                },
-                {
-                    id: 'tokyosilk',
-                    name: { zh: '東京Silk診所', en: 'Tokyo Silk Clinic' },
-                    tags: [
-                        { zh: '線上診療', en: 'Online Clinic' },
-                        { zh: '全國配送', en: 'Nationwide Delivery' },
-                        { zh: '總量需買滿3個月', en: 'Min Purchase: 3 Months' }
-                    ],
-                    locations: [], // Online
-                    link: 'https://x.com/tokyosilkclinic',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
-                    freeShipping: true,
-                    minTotalMonths: 3,
-                    prices: {
-                        '2.5mg': [{ price: 12000, months: 1 }],
-                        '5mg': [{ price: 21500, months: 1 }],
-                        '7.5mg': [{ price: 31500, months: 1 }]
-                    }
-                },
-                {
-                    id: 'ikegawa',
-                    name: { zh: '池川内科', en: 'Ikegawa Internal Medicine' },
-                    tags: [
-                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' }
-                    ],
-                    link: 'https://lin.ee/AX891RZ',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } }, // Shipping calculated dynamically
-                    locations: ['kansai'], // Assumed offline location based on cheapest shipping
-                    freeShipping: false,
-                    shipping_rules: {
-                        'hokkaido': 2500,
-                        'tohoku': 1500, 'kanto': 1500, 'shinetsu': 1500,
-                        'kansai': 1000, 'chubu': 1000, 'hokuriku': 1000, 'shikoku': 1000, 'chugoku': 1000, 'kyushu': 1000,
-                        'okinawa': 2000,
-                        'default': 1500 // Fallback
-                    },
-                    prices: {
-                        '2.5mg': [{ price: 12500, months: 1 }, { price: 6250, months: 0.5 }], // 0.5 month = 2 pens (minimum)
-                        '5mg': [{ price: 24500, months: 1 }, { price: 12250, months: 0.5 }],
-                        '7.5mg': [{ price: 37500, months: 1 }, { price: 18750, months: 0.5 }],
-                        '10mg': [{ price: 42000, months: 1 }, { price: 21000, months: 0.5 }],
-                        '12.5mg': [{ price: 55000, months: 1 }, { price: 27500, months: 0.5 }],
-                        '15mg': [{ price: 80000, months: 1 }, { price: 40000, months: 0.5 }]
-                    }
-                },
-                {
-                    id: 'ikegami',
-                    name: { zh: '池上陽光診所', en: 'Ikegami Ohisama Clinic' },
-                    tags: [
-                        { zh: '線上診療', en: 'Online Clinic' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' }
-                    ],
-                    link: 'https://ikegamiohisama.jp/', 
-                    locations: ['kanto'],
-                    fees: { initialNum: 0, shippingNum: 1500, note: { zh: '初診0元+運費1500', en: 'Reg 0 + Ship 1500' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [
-                            { price: 14000, months: 1, type: 'initial' },
-                            { price: 18000, months: 1, type: 'regular' }
-                        ],
-                        '5mg': [
-                            { price: 21000, months: 1, type: 'initial' },
-                            { price: 25000, months: 1, type: 'regular' }
-                        ],
-                        '7.5mg': [
-                            { price: 29000, months: 1, type: 'initial' },
-                            { price: 33000, months: 1, type: 'regular' }
-                        ],
-                        '10mg': [
-                            { price: 37000, months: 1, type: 'initial' },
-                            { price: 41000, months: 1, type: 'regular' }
-                        ],
-                        '12.5mg': [
-                            { price: 44000, months: 1, type: 'initial' },
-                            { price: 48000, months: 1, type: 'regular' }
-                        ]
-                    }
-                },
-                {
-                    id: 'tkevery',
-                    name: { zh: 'TK Every', en: 'TK Every Clinic' },
-                    tags: [
-                        { zh: '中文服務', en: 'Chinese Support'},
-                        { zh: '線下/線上', en: 'Offline/Online'},
-                        { zh: '線上需另加1100使用費+自付運費', en: 'Shipping fee/Online fee extra' }
-                    ],
-                    locations: ['kanto'],
-                    link: 'https://threads.com/@tk.every', 
-                    fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需另加1100使用費+自付運費', en: 'Shipping fee/Online fee extra' } },
-                    freeShipping: false,
-                    onlineFee: 1100, // Additional fee if not offline (not in Kanto)
-                    prices: {
-                        '2.5mg': [{ price: 13100, months: 1 }],
-                        '5mg':   [{ price: 26300, months: 1 }],
-                        '7.5mg': [{ price: 39500, months: 1 }],
-                        '10mg':  [{ price: 52700, months: 1 }],
-                    }
-                },
-                {
-                    id: 'pococlinic',
-                    name: { zh: '狸貓診所 (Poco)', en: 'Poco Clinic' },
-                    tags: [
-                        { zh: '用Zoom線上診療', en: 'Online Clinic Via Zoom' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    link: 'https://x.com/poco_clinic?t=J1lyy3oqNA6Ozcv3lpg18A&s=09',
-                    locations: [], // Online focused
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費/含運', en: 'Free Reg/Ship' } },
-                    freeShipping: true,
-                    prices: {
-                        '2.5mg': [{ price: 13500, months: 1 }, { price: 26000, months: 2 }, { price: 36000, months: 3 }],
-                        '5mg': [{ price: 23500, months: 1 }, { price: 45500, months: 2 }, { price: 64000, months: 3 }],
-                        '7.5mg': [{ price: 36000, months: 1 }, { price: 66000, months: 2 }, { price: 88000, months: 3 }],
-                        '10mg': [{ price: 42000, months: 1 }, { price: 81500, months: 2 }, { price: 116000, months: 3 }],
-                        '12.5mg': [{ price: 51000, months: 1 }, { price: 100000, months: 2 }, { price: 144000, months: 3 }],
-                        '15mg': [{ price: 58000, months: 1 }, { price: 114500, months: 2 }, { price: 165000, months: 3 }],
-                        '2.5mg+5mg': [{ price: 18500, months: 1 }, { price: 35750, months: 2 }],
-                        '5mg+7.5mg': [{ price: 29750, months: 1 }, { price: 55750, months: 2 }],
-                        '7.5mg+10mg': [{ price: 39000, months: 1 }, { price: 73750, months: 2 }],
-                        '10mg+12.5mg': [{ price: 46500, months: 1 }, { price: 90750, months: 2 }],
-                        '12.5mg+15mg': [{ price: 54500, months: 1 }, { price: 107250, months: 2 }]
-                    }
-                },
-                {
-                    id: 'osaka-light',
-                    name: { zh: 'Light Clinic', en: 'Light Clinic' },
-                    tags: [
-                        { zh: '用Zoom線上診療', en: 'Online Clinic Via Zoom' },
-                        { zh: '需冷藏配送須事先告知', en: 'Chilled Delivery: Need to Notify Clinic' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: [], // Online only now
-                    link: 'https://x.com/OsakaLight?t=AMGZj7ZfXqaGQ4T9Fz7-Kg&s=09',
-                    fees: { initialNum: 0, shippingNum: 2200, note: { zh: '免掛號費+運費¥2,200', en: 'Free Reg + Ship ¥2,200' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [{ price: 14000, months: 1 }],
-                        '5mg':   [{ price: 21000, months: 1 }],
-                        '7.5mg': [{ price: 29000, months: 1 }],
-                        '10mg':  [{ price: 37000, months: 1 }],
-                        '12.5mg':[{ price: 44000, months: 1 }],
-                        '15mg':  [{ price: 52000, months: 1 }]
-                    }
-                },
-                {
-                    id: 'noname',
-                    name: { zh: 'Noname醫美線上診所', en: 'Noname Beauty Clinic' },
-                    tags: [
-                        { zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: [],
-                    link: 'https://t.co/wzT0jScIqw',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
-                    freeShipping: true,
-                    prices: {
-                         '2.5mg': [{ price: 13000, months: 1 }, { price: 25500, months: 2 }, { price: 35000, months: 3 }],
-                        '5mg': [{ price: 22850, months: 1 }, { price: 45500, months: 2 }, { price: 63000, months: 3 }],
-                        '7.5mg': [{ price: 34000, months: 1 }, { price: 65000, months: 2 }, { price: 96000, months: 3 }]
-                    }
-                },
-                {
-                    id: 'yamamoto',
-                    name: { zh: '山本診所', en: 'Yamamoto Clinic' },
-                    tags: [
-                        { zh: '線下診療', en: 'Offline Clinic' },
-
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: ['shikoku'], 
-                    link: 'https://page.line.me/kvi9221d',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'Free Reg' } },
-                    freeShipping: false,
-                    offlineOnly: true,
-                    prices: {
-                        '2.5mg': [{ price: 9000, months: 1 }],
-                        '5mg':   [{ price: 17000, months: 1 }],
-                        '7.5mg': [{ price: 28000, months: 1 }],
-                        '10mg':  [{ price: 41000, months: 1 }],
-                        '12.5mg':[{ price: 52000, months: 1 }],
-                        '15mg':  [{ price: 62000, months: 1 }]
-                    }
-                },
-{
-                    id: 'theclinic',
-                    name: { zh: 'The Clinic(大阪/福岡）', en: 'The Clinic（Osaka/Fukuoka)' },
-                    tags: [
-                        { zh: '線下診療', en: 'Offline Clinic' },
-
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: ['kansai', 'kyushu'], 
-                    link: 'https://page.line.me/kvi9221d',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'Free Reg' } },
-                    freeShipping: false,
-                    offlineOnly: true,
-                    prices: {
-                        '2.5mg': [{ price: 10000, months: 1 }],
-                        '5mg':   [{ price: 20000, months: 1 }]
-                    }
-                },
-                {
-                    id: 'Yoroshii',
-                    name: { zh: '優樂喜醫', en: 'Yoroshii Medical', jp: 'yoroshii_medical' },
-                    tags: [
-                        { zh: '中文服務', en: 'Chinese Support'},
-                        { zh: '線下/線上', en: 'Offline/Online'}
-                    ],
-                    locations: ['kanto'],
-                    link: 'https://www.threads.net/@yoroshii_medical',
-                    fees: { initialNum: 5500, shippingNum: 1800, note: { zh: '含掛號¥5,500+運費¥1,800', en: 'Incl Reg + Ship' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [{ price: 18000, months: 1 },{ price: 45000, months: 3 },{ price: 90000, months: 6 }],
-                        '5mg':   [{ price: 21000, months: 1 },{ price: 81000, months: 3 },{ price: 162000, months: 6 }],
-                    }
-                },
-                {
-                    id: 'kirei',
-                    name: { zh: 'Kirei Repo 線上診所', en: 'Kirei Repo Online Clinic' },
-                    tags: [
-                        { zh: '線下/線上', en: 'Offline/Online'},
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: [], // Online only
-                    link: 'https://t.co/hB691i5o7C',
-                    fees: { initialNum: 2000, shippingNum: 0, note: { zh: '含掛號+運費¥2,000', en: 'Incl Reg + Ship' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [{ price: 12000, months: 1, type: 'regular' },{ price: 33900, months: 3, type: 'initial' },{ price: 34920, months: 3, type: 'regular' },{ price: 66000, months: 6, type: 'initial' }, { price: 67680, months: 6, type: 'regular' }],
-                        '5mg':   [{ price: 25000, months: 1, type: 'initial' },{ price: 27000, months: 1, type: 'regular' },{ price: 74000, months: 3, type: 'initial' },{ price: 78570, months: 3, type: 'regular' },{ price: 135000, months: 6, type: 'initial' }, { price: 152280, months: 6, type: 'regular' }],
-                        '7.5mg':   [{ price: 36000, months: 1, type: 'initial' },{ price: 38000, months: 1, type: 'regular' },{ price: 107000, months: 3, type: 'initial' },{ price: 110500, months: 3, type: 'regular' },{ price: 198000, months: 6, type: 'initial' }, { price: 214320, months: 6, type: 'regular' }],
-                        '10mg':   [{ price: 45000, months: 1, type: 'initial' },{ price: 47000, months: 1, type: 'regular' },{ price: 131000, months: 3, type: 'initial' },{ price: 136700, months: 3, type: 'regular' }]
-                    }
-                },
-                {
-                    id: 'light',
-                    name: { zh: 'Light Mental Clinic', en: 'Light Mental Clinic' },
-                    tags: [
-                        { zh: '線上診療', en: 'Online Clinic' },
-                        { zh: '第17支後送一次CBT', en: 'Free CBT upon 17th pen' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: [], // Online only
-                    link: 'https://light-clinic.com/',
-                    fees: { initialNum: 1100, shippingNum: 1100, note: { zh: '含掛號¥1,100+運費(離島¥2,200)', en: 'Reg 1100 + Ship (Islands 2200)' } },
-                    freeShipping: false, 
-                    shipping_rules: {
-                        'okinawa': 2200,
-                        'hokkaido': 2200,
-                        'default': 1100
-                    },
-                    prices: {
-                        '2.5mg': [{ price: 12000, months: 1 }, { price: 36000, months: 3 }, { price: 69000, months: 6 }],
-                        '5mg':   [{ price: 22000, months: 1 }, { price: 66000, months: 3 }, { price: 126000, months: 6 }]
-                    }
-                },
-                {
-                    id: 'Wakeari',
-                    name: { zh: 'Wakeari診所', en: 'Wakeari Clinic' },
-                    tags: [
-                        { zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: [],
-                    link: 'https://wakeari-diet.com/',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
-                    freeShipping: true, 
-                    prices: {
-                        '2.5mg': [{ price: 7700, months: 0.5, type: 'initial' }, { price: 13200, months: 1 }, { price: 25700, months: 2 }, { price: 35200, months: 3 }, { price: 67300, months: 6 }],
-                        '5mg':   [{ price: 13600, months: 0.5, type: 'initial' }, { price: 23050, months: 1 }, { price: 45700, months: 2 }, { price: 63200, months: 3 }, { price: 114550, months: 6 }],
-                        '7.5mg': [{ price: 34400, months: 1 }, { price: 65200, months: 2 }, { price: 88200, months: 3 }, { price: 161800, months: 6 }],
-                        '10mg':  [{ price: 42200, months: 1 }, { price: 81700, months: 2 }, { price: 116200, months: 3 }, { price: 202300, months: 6 }],
-                        '12.5mg':[{ price: 53800, months: 1 }, { price: 99160, months: 2 }, { price: 132640, months: 3 }, { price: 242800, months: 6 }],
-                        '15mg':  [{ price: 62800, months: 1 }, { price: 115720, months: 2 }, { price: 154780, months: 3 }, { price: 283300, months: 6 }],
-                         '2.5mg+5mg': [{ price: 10650, months: 0.5 }, { price: 18125, months: 1 }, { price: 35700, months: 2 }, { price: 49200, months: 3 }],
-                        '5mg+7.5mg': [{ price: 28725, months: 1 }, { price: 55450, months: 2 }],
-                        '7.5mg+10mg': [{ price: 38300, months: 1 }, { price: 73450, months: 2 }],
-                        '10mg+12.5mg': [{ price: 48000, months: 1 }, { price: 90430, months: 2 }],
-                        '12.5mg+15mg': [{ price: 58300, months: 1 }, { price: 107440, months: 2 }]
-                    }
-                },
-                {
-                    id: 'shibuya',
-                    name: { zh: '澀谷 Kimura 診所', en: 'Shibuya Kimura Clinic' },
-                    tags: [
-                        { zh: '中文服務', en: 'Chinese Support' },
-                        { zh: '線下/線上', en: 'Offline/Online' }
-                    ],
-                    locations: ['kanto'],
-                    offlineOnly: true, // Mark as offline only
-                    link: 'https://www.threads.net/@shibuyakimura_clinic',
-                    fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需自付運費', en: 'Shipping fee extra' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [{ price: 13200, months: 1 }],
-                        '5mg':   [{ price: 26400, months: 1 }],
-                        '7.5mg': [{ price: 39600, months: 1 }],
-                        '10mg':  [{ price: 52800, months: 1 }]
-                    }
-                },
-                {
-                    id: 'shinjuku',
-                    name: { zh: '新宿站前診所', en: 'Shinjuku Station Clinic' },
-                    tags: [
-                        { zh: '到院門診限定', en: 'Visit Only' },
-                        { zh: '免預約', en: 'No Appt Needed' }
-                    ],
-                    locations: ['kanto'],
-                    offlineOnly: true, // Mark as offline only
-                    link: 'https://x.com/ShinjukuCIinic?t=IK7B4EISNXdiBcoE81lpLQ&s=09',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
-                    freeShipping: false, 
-                    prices: {
-                        '2.5mg': [{ price: 16000, months: 1 }],
-                        '5mg':   [{ price: 28000, months: 1 }],
-                        '7.5mg': [{ price: 36000, months: 1 }],
-                        '10mg':  [{ price: 44000, months: 1 }]
-                    }
-                },
-                {
-                    id: 'ckk',
-                    name: { zh: 'CKK線上診所', en: 'CKK Online Clinic' },
-                    tags: [
-                        { zh: '線上Line診療', en: 'Online Clinic Thru Line' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: [],
-                    link: 'https://lin.ee/ujGjFmKU',
-                    fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費+運費2000', en: 'No Reg. Fee, Shipping 2000' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [{ price: 12900, months: 1 }],
-                        '5mg': [{ price: 20900, months: 1 }],
-                        '7.5mg': [{ price: 29990, months: 1 }],
-                        '10mg': [{ price: 44200, months: 1 }],
-                        '2.5mg+5mg': [{ price: 16900, months: 1 }],
-                    }
-                },
-                {
-                    id: 'imazu',
-                    name: { zh: '醫療法人近江今津站前精神科診所', en: 'Oumi Imazu Station Front Clinic' },
-                    tags: [
-                         { zh: '線上/線下診療', en: 'Online/Offline Clinic' },
-                         { zh: '電話看診', en: 'Telemedic Clinic' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-                        { zh: '線下再折2000円', en: '2000Yen Off for Offline' }
-                    ],
-                    locations: ['kansai'], // Shiga
-                    link: 'https://jrsandaaga.com/',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
-                    freeShipping: true,
-                    offlineDiscount: 2000, // Added discount property
-                    prices: {
-                         '2.5mg': [{ price: 13000, months: 1 }, { price: 34000, months: 3 }],
-                        '5mg': [{ price: 22850, months: 1 },{ price: 63000, months: 3 }],
-                        '7.5mg': [{ price: 34000, months: 1 }, { price: 96000, months: 3 }],
-                        '10mg': [{ price: 42000, months: 1 }, { price: 120000, months: 3 }],
-                        '12.5mg': [{ price: 50000, months: 1 }, { price: 145000, months: 3 }],
-                        '15mg': [{ price: 57000, months: 1 }, { price: 168000, months: 3 }]
-                    }
-                },
-                {
-                    id: 'pokekuri',
-                    name: { zh: 'Pokekuri', en: 'Pokekuri' },
-                    tags: [
-                        { zh: '線上診療', en: 'Online Clinic' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' }
-                    ],
-                    locations: [],
-                    link: 'https://x.com/pokekuri?t=v44jYexZkPzy-bYR1k8chA&s=09',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
-                    freeShipping: true,
-                    prices: {
-                        '2.5mg': [{ price: 15800, months: 1 }, { price: 29600, months: 2 }, { price: 40500, months: 3 }],
-                        '5mg': [{ price: 27700, months: 1 }, { price: 52000, months: 2 }, { price: 73200, months: 3 }],
-                        '7.5mg': [{ price: 38900, months: 1 }, { price: 72000, months: 2 }, { price: 98700, months: 3 }],
-                        '2.5mg+5mg': [{ price: 22200, months: 1 }, { price: 41500, months: 2 }]
-                    }
-                }
-            ];
 
             const getRegFee = (clinic) => {
                 if (userType === 'new') return clinic.fees.initialNum;
-                // If returning fee is not defined, default to initial fee (assuming same price)
                 return clinic.fees.returningNum !== undefined ? clinic.fees.returningNum : clinic.fees.initialNum;
             };
 
             const getShippingFee = (clinic, userRegion, months) => {
                 let shippingCost = 0;
-
-                // 1. Determine Base Shipping
                 if (userRegion === 'all') {
                     if (clinic.shipping_rules && clinic.shipping_rules.default) {
                         shippingCost = clinic.shipping_rules.default;
@@ -831,35 +483,26 @@
                         shippingCost = clinic.fees.shippingNum;
                     }
                 } else {
-                    // Specific Region Logic
-                    // Check for Offline availability (Free Shipping)
                     if (clinic.locations && clinic.locations.includes(userRegion)) {
-                        return 0; // User goes to clinic, so 0 immediately.
+                        return 0; 
                     }
-
-                    // Calculate shipping based on region
                     if (clinic.shipping_rules) {
                         shippingCost = clinic.shipping_rules[userRegion] || clinic.shipping_rules.default || clinic.fees.shippingNum;
                     } else {
                         shippingCost = clinic.fees.shippingNum;
                     }
                 }
-
-                // 2. Apply Surcharges (Ikegawa Special Rule)
                 if (clinic.id === 'ikegawa' && months >= 3) {
                     shippingCost += 500;
                 }
-
                 return shippingCost;
             };
 
             const filterPricesByUserType = (prices) => {
                 if (!prices) return [];
                 if (userType === 'returning') {
-                    // Returning users cannot see initial prices
                     return prices.filter(p => p.type !== 'initial');
                 } else {
-                    // New users logic...
                     const initialMonths = prices.filter(p => p.type === 'initial').map(p => p.months);
                     return prices.filter(p => {
                         if (p.type === 'initial') return true;
@@ -869,36 +512,6 @@
                 }
             };
 
-            // Logic Helpers
-            const getPriceForDosageMonths = (clinic, dosage, targetMonths) => {
-                let prices = clinic.prices[dosage];
-                if (!prices) return null;
-                
-                prices = filterPricesByUserType(prices);
-                if (prices.length === 0) return null;
-
-                const exactMatch = prices.find(p => p.months === targetMonths);
-                if (exactMatch) return exactMatch.price;
-                
-                // Fallbacks...
-                if (targetMonths === 2) {
-                    const p2 = prices.find(p => p.months === 2);
-                    if (p2) return p2.price;
-                    const p1 = prices.find(p => p.months === 1);
-                    if (p1) return p1.price * 2;
-                }
-                
-                if (targetMonths === 1) {
-                    const p1 = prices.find(p => p.months === 1);
-                    if (p1) return p1.price;
-                }
-
-                const p1 = prices.find(p => p.months === 1);
-                if (p1) return p1.price * targetMonths;
-
-                return null;
-            };
-
             const getSmartPrices = (clinic, dosage, targetDuration) => {
                 let prices = clinic.prices[dosage];
                 if (!prices) return [];
@@ -906,129 +519,58 @@
                 prices = filterPricesByUserType(prices);
                 if (prices.length === 0) return [];
 
-                // Function to calc total with dynamic shipping and discounts
                 const calculateTotal = (drugPrice, duration) => {
-                    // Calculate basic offline status
                     const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
-                    
                     let total = drugPrice + getRegFee(clinic) + getShippingFee(clinic, region, duration);
-                    
-                    // Apply offline discount if applicable
-                    if (isOffline && clinic.offlineDiscount) {
-                        total -= clinic.offlineDiscount;
-                    }
-                    
-                    // Apply online fee if applicable (e.g. TK Every)
-                    // If region is 'all', treat as online (add fee)
-                    // If region is specific and NOT offline, treat as online (add fee)
-                    if ((region === 'all' || !isOffline) && clinic.onlineFee) {
-                        total += clinic.onlineFee;
-                    }
-                    
+                    if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
+                    if ((region === 'all' || !isOffline) && clinic.onlineFee) total += clinic.onlineFee;
                     return total;
                 };
 
-                // Check if it's ANY combo dosage (contains '+')
-                if (dosage.includes('+')) {
-                    const formatData = (p) => ({
-                        ...p,
-                        label: getLabel(p.months),
-                        totalPrice: calculateTotal(p.price, p.months),
-                        drugPriceOnly: p.price,
-                        isCalculated: false,
-                        calculationNote: t.calcNotes.mixed
-                    });
+                const formatData = (p, calcNote = null) => ({
+                    ...p,
+                    label: getLabel(p.months) + (p.type === 'initial' ? ` (${t.firstTime})` : ''),
+                    totalPrice: calculateTotal(p.price, p.months),
+                    drugPriceOnly: p.price,
+                    isCalculated: !!calcNote,
+                    calculationNote: calcNote || (dosage.includes('+') ? t.calcNotes.mixed : '')
+                });
 
-                    if (targetDuration === 'all') {
-                        // Apply Min Month Constraint Logic for All
+                if (dosage.includes('+')) {
+                     if (targetDuration === 'all') {
                         if (clinic.minTotalMonths) {
                              const minMonths = clinic.minTotalMonths;
-                             
                              const oneMonthCombo = prices.find(p => p.months === 1);
                              if (oneMonthCombo) {
-                                 const items = [];
-                                 // Min Package
-                                 items.push({
-                                     ...oneMonthCombo,
-                                     months: minMonths,
-                                     price: oneMonthCombo.price * minMonths,
-                                     label: `${minMonths} ${t.months} (Min)`,
-                                     totalPrice: calculateTotal(oneMonthCombo.price * minMonths, minMonths),
-                                     drugPriceOnly: oneMonthCombo.price * minMonths,
-                                     isCalculated: true,
-                                     calculationNote: `Minimum ${minMonths} months required`
-                                 });
-                                 // 6 Months
-                                 items.push({
-                                     ...oneMonthCombo,
-                                     months: 6,
-                                     price: oneMonthCombo.price * 6,
-                                     label: `6 ${t.months}`,
-                                     totalPrice: calculateTotal(oneMonthCombo.price * 6, 6),
-                                     drugPriceOnly: oneMonthCombo.price * 6,
-                                     isCalculated: true,
-                                     calculationNote: t.calcNotes.base1x6
-                                 });
-                                 return items;
+                                 return [
+                                     formatData({...oneMonthCombo, months: minMonths, price: oneMonthCombo.price * minMonths}, `Min ${minMonths} months`),
+                                     formatData({...oneMonthCombo, months: 6, price: oneMonthCombo.price * 6}, t.calcNotes.base1x6)
+                                 ];
                              }
                              return [];
                         }
-                        return prices.map(formatData);
+                        return prices.map(p => formatData(p));
                     }
-                    
                     const exactMatch = prices.find(p => p.months === targetDuration);
                     if (exactMatch) {
                          if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
                          return [formatData(exactMatch)];
                     }
-                    
                     return []; 
                 }
 
-                const formatData = (p) => ({
-                    ...p,
-                    label: getLabel(p.months),
-                    totalPrice: calculateTotal(p.price, p.months),
-                    drugPriceOnly: p.price,
-                    isCalculated: false
-                });
-
                 if (targetDuration === 'all') {
-                    // Logic to handle Min Total Months for 'All' view
                     if (clinic.minTotalMonths) {
                         const oneMonth = prices.find(p => p.months === 1);
                         if (oneMonth) {
                              const minMonths = clinic.minTotalMonths;
-                             const items = [];
-                             
-                             // Synthesize Min Month Entry
-                             items.push({
-                                 ...oneMonth,
-                                 months: minMonths,
-                                 price: oneMonth.price * minMonths,
-                                 label: `${minMonths} ${t.months} (Min Order)`,
-                                 totalPrice: calculateTotal(oneMonth.price * minMonths, minMonths),
-                                 drugPriceOnly: oneMonth.price * minMonths,
-                                 isCalculated: true,
-                                 calculationNote: `Minimum ${minMonths} months required`
-                             });
-
-                             // Synthesize 6 Month Entry (Standard comparison point)
-                             items.push({
-                                 ...oneMonth,
-                                 months: 6,
-                                 price: oneMonth.price * 6,
-                                 label: `6 ${t.months}`,
-                                 totalPrice: calculateTotal(oneMonth.price * 6, 6),
-                                 drugPriceOnly: oneMonth.price * 6,
-                                 isCalculated: true,
-                                 calculationNote: t.calcNotes.base1x6
-                             });
-                             return items;
+                             return [
+                                 formatData({...oneMonth, months: minMonths, price: oneMonth.price * minMonths}, `Min ${minMonths} months`),
+                                 formatData({...oneMonth, months: 6, price: oneMonth.price * 6}, t.calcNotes.base1x6)
+                             ];
                         }
-                        // If no 1 month price found, falls through (unlikely for this clinic)
                     }
-                    return prices.map(formatData);
+                    return prices.map(p => formatData(p));
                 }
 
                 const exactMatch = prices.find(p => p.months === targetDuration);
@@ -1037,38 +579,28 @@
                     return [formatData(exactMatch)];
                 }
 
-                // Calculation logic for estimated months
+                // Estimation Logic
                 let calculatedDrugPrice = null;
                 let calcNoteKey = '';
 
                 if (targetDuration === 6) {
-                    const price3mo = prices.find(p => p.months === 3);
-                    const price2mo = prices.find(p => p.months === 2);
-                    const price1mo = prices.find(p => p.months === 1);
-                    if (price3mo) { calculatedDrugPrice = price3mo.price * 2; calcNoteKey = 'base3x2'; }
-                    else if (price2mo) { calculatedDrugPrice = price2mo.price * 3; calcNoteKey = 'base2x3'; }
-                    else if (price1mo) { calculatedDrugPrice = price1mo.price * 6; calcNoteKey = 'base1x6'; }
+                    const p3 = prices.find(p => p.months === 3);
+                    const p2 = prices.find(p => p.months === 2);
+                    const p1 = prices.find(p => p.months === 1);
+                    if (p3) { calculatedDrugPrice = p3.price * 2; calcNoteKey = 'base3x2'; }
+                    else if (p2) { calculatedDrugPrice = p2.price * 3; calcNoteKey = 'base2x3'; }
+                    else if (p1) { calculatedDrugPrice = p1.price * 6; calcNoteKey = 'base1x6'; }
                 } else if (targetDuration === 3) {
-                    const price1mo = prices.find(p => p.months === 1);
-                    if (price1mo) { calculatedDrugPrice = price1mo.price * 3; calcNoteKey = 'base1x3'; }
+                    const p1 = prices.find(p => p.months === 1);
+                    if (p1) { calculatedDrugPrice = p1.price * 3; calcNoteKey = 'base1x3'; }
                 } else if (targetDuration === 2) {
-                    const price1mo = prices.find(p => p.months === 1);
-                    if (price1mo) { calculatedDrugPrice = price1mo.price * 2; calcNoteKey = 'base1x2'; }
+                    const p1 = prices.find(p => p.months === 1);
+                    if (p1) { calculatedDrugPrice = p1.price * 2; calcNoteKey = 'base1x2'; }
                 }
 
                 if (calculatedDrugPrice !== null) {
-                    // Check Min Month Constraint for calculated prices
                     if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
-
-                    return [{
-                        label: `${targetDuration} ${t.months} (${t.est})`,
-                        price: calculatedDrugPrice,
-                        totalPrice: calculateTotal(calculatedDrugPrice, targetDuration),
-                        drugPriceOnly: calculatedDrugPrice,
-                        months: targetDuration,
-                        isCalculated: true,
-                        calculationNote: t.calcNotes[calcNoteKey]
-                    }];
+                    return [formatData({ price: calculatedDrugPrice, months: targetDuration }, t.calcNotes[calcNoteKey])];
                 }
                 return [];
             };
@@ -1078,12 +610,8 @@
                 clinics.forEach(clinic => {
                     const displayPrices = getSmartPrices(clinic, dosage, duration);
                     displayPrices.forEach(item => {
-                        if (duration === 'all') {
-                            const monthlyAvg = item.totalPrice / item.months;
-                            if (monthlyAvg < best) best = monthlyAvg;
-                        } else {
-                            if (item.totalPrice < best) best = item.totalPrice;
-                        }
+                        const metric = duration === 'all' ? item.totalPrice / item.months : item.totalPrice;
+                        if (metric < best) best = metric;
                     });
                 });
                 return best;
@@ -1094,28 +622,19 @@
             const getClinicSortValue = (clinic) => {
                 const displayPrices = getSmartPrices(clinic, activeDosage, activeDuration);
                 if (displayPrices.length === 0) return Infinity; 
-                let bestMetricForClinic = Infinity;
+                let bestMetric = Infinity;
                 displayPrices.forEach(item => {
-                    const metric = activeDuration === 'all' ? (item.totalPrice / item.months) : item.totalPrice;
-                    if (metric < bestMetricForClinic) bestMetricForClinic = metric;
+                    const metric = activeDuration === 'all' ? item.totalPrice / item.months : item.totalPrice;
+                    if (metric < bestMetric) bestMetric = metric;
                 });
-                return bestMetricForClinic;
+                return bestMetric;
             };
 
-            // Chinese Filter Logic
             const filteredClinics = clinics.filter(c => {
-                // Chinese Filter
-                if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) {
-                    return false;
-                }
-
-                // Region Filter for Offline-Only Clinics
+                if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) return false;
                 if (c.offlineOnly && region !== 'all') {
-                    if (!c.locations || !c.locations.includes(region)) {
-                        return false;
-                    }
+                    if (!c.locations || !c.locations.includes(region)) return false;
                 }
-
                 return true;
             });
 
@@ -1125,21 +644,15 @@
 
             const totalSelectedMonths = Object.values(cart).reduce((sum, val) => sum + val, 0);
 
-            // New Helper: Calculate cheapest combination for target months using DP
+            // DP for Calculator
             const calculateOptimalCombination = (clinic, dosage, targetMonths) => {
                 let plans = clinic.prices[dosage];
                 if (!plans) return null;
-                
-                // IMPORTANT: Filter plans by user type for the calculator too!
                 plans = filterPricesByUserType(plans);
                 if (plans.length === 0) return null;
 
-                // Max months is 6. Working in 0.5 steps to support trial plans.
-                // targetMonths is integer from input, but let's be safe.
                 const maxUnits = Math.round(targetMonths * 2);
                 const dp = new Array(maxUnits + 1).fill(null);
-                
-                // Base case: 0 cost for 0 months
                 dp[0] = { cost: 0, plans: [] };
 
                 for (let i = 1; i <= maxUnits; i++) {
@@ -1150,16 +663,12 @@
                             if (dp[remainder]) {
                                 const newCost = dp[remainder].cost + plan.price;
                                 if (!dp[i] || newCost < dp[i].cost) {
-                                    dp[i] = {
-                                        cost: newCost,
-                                        plans: [...dp[remainder].plans, plan]
-                                    };
+                                    dp[i] = { cost: newCost, plans: [...dp[remainder].plans, plan] };
                                 }
                             }
                         }
                     }
                 }
-
                 return dp[maxUnits];
             };
 
@@ -1167,35 +676,21 @@
                 const results = [];
                 const hasItems = totalSelectedMonths > 0;
                 if (!hasItems) return [];
-
-                // Filter clinics first
                 const targetClinics = clinics.filter(c => {
-                    // Chinese Filter
-                    if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) {
-                        return false;
-                    }
-
-                    // Region Filter for Offline-Only Clinics
+                    if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) return false;
                     if (c.offlineOnly && region !== 'all') {
-                        if (!c.locations || !c.locations.includes(region)) {
-                            return false;
-                        }
+                        if (!c.locations || !c.locations.includes(region)) return false;
                     }
-                    
                     return true;
                 });
 
                 targetClinics.forEach(clinic => {
-                    // Min Total Months Check for Calculator
-                    if (clinic.minTotalMonths && totalSelectedMonths < clinic.minTotalMonths) {
-                        return; // Skip this clinic
-                    }
+                    if (clinic.minTotalMonths && totalSelectedMonths < clinic.minTotalMonths) return;
 
                     let totalMeds = 0;
                     let possible = true;
                     let breakdown = [];
                     let bundleApplied = false;
-
                     let tempCart = {...cart};
                     
                     const COMBO_KEYS = [
@@ -1212,17 +707,13 @@
                             if (comboData) {
                                 comboData = filterPricesByUserType(comboData); 
                                 const twoMonthCombo = comboData.find(p => p.months === 2);
-                                
                                 if (twoMonthCombo) {
                                     const pairs = Math.min(tempCart[doseA], tempCart[doseB]);
-                                    
                                     const optA = calculateOptimalCombination(clinic, doseA, 1);
                                     const optB = calculateOptimalCombination(clinic, doseB, 1);
-                                    
                                     if (optA && optB) {
                                         const indivTotal = (optA.cost + optB.cost) * pairs;
                                         const bundleTotal = twoMonthCombo.price * pairs;
-                                        
                                         if (bundleTotal < indivTotal) {
                                             totalMeds += bundleTotal;
                                             breakdown.push(`${label} x ${pairs}`);
@@ -1241,11 +732,8 @@
                             const optimal = calculateOptimalCombination(clinic, dosage, months);
                             if (optimal) {
                                 totalMeds += optimal.cost;
-                                
                                 const counts = {};
-                                optimal.plans.forEach(p => {
-                                    counts[p.months] = (counts[p.months] || 0) + 1;
-                                });
+                                optimal.plans.forEach(p => counts[p.months] = (counts[p.months] || 0) + 1);
                                 const parts = Object.keys(counts).sort((a,b) => parseFloat(b) - parseFloat(a)).map(m => {
                                     const c = counts[m];
                                     let label = getLabel(parseFloat(m));
@@ -1253,7 +741,6 @@
                                     if (plan && plan.type === 'initial') label += ` (${t.firstTime})`;
                                     return c > 1 ? `${label} x${c}` : label;
                                 });
-                                
                                 breakdown.push(`${dosage} [${parts.join(' + ')}]`);
                             } else {
                                 possible = false;
@@ -1262,18 +749,10 @@
                     });
 
                     if (possible) {
-                        // Calculate total with offline discount logic AND online fee logic
                         const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
-                        
                         let total = totalMeds + getRegFee(clinic) + getShippingFee(clinic, region, totalSelectedMonths);
-                        
-                        if (isOffline && clinic.offlineDiscount) {
-                            total -= clinic.offlineDiscount;
-                        }
-                        
-                        if ((region === 'all' || !isOffline) && clinic.onlineFee) {
-                            total += clinic.onlineFee;
-                        }
+                        if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
+                        if ((region === 'all' || !isOffline) && clinic.onlineFee) total += clinic.onlineFee;
 
                         results.push({
                             clinic: clinic,
@@ -1284,384 +763,274 @@
                         });
                     }
                 });
-
                 return results.sort((a, b) => a.total - b.total);
             };
 
             const calcResults = getCalculatorResults();
 
             return (
-                <div className="max-w-5xl mx-auto px-6 py-10 md:py-16">
-                    {/* Filter Drawer (Mobile) */}
-                    {showMobileFilters && (
-                        <div className="fixed inset-0 z-50 flex justify-end">
-                            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowMobileFilters(false)}></div>
-                            <div className="relative z-50 w-4/5 max-w-sm h-full bg-[#FAFAF9] shadow-2xl p-6 overflow-y-auto animate-fade-up">
-                                <div className="flex justify-between items-center mb-6 border-b border-stone-200 pb-4">
-                                    <h3 className="font-serif text-xl text-stone-900">{t.filterLabel}</h3>
-                                    <button onClick={() => setShowMobileFilters(false)} className="text-stone-500 hover:text-stone-900">
-                                        <Icons.X size={24}/>
-                                    </button>
-                                </div>
-                                <div className="space-y-6">
-                                    <div>
-                                        <label className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">{t.userTypeLabel}</label>
-                                        <div className="custom-select-wrapper">
-                                            <select className="custom-select" value={userType} onChange={(e) => setUserType(e.target.value)}>
-                                                <option value="new">{t.userNew}</option>
-                                                <option value="returning">{t.userReturning}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">{t.filterLabel}</label>
-                                        <div className="custom-select-wrapper">
-                                            <select className="custom-select" value={chineseFilter ? 'chinese' : 'all'} onChange={(e) => setChineseFilter(e.target.value === 'chinese')}>
-                                                <option value="all">{t.filterAll}</option>
-                                                <option value="chinese">{t.filterChinese}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">{t.regionLabel}</label>
-                                        <div className="custom-select-wrapper">
-                                            <select className="custom-select bg-gold-100/30 border-gold-200 text-stone-700" value={region} onChange={(e) => setRegion(e.target.value)}>
-                                                {REGIONS.map(r => (
-                                                    <option key={r.id} value={r.id}>{lang === 'zh' ? r.zh : r.en}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    {mode === 'standard' && (
-                                        <>
-                                            <div>
-                                                <label className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">{t.dosageLabel}</label>
-                                                <div className="custom-select-wrapper">
-                                                    <select className="custom-select" value={activeDosage} onChange={(e) => setActiveDosage(e.target.value)}>
-                                                        <optgroup label={t.dosageLabel}>
-                                                            {['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg'].map(d => <option key={d} value={d}>{d}</option>)}
-                                                        </optgroup>
-                                                        <optgroup label={t.transitPlan}>
-                                                            {['2.5mg+5mg', '5mg+7.5mg', '7.5mg+10mg', '10mg+12.5mg', '12.5mg+15mg'].map(combo => (
-                                                                <option key={combo} value={combo}>{combo === '2.5mg+5mg' ? t.combo2550 : combo === '5mg+7.5mg' ? t.combo5075 : combo === '7.5mg+10mg' ? t.combo75100 : combo === '10mg+12.5mg' ? t.combo100125 : t.combo125150}</option>
-                                                            ))}
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">{t.durationLabel}</label>
-                                                <div className="custom-select-wrapper">
-                                                    <select className="custom-select" value={activeDuration} onChange={(e) => setActiveDuration(e.target.value === 'all' ? 'all' : parseFloat(e.target.value))}>
-                                                        <option value="all">{t.allPlans}</option>
-                                                        <option value="0.5">0.5 {t.month}</option>
-                                                        <option value="1">1 {t.month}</option>
-                                                        <option value="2">2 {t.months}</option>
-                                                        <option value="3">3 {t.months}</option>
-                                                        <option value="6">6 {t.months}</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
-                                    <button onClick={() => setShowMobileFilters(false)} className="w-full bg-stone-900 text-white py-3 rounded-lg font-sans font-bold mt-4 shadow-lg active:scale-95 transition-transform">{t.applyFilter}</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                React.createElement("div", {className: "max-w-5xl mx-auto px-6 py-10 md:py-16"},
+                    // Mobile Filter Drawer
+                    showMobileFilters && React.createElement("div", {className: "fixed inset-0 z-50 flex justify-end"},
+                        React.createElement("div", {className: "fixed inset-0 bg-black/50 backdrop-blur-sm", onClick: () => setShowMobileFilters(false)}),
+                        React.createElement("div", {className: "relative z-50 w-4/5 max-w-sm h-full bg-[#FAFAF9] shadow-2xl p-6 overflow-y-auto animate-fade-up"},
+                            React.createElement("div", {className: "flex justify-between items-center mb-6 border-b border-stone-200 pb-4"},
+                                React.createElement("h3", {className: "font-serif text-xl text-stone-900"}, t.filterLabel),
+                                React.createElement("button", {onClick: () => setShowMobileFilters(false), className: "text-stone-500 hover:text-stone-900"}, React.createElement(Icons.X, {size: 24}))
+                            ),
+                            React.createElement("div", {className: "space-y-6"},
+                                React.createElement("div", null,
+                                    React.createElement("label", {className: "block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2"}, t.userTypeLabel),
+                                    React.createElement("div", {className: "custom-select-wrapper"},
+                                        React.createElement("select", {className: "custom-select", value: userType, onChange: (e) => setUserType(e.target.value)},
+                                            React.createElement("option", {value: "new"}, t.userNew),
+                                            React.createElement("option", {value: "returning"}, t.userReturning)
+                                        )
+                                    )
+                                ),
+                                React.createElement("div", null,
+                                    React.createElement("label", {className: "block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2"}, t.filterLabel),
+                                    React.createElement("div", {className: "custom-select-wrapper"},
+                                        React.createElement("select", {className: "custom-select", value: chineseFilter ? 'chinese' : 'all', onChange: (e) => setChineseFilter(e.target.value === 'chinese')},
+                                            React.createElement("option", {value: "all"}, t.filterAll),
+                                            React.createElement("option", {value: "chinese"}, t.filterChinese)
+                                        )
+                                    )
+                                ),
+                                React.createElement("div", null,
+                                    React.createElement("label", {className: "block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2"}, t.regionLabel),
+                                    React.createElement("div", {className: "custom-select-wrapper"},
+                                        React.createElement("select", {className: "custom-select bg-gold-100/30 border-gold-200 text-stone-700", value: region, onChange: (e) => setRegion(e.target.value)},
+                                            REGIONS.map(r => React.createElement("option", {key: r.id, value: r.id}, lang === 'zh' ? r.zh : r.en))
+                                        )
+                                    )
+                                ),
+                                mode === 'standard' && React.createElement(React.Fragment, null,
+                                    React.createElement("div", null,
+                                        React.createElement("label", {className: "block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2"}, t.dosageLabel),
+                                        React.createElement("div", {className: "custom-select-wrapper"},
+                                            React.createElement("select", {className: "custom-select", value: activeDosage, onChange: (e) => setActiveDosage(e.target.value)},
+                                                React.createElement("optgroup", {label: t.dosageLabel},
+                                                    ['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg'].map(d => React.createElement("option", {key: d, value: d}, d))
+                                                ),
+                                                React.createElement("optgroup", {label: t.transitPlan},
+                                                    ['2.5mg+5mg', '5mg+7.5mg', '7.5mg+10mg', '10mg+12.5mg', '12.5mg+15mg'].map(combo => React.createElement("option", {key: combo, value: combo}, combo === '2.5mg+5mg' ? t.combo2550 : combo === '5mg+7.5mg' ? t.combo5075 : combo === '7.5mg+10mg' ? t.combo75100 : combo === '10mg+12.5mg' ? t.combo100125 : t.combo125150))
+                                                )
+                                            )
+                                        )
+                                    ),
+                                    React.createElement("div", null,
+                                        React.createElement("label", {className: "block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2"}, t.durationLabel),
+                                        React.createElement("div", {className: "custom-select-wrapper"},
+                                            React.createElement("select", {className: "custom-select", value: activeDuration, onChange: (e) => setActiveDuration(e.target.value === 'all' ? 'all' : parseFloat(e.target.value))},
+                                                React.createElement("option", {value: "all"}, t.allPlans),
+                                                React.createElement("option", {value: "0.5"}, `0.5 ${t.month}`),
+                                                React.createElement("option", {value: "1"}, `1 ${t.month}`),
+                                                React.createElement("option", {value: "2"}, `2 ${t.months}`),
+                                                React.createElement("option", {value: "3"}, `3 ${t.months}`),
+                                                React.createElement("option", {value: "6"}, `6 ${t.months}`)
+                                            )
+                                        )
+                                    )
+                                ),
+                                React.createElement("button", {onClick: () => setShowMobileFilters(false), className: "w-full bg-stone-900 text-white py-3 rounded-lg font-sans font-bold mt-4 shadow-lg active:scale-95 transition-transform"}, t.applyFilter)
+                            )
+                        )
+                    ),
+                    // Header
+                    React.createElement("div", {className: "flex flex-col-reverse md:flex-row justify-between items-center mb-8 gap-6 relative z-40"},
+                        React.createElement("div", {className: "flex gap-2"},
+                            React.createElement("button", {onClick: () => setMode('standard'), className: `flex items-center justify-center gap-2 px-6 py-2 rounded-full text-sm font-sans transition-all shadow-sm ${mode === 'standard' ? 'bg-stone-900 text-white' : 'bg-white border border-stone-200 text-stone-500 hover:bg-stone-50'}`}, React.createElement(Icons.Grid), t.modeStandard),
+                            React.createElement("button", {onClick: () => setMode('calculator'), className: `flex items-center justify-center gap-2 px-6 py-2 rounded-full text-sm font-sans transition-all shadow-sm ${mode === 'calculator' ? 'bg-gold-500 text-white' : 'bg-white border border-stone-200 text-stone-500 hover:bg-stone-50'}`}, React.createElement(Icons.Calc), t.modeCalculator)
+                        ),
+                        React.createElement("div", {className: "flex gap-4 items-center"},
+                            React.createElement("button", {onClick: () => setLang('zh'), className: `lang-btn ${lang === 'zh' ? 'active' : ''}`}, "中文"),
+                            React.createElement("button", {onClick: () => setLang('en'), className: `lang-btn ${lang === 'en' ? 'active' : ''}`}, "EN")
+                        )
+                    ),
+                    React.createElement("header", {className: "text-center mb-10"},
+                        React.createElement("h1", {className: "font-display text-2xl md:text-3xl tracking-widest text-stone-900 uppercase mb-2"}, "Mounjaro"),
+                        React.createElement("p", {className: "font-serif text-xs text-stone-500 italic"}, t.subtitle)
+                    ),
+                    
+                    // --- Content: Loading State ---
+                    loading ? React.createElement("div", {className: "space-y-6"}, 
+                        [1,2,3].map(i => React.createElement("div", {key: i, className: "w-full h-40 skeleton"}))
+                    ) : (
+                        // ... Main Content Render (Standard or Calc) ...
+                        React.createElement(React.Fragment, null,
+                            mode === 'standard' && React.createElement("div", {className: "mb-12 sticky top-0 z-30 bg-[#FAFAF9]/95 backdrop-blur-sm py-4 border-b border-stone-200 transition-all shadow-sm max-w-5xl mx-auto"},
+                                // Desktop Filter Bar
+                                React.createElement("div", {className: "hidden md:grid grid-cols-5 gap-4 px-1"},
+                                    React.createElement("div", {className: "custom-select-wrapper"},
+                                        React.createElement("select", {className: "custom-select", value: userType, onChange: (e) => setUserType(e.target.value)},
+                                            React.createElement("option", {value: "new"}, t.userNew),
+                                            React.createElement("option", {value: "returning"}, t.userReturning)
+                                        )
+                                    ),
+                                    React.createElement("div", {className: "custom-select-wrapper"},
+                                        React.createElement("select", {className: "custom-select", value: chineseFilter ? 'chinese' : 'all', onChange: (e) => setChineseFilter(e.target.value === 'chinese')},
+                                            React.createElement("option", {value: "all"}, t.filterAll),
+                                            React.createElement("option", {value: "chinese"}, t.filterChinese)
+                                        )
+                                    ),
+                                    React.createElement("div", {className: "custom-select-wrapper"},
+                                        React.createElement("select", {className: "custom-select bg-gold-100/30 border-gold-200 text-stone-700", value: region, onChange: (e) => setRegion(e.target.value)},
+                                            REGIONS.map(r => React.createElement("option", {key: r.id, value: r.id}, lang === 'zh' ? r.zh : r.en))
+                                        )
+                                    ),
+                                    React.createElement("div", {className: "custom-select-wrapper"},
+                                        React.createElement("select", {className: "custom-select", value: activeDosage, onChange: (e) => setActiveDosage(e.target.value)},
+                                            React.createElement("optgroup", {label: t.dosageLabel}, ['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg'].map(d => React.createElement("option", {key: d, value: d}, d))),
+                                            React.createElement("optgroup", {label: t.transitPlan}, ['2.5mg+5mg', '5mg+7.5mg', '7.5mg+10mg', '10mg+12.5mg', '12.5mg+15mg'].map(combo => React.createElement("option", {key: combo, value: combo}, combo === '2.5mg+5mg' ? t.combo2550 : combo === '5mg+7.5mg' ? t.combo5075 : combo === '7.5mg+10mg' ? t.combo75100 : combo === '10mg+12.5mg' ? t.combo100125 : t.combo125150)))
+                                        )
+                                    ),
+                                    React.createElement("div", {className: "custom-select-wrapper"},
+                                        React.createElement("select", {className: "custom-select", value: activeDuration, onChange: (e) => setActiveDuration(e.target.value === 'all' ? 'all' : parseFloat(e.target.value))},
+                                            React.createElement("option", {value: "all"}, t.allPlans),
+                                            React.createElement("option", {value: "0.5"}, `0.5 ${t.month}`),
+                                            React.createElement("option", {value: "1"}, `1 ${t.month}`),
+                                            React.createElement("option", {value: "2"}, `2 ${t.months}`),
+                                            React.createElement("option", {value: "3"}, `3 ${t.months}`),
+                                            React.createElement("option", {value: "6"}, `6 ${t.months}`)
+                                        )
+                                    )
+                                ),
+                                // Mobile Filter Trigger
+                                React.createElement("div", {className: "flex md:hidden items-center justify-between gap-3 px-1"},
+                                    React.createElement("div", {className: "flex-1 flex flex-col justify-center"},
+                                        React.createElement("span", {className: "text-[10px] uppercase text-stone-400 tracking-wider font-bold"}, `${t.dosage} / ${t.durationLabel}`),
+                                        React.createElement("span", {className: "font-serif text-stone-800 text-lg leading-tight truncate"}, `${activeDosage.replace('+',' & ')} • ${activeDuration === 'all' ? t.allPlans : getLabel(activeDuration)}`)
+                                    ),
+                                    React.createElement("button", {onClick: () => setShowMobileFilters(true), className: "flex items-center gap-2 bg-white border border-stone-300 text-stone-700 px-4 py-2 rounded-lg shadow-sm font-sans font-bold text-sm active:bg-stone-50"}, React.createElement(Icons.Filter, {size: 16}), t.mobileFilterBtn)
+                                )
+                            ),
+                            
+                            mode === 'calculator' && React.createElement("div", {className: "mb-8 max-w-5xl mx-auto"},
+                                // Desktop
+                                React.createElement("div", {className: "hidden md:flex flex-row gap-4 justify-start bg-white p-3 rounded-lg border border-stone-100 shadow-sm"},
+                                    React.createElement("div", {className: "custom-select-wrapper w-auto"}, React.createElement("select", {className: "custom-select", value: userType, onChange: (e) => setUserType(e.target.value)}, React.createElement("option", {value: "new"}, t.userNew), React.createElement("option", {value: "returning"}, t.userReturning))),
+                                    React.createElement("div", {className: "custom-select-wrapper w-auto"}, React.createElement("select", {className: "custom-select", value: chineseFilter ? 'chinese' : 'all', onChange: (e) => setChineseFilter(e.target.value === 'chinese')}, React.createElement("option", {value: "all"}, t.filterAll), React.createElement("option", {value: "chinese"}, t.filterChinese))),
+                                    React.createElement("div", {className: "custom-select-wrapper w-auto"}, React.createElement("select", {className: "custom-select bg-gold-100/30 border-gold-200 text-stone-700", value: region, onChange: (e) => setRegion(e.target.value)}, REGIONS.map(r => React.createElement("option", {key: r.id, value: r.id}, lang === 'zh' ? r.zh : r.en))))
+                                ),
+                                // Mobile
+                                React.createElement("div", {className: "md:hidden flex justify-end mb-4"},
+                                    React.createElement("button", {onClick: () => setShowMobileFilters(true), className: "flex items-center gap-2 bg-white border border-stone-300 text-stone-700 px-4 py-2 rounded-lg shadow-sm font-sans font-bold text-sm w-full justify-center"}, React.createElement(Icons.Filter, {size: 16}), t.mobileFilterBtn)
+                                )
+                            ),
 
-                    {/* Header & Main Controls */}
-                    <div className="flex flex-col-reverse md:flex-row justify-between items-center mb-8 gap-6 relative z-40">
-                        {/* Mode Switcher (Left) */}
-                        <div className="flex gap-2">
-                            <button onClick={() => setMode('standard')} className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full text-sm font-sans transition-all shadow-sm ${mode === 'standard' ? 'bg-stone-900 text-white' : 'bg-white border border-stone-200 text-stone-500 hover:bg-stone-50'}`}>
-                                <Icons.Grid /> {t.modeStandard}
-                            </button>
-                            <button onClick={() => setMode('calculator')} className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full text-sm font-sans transition-all shadow-sm ${mode === 'calculator' ? 'bg-gold-500 text-white' : 'bg-white border border-stone-200 text-stone-500 hover:bg-stone-50'}`}>
-                                <Icons.Calc /> {t.modeCalculator}
-                            </button>
-                        </div>
-
-                        {/* Language Switcher (Right) */}
-                        <div className="flex gap-4 items-center">
-                            <button onClick={() => setLang('zh')} className={`lang-btn ${lang === 'zh' ? 'active' : ''}`}>中文</button>
-                            <button onClick={() => setLang('en')} className={`lang-btn ${lang === 'en' ? 'active' : ''}`}>EN</button>
-                        </div>
-                    </div>
-
-                    <header className="text-center mb-10">
-                        <h1 className="font-display text-2xl md:text-3xl tracking-widest text-stone-900 uppercase mb-2">Mounjaro</h1>
-                        <p className="font-serif text-xs text-stone-500 italic">{t.subtitle}</p>
-                    </header>
-
-                    {/* Standard Mode - Sticky Bar */}
-                    {mode === 'standard' && (
-                        <div className="mb-12 sticky top-0 z-30 bg-[#FAFAF9]/95 backdrop-blur-sm py-4 border-b border-stone-200 transition-all shadow-sm max-w-5xl mx-auto">
-                            {/* Desktop Filter View */}
-                            <div className="hidden md:grid grid-cols-5 gap-4 px-1">
-                                <div className="custom-select-wrapper">
-                                    <select 
-                                        className="custom-select" 
-                                        value={userType} 
-                                        onChange={(e) => setUserType(e.target.value)}
-                                    >
-                                        <option value="new">{t.userNew}</option>
-                                        <option value="returning">{t.userReturning}</option>
-                                    </select>
-                                </div>
-                                <div className="custom-select-wrapper">
-                                    <select 
-                                        className="custom-select" 
-                                        value={chineseFilter ? 'chinese' : 'all'} 
-                                        onChange={(e) => setChineseFilter(e.target.value === 'chinese')}
-                                    >
-                                        <option value="all">{t.filterAll}</option>
-                                        <option value="chinese">{t.filterChinese}</option>
-                                    </select>
-                                </div>
-                                <div className="custom-select-wrapper">
-                                    <select 
-                                        className="custom-select bg-gold-100/30 border-gold-200 text-stone-700" 
-                                        value={region} 
-                                        onChange={(e) => setRegion(e.target.value)}
-                                    >
-                                        {REGIONS.map(r => (
-                                            <option key={r.id} value={r.id}>{lang === 'zh' ? r.zh : r.en}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="custom-select-wrapper">
-                                    <select 
-                                        className="custom-select" 
-                                        value={activeDosage} 
-                                        onChange={(e) => setActiveDosage(e.target.value)}
-                                    >
-                                        <optgroup label={t.dosageLabel}>
-                                            {['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg'].map(d => (
-                                                <option key={d} value={d}>{d}</option>
-                                            ))}
-                                        </optgroup>
-                                        <optgroup label={t.transitPlan}>
-                                            {['2.5mg+5mg', '5mg+7.5mg', '7.5mg+10mg', '10mg+12.5mg', '12.5mg+15mg'].map(combo => (
-                                                <option key={combo} value={combo}>
-                                                    {combo === '2.5mg+5mg' ? t.combo2550 : combo === '5mg+7.5mg' ? t.combo5075 : combo === '7.5mg+10mg' ? t.combo75100 : combo === '10mg+12.5mg' ? t.combo100125 : t.combo125150}
-                                                </option>
-                                            ))}
-                                        </optgroup>
-                                    </select>
-                                </div>
-                                <div className="custom-select-wrapper">
-                                    <select 
-                                        className="custom-select" 
-                                        value={activeDuration} 
-                                        onChange={(e) => setActiveDuration(e.target.value === 'all' ? 'all' : parseFloat(e.target.value))}
-                                    >
-                                        <option value="all">{t.allPlans}</option>
-                                        <option value="0.5">0.5 {t.month}</option>
-                                        <option value="1">1 {t.month}</option>
-                                        <option value="2">2 {t.months}</option>
-                                        <option value="3">3 {t.months}</option>
-                                        <option value="6">6 {t.months}</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* Mobile Filter Trigger View */}
-                            <div className="flex md:hidden items-center justify-between gap-3 px-1">
-                                <div className="flex-1 flex flex-col justify-center">
-                                     <span className="text-[10px] uppercase text-stone-400 tracking-wider font-bold">{t.dosage} / {t.durationLabel}</span>
-                                     <span className="font-serif text-stone-800 text-lg leading-tight truncate">
-                                        {activeDosage.replace('+',' & ')} • {activeDuration === 'all' ? t.allPlans : getLabel(activeDuration)}
-                                     </span>
-                                </div>
-                                <button 
-                                    onClick={() => setShowMobileFilters(true)} 
-                                    className="flex items-center gap-2 bg-white border border-stone-300 text-stone-700 px-4 py-2 rounded-lg shadow-sm font-sans font-bold text-sm active:bg-stone-50"
-                                >
-                                    <Icons.Filter size={16}/> {t.mobileFilterBtn}
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Calculator Mode - Controls */}
-                    {mode === 'calculator' && (
-                        <div className="mb-8 max-w-5xl mx-auto">
-                            {/* Desktop Calc Controls */}
-                            <div className="hidden md:flex flex-row gap-4 justify-start bg-white p-3 rounded-lg border border-stone-100 shadow-sm">
-                                <div className="custom-select-wrapper w-auto">
-                                    <select className="custom-select" value={userType} onChange={(e) => setUserType(e.target.value)}>
-                                        <option value="new">{t.userNew}</option>
-                                        <option value="returning">{t.userReturning}</option>
-                                    </select>
-                                </div>
-                                <div className="custom-select-wrapper w-auto">
-                                    <select className="custom-select" value={chineseFilter ? 'chinese' : 'all'} onChange={(e) => setChineseFilter(e.target.value === 'chinese')}>
-                                        <option value="all">{t.filterAll}</option>
-                                        <option value="chinese">{t.filterChinese}</option>
-                                    </select>
-                                </div>
-                                <div className="custom-select-wrapper w-auto">
-                                    <select className="custom-select bg-gold-100/30 border-gold-200 text-stone-700" value={region} onChange={(e) => setRegion(e.target.value)}>
-                                        {REGIONS.map(r => (<option key={r.id} value={r.id}>{lang === 'zh' ? r.zh : r.en}</option>))}
-                                    </select>
-                                </div>
-                            </div>
-                             {/* Mobile Calc Controls Trigger */}
-                             <div className="md:hidden flex justify-end mb-4">
-                                <button 
-                                    onClick={() => setShowMobileFilters(true)} 
-                                    className="flex items-center gap-2 bg-white border border-stone-300 text-stone-700 px-4 py-2 rounded-lg shadow-sm font-sans font-bold text-sm w-full justify-center"
-                                >
-                                    <Icons.Filter size={16}/> {t.mobileFilterBtn}
-                                </button>
-                             </div>
-                        </div>
-                    )}
-
-                    {/* Content - Calculator */}
-                    {mode === 'calculator' && (
-                        <div className="animate-fade-up">
-                            <div className="bg-white border border-gold-200 rounded-xl p-6 md:p-8 shadow-sm mb-12">
-                                <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-8 gap-6">
-                                    <div className="order-1">
-                                        <h3 className="font-serif text-xl text-stone-800 mb-2 flex items-center gap-2">
-                                            <Icons.Calc /> {t.modeCalculator}
-                                        </h3>
-                                        <div className="md:hidden mt-4 mb-4">
-                                            <div className={`text-sm font-bold flex items-center justify-between gap-2 ${totalSelectedMonths >= 6 ? 'text-red-500' : 'text-stone-600'}`}>
-                                                <span className="text-xs uppercase text-stone-400 tracking-wider">{t.totalSelected}</span>
-                                                <span>{totalSelectedMonths} / 6</span>
-                                            </div>
-                                            <div className="w-full h-2 bg-stone-100 rounded-full mt-2 overflow-hidden">
-                                                <div className={`h-full transition-all duration-500 ${totalSelectedMonths >= 6 ? 'bg-red-400' : 'bg-gold-400'}`} style={{width: `${Math.min(totalSelectedMonths/6 * 100, 100)}%`}}></div>
-                                            </div>
-                                            {totalSelectedMonths >= 6 && <div className="text-right text-[10px] text-red-400 mt-1 font-sans flex items-center justify-end gap-1"><Icons.Alert size={10}/> {t.maxLimitMsg}</div>}
-                                        </div>
-                                        <p className="text-stone-500 text-sm font-sans leading-relaxed">{t.calcIntro}</p>
-                                        {userType === 'new' && <p className="text-gold-600 text-xs mt-2 font-bold bg-gold-50 p-2 rounded border border-gold-100 inline-block">{t.calcDisclaimer}</p>}
-                                    </div>
-                                    <div className="hidden md:flex flex-col items-end order-2">
-                                        <div className={`text-sm font-bold flex items-center gap-2 ${totalSelectedMonths >= 6 ? 'text-red-500' : 'text-stone-600'}`}>
-                                            {totalSelectedMonths >= 6 && <Icons.Alert size={16}/>}
-                                            {t.totalSelected}: {totalSelectedMonths} / 6
-                                        </div>
-                                        {totalSelectedMonths >= 6 && <span className="text-[10px] text-red-400 mt-1 font-sans">{t.maxLimitMsg}</span>}
-                                        <div className="w-48 h-2 bg-stone-100 rounded-full mt-2 overflow-hidden">
-                                            <div className={`h-full transition-all duration-500 ${totalSelectedMonths >= 6 ? 'bg-red-400' : 'bg-gold-400'}`} style={{width: `${Math.min(totalSelectedMonths/6 * 100, 100)}%`}}></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-                                    {Object.keys(cart).map(dosage => (
-                                        <div key={dosage} className="flex flex-col">
-                                            <label className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">{dosage}</label>
-                                            <div className={`flex items-center border rounded-lg overflow-hidden transition-colors h-12 ${totalSelectedMonths >= 6 && cart[dosage] === 0 ? 'bg-stone-50 border-stone-100 opacity-50 cursor-not-allowed' : 'bg-stone-50 border-stone-200'}`}>
-                                                <input type="number" min="0" max="6" value={cart[dosage]} onChange={(e) => {
+                            // --- Views ---
+                            mode === 'calculator' && React.createElement("div", {className: "animate-fade-up"},
+                                React.createElement("div", {className: "bg-white border border-gold-200 rounded-xl p-6 md:p-8 shadow-sm mb-12"},
+                                    React.createElement("div", {className: "flex flex-col md:flex-row md:justify-between md:items-start mb-8 gap-6"},
+                                        React.createElement("div", {className: "order-1"},
+                                            React.createElement("h3", {className: "font-serif text-xl text-stone-800 mb-2 flex items-center gap-2"}, React.createElement(Icons.Calc), t.modeCalculator),
+                                            React.createElement("div", {className: "md:hidden mt-4 mb-4"},
+                                                 React.createElement("div", {className: `text-sm font-bold flex items-center justify-between gap-2 ${totalSelectedMonths >= 6 ? 'text-red-500' : 'text-stone-600'}`}, React.createElement("span", {className: "text-xs uppercase text-stone-400 tracking-wider"}, t.totalSelected), React.createElement("span", null, totalSelectedMonths, " / 6")),
+                                                 React.createElement("div", {className: "w-full h-2 bg-stone-100 rounded-full mt-2 overflow-hidden"}, React.createElement("div", {className: `h-full transition-all duration-500 ${totalSelectedMonths >= 6 ? 'bg-red-400' : 'bg-gold-400'}`, style: {width: `${Math.min(totalSelectedMonths/6 * 100, 100)}%`}})),
+                                                 totalSelectedMonths >= 6 && React.createElement("div", {className: "text-right text-[10px] text-red-400 mt-1 font-sans flex items-center justify-end gap-1"}, React.createElement(Icons.Alert, {size: 10}), t.maxLimitMsg)
+                                            ),
+                                            React.createElement("p", {className: "text-stone-500 text-sm font-sans leading-relaxed"}, t.calcIntro),
+                                            userType === 'new' && React.createElement("p", {className: "text-gold-600 text-xs mt-2 font-bold bg-gold-50 p-2 rounded border border-gold-100 inline-block"}, t.calcDisclaimer)
+                                        ),
+                                        React.createElement("div", {className: "hidden md:flex flex-col items-end order-2"},
+                                            React.createElement("div", {className: `text-sm font-bold flex items-center gap-2 ${totalSelectedMonths >= 6 ? 'text-red-500' : 'text-stone-600'}`}, totalSelectedMonths >= 6 && React.createElement(Icons.Alert, {size: 16}), t.totalSelected, ": ", totalSelectedMonths, " / 6"),
+                                            totalSelectedMonths >= 6 && React.createElement("span", {className: "text-[10px] text-red-400 mt-1 font-sans"}, t.maxLimitMsg),
+                                            React.createElement("div", {className: "w-48 h-2 bg-stone-100 rounded-full mt-2 overflow-hidden"}, React.createElement("div", {className: `h-full transition-all duration-500 ${totalSelectedMonths >= 6 ? 'bg-red-400' : 'bg-gold-400'}`, style: {width: `${Math.min(totalSelectedMonths/6 * 100, 100)}%`}}))
+                                        )
+                                    ),
+                                    React.createElement("div", {className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8"},
+                                        Object.keys(cart).map(dosage => 
+                                            React.createElement("div", {key: dosage, className: "flex flex-col"},
+                                                React.createElement("label", {className: "text-xs font-bold text-stone-400 uppercase tracking-wider mb-2"}, dosage),
+                                                React.createElement("div", {className: `flex items-center border rounded-lg overflow-hidden transition-colors h-12 ${totalSelectedMonths >= 6 && cart[dosage] === 0 ? 'bg-stone-50 border-stone-100 opacity-50 cursor-not-allowed' : 'bg-stone-50 border-stone-200'}`},
+                                                    React.createElement("input", {type: "number", min: "0", max: "6", value: cart[dosage], onChange: (e) => {
                                                         let val = parseInt(e.target.value) || 0;
                                                         if (val < 0) val = 0;
                                                         const currentTotal = Object.entries(cart).filter(([key]) => key !== dosage).reduce((sum, [, v]) => sum + v, 0);
                                                         if (currentTotal + val > 6) val = 6 - currentTotal;
                                                         setCart({...cart, [dosage]: val});
-                                                    }}
-                                                    className="w-full p-2 text-center text-stone-900 font-sans font-bold bg-transparent outline-none text-lg"
-                                                />
-                                                <span className="pr-3 text-xs text-stone-400 select-none whitespace-nowrap">{t.monthsCount}</span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="flex justify-end border-t border-stone-100 pt-4">
-                                    <button onClick={() => setCart({'2.5mg': 0, '5mg': 0, '7.5mg': 0, '10mg': 0, '12.5mg': 0, '15mg': 0})} className="text-xs text-stone-400 hover:text-red-500 font-sans border-b border-transparent hover:border-red-500 transition-all">{t.reset}</button>
-                                </div>
-                            </div>
-                            <div className="grid gap-6">
-                                {calcResults.map((res, idx) => {
-                                    const shippingCost = getShippingFee(res.clinic, region, totalSelectedMonths);
-                                    const isOffline = shippingCost === 0 && res.clinic.locations && res.clinic.locations.includes(region);
-                                    const offlineDiscount = (isOffline && res.clinic.offlineDiscount) ? res.clinic.offlineDiscount : 0;
-                                    const onlineFee = ((region === 'all' || !isOffline) && res.clinic.onlineFee) ? res.clinic.onlineFee : 0;
-                                    
-                                    return (
-                                        <div key={res.clinic.id} className="bg-white border border-stone-100 rounded-lg p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all">
-                                            {idx === 0 && <div className="absolute top-0 left-0 w-1 h-full bg-gold-400"></div>}
-                                            <div className="flex-1 w-full">
-                                                <div className="flex items-center justify-between md:justify-start gap-3 mb-2">
-                                                    <h3 className="font-serif text-xl text-stone-900">{res.clinic.name[lang]}</h3>
-                                                    {idx === 0 && <span className="bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">{t.bestValue}</span>}
-                                                    {res.isBundle && <span className="bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 flex items-center gap-1"><Icons.Star size={10}/> {t.bundleApplied}</span>}
-                                                </div>
-                                                <p className="text-sm text-stone-500 font-sans mb-3 flex items-center gap-2"><span className="bg-stone-100 px-2 py-1 rounded text-xs break-all">{res.breakdown}</span></p>
-                                                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-400 font-sans">
-                                                    <span>{t.meds}: {formatCurrency(res.meds)}</span>
-                                                    {getRegFee(res.clinic) > 0 && <span>+ {t.regFee}: {formatCurrency(getRegFee(res.clinic))}</span>}
-                                                    {shippingCost > 0 ? (
-                                                        <span>+ {t.shipFee}: {formatCurrency(shippingCost)}</span>
-                                                    ) : (
-                                                        isOffline && <span className="text-gold-600 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.shippingOffline}</span>
-                                                    )}
-                                                    {offlineDiscount > 0 && <span className="text-green-600 font-bold"> - {formatCurrency(offlineDiscount)} (Off)</span>}
-                                                    {onlineFee > 0 && <span className="text-red-500 font-bold"> + {t.onlineFee}: {formatCurrency(onlineFee)}</span>}
-                                                </div>
-                                            </div>
-                                            <div className="text-right w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0 mt-2 md:mt-0">
-                                                <span className="text-xs text-stone-400 uppercase block mb-1">{t.calcTotal}</span>
-                                                <span className={`text-3xl font-sans font-light tracking-tight ${idx === 0 ? 'text-stone-900' : 'text-stone-600'}`}>
-                                                    {formatCurrency(res.total)}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                                {calcResults.length === 0 && (
-                                    <div className="text-center py-12 text-stone-400 font-serif italic bg-white rounded-xl border border-dashed border-stone-200">{t.noData}</div>
-                                )}
-                            </div>
-                        </div>
-                    )}
+                                                    }, className: "w-full p-2 text-center text-stone-900 font-sans font-bold bg-transparent outline-none text-lg"}),
+                                                    React.createElement("span", {className: "pr-3 text-xs text-stone-400 select-none whitespace-nowrap"}, t.monthsCount)
+                                                )
+                                            )
+                                        )
+                                    ),
+                                    React.createElement("div", {className: "flex justify-end border-t border-stone-100 pt-4"},
+                                        React.createElement("button", {onClick: () => setCart({'2.5mg': 0, '5mg': 0, '7.5mg': 0, '10mg': 0, '12.5mg': 0, '15mg': 0}), className: "text-xs text-stone-400 hover:text-red-500 font-sans border-b border-transparent hover:border-red-500 transition-all"}, t.reset)
+                                    )
+                                ),
+                                React.createElement("div", {className: "grid gap-6"},
+                                    calcResults.map((res, idx) => {
+                                        const shippingCost = getShippingFee(res.clinic, region, totalSelectedMonths);
+                                        const isOffline = shippingCost === 0 && res.clinic.locations && res.clinic.locations.includes(region);
+                                        const offlineDiscount = (isOffline && res.clinic.offlineDiscount) ? res.clinic.offlineDiscount : 0;
+                                        const onlineFee = ((region === 'all' || !isOffline) && res.clinic.onlineFee) ? res.clinic.onlineFee : 0;
 
-                    {/* Content - Standard */}
-                    {mode === 'standard' && (
-                        <div className="animate-fade-up">
-                            <div className="flex flex-col items-center mb-12 gap-2">
-                                <div className="bg-white border border-stone-200 px-6 py-3 flex items-center gap-3 shadow-sm rounded-full">
-                                    <div className="text-stone-400"><Icons.Info /></div>
-                                    <p className="text-xs text-stone-500 uppercase tracking-wider font-sans">{t.disclaimer} <span className="text-stone-900 font-bold border-b border-stone-300">{t.disclaimerHighlight}</span>.</p>
-                                </div>
-                                <div className="flex items-center gap-1 text-xs text-stone-400 font-sans tracking-wide animate-pulse"><Icons.Sort size={12} /> {t.sortNote}</div>
-                            </div>
-                            {sortedClinics.length === 0 && (
-                                <div className="text-center py-20 animate-fade-up">
-                                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-stone-100 text-stone-400 mb-4"><Icons.Info size={24} /></div>
-                                    <p className="text-stone-500 font-serif italic max-w-md mx-auto">{t.noData}</p>
-                                </div>
-                            )}
-                            <div className="grid gap-8 md:gap-10">
-                                {sortedClinics.map((clinic, clinicIndex) => {
-                                    const displayPrices = getSmartPrices(clinic, activeDosage, activeDuration);
-                                    let rankColor = '';
-                                    if (clinicIndex === 0) rankColor = 'bg-gold-400 text-white';
-                                    else if (clinicIndex === 1) rankColor = 'bg-stone-400 text-white';
-                                    else if (clinicIndex === 2) rankColor = 'bg-stone-300 text-white';
-                                    
-                                    return (
-                                        <div key={clinic.id} className="group animate-fade-up bg-white shadow-sm border border-stone-100 hover:shadow-md transition-all duration-500 relative">
-                                            {rankColor && <div className={`absolute -top-3 -left-3 ${rankColor} w-8 h-8 flex items-center justify-center font-display font-bold shadow-md z-10 rank-badge rounded-sm`}>{clinicIndex + 1}</div>}
-                                            <div className="flex flex-col md:flex-row md:items-center justify-between p-6 md:p-8 border-b border-stone-100">
-                                                <div>
-                                                    <div className="flex items-baseline gap-3 mb-2">
-                                                        <h2 className="font-serif text-xl md:text-2xl text-stone-900">{clinic.name[lang]}</h2>
-                                                        <a href={clinic.link} target="_blank" className="text-stone-300 hover:text-gold-400 transition-colors"><Icons.ExternalLink /></a>
-                                                    </div>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {clinic.freeShipping ? <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-600 px-2 py-1 flex items-center gap-1 font-sans bg-stone-50/50"><Icons.Truck size={10}/> {t.shippingIncluded}</span> : <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 flex items-center gap-1 font-sans"><Icons.Truck size={10}/> {t.shippingExtra}</span>}
-                                                        <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 font-sans">{t.regFeeLabel}: {formatCurrency(getRegFee(clinic))}</span>
-                                                        {clinic.tags.map((tagObj, idx) => <span key={idx} className="text-[10px] uppercase tracking-widest bg-stone-50 text-stone-400 px-2 py-1 font-sans">{tagObj[lang]}</span>)}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                                {displayPrices.map((item, idx) => {
+                                        return React.createElement("div", {key: res.clinic.id, className: "bg-white border border-stone-100 rounded-lg p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all"},
+                                            idx === 0 && React.createElement("div", {className: "absolute top-0 left-0 w-1 h-full bg-gold-400"}),
+                                            React.createElement("div", {className: "flex-1 w-full"},
+                                                React.createElement("div", {className: "flex items-center justify-between md:justify-start gap-3 mb-2"},
+                                                    React.createElement("h3", {className: "font-serif text-xl text-stone-900"}, res.clinic.name[lang]),
+                                                    idx === 0 && React.createElement("span", {className: "bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0"}, t.bestValue),
+                                                    res.isBundle && React.createElement("span", {className: "bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 flex items-center gap-1"}, React.createElement(Icons.Star, {size: 10}), t.bundleApplied)
+                                                ),
+                                                React.createElement("p", {className: "text-sm text-stone-500 font-sans mb-3 flex items-center gap-2"}, React.createElement("span", {className: "bg-stone-100 px-2 py-1 rounded text-xs break-all"}, res.breakdown)),
+                                                React.createElement("div", {className: "flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-400 font-sans"},
+                                                    React.createElement("span", null, t.meds, ": ", formatCurrency(res.meds)),
+                                                    getRegFee(res.clinic) > 0 && React.createElement("span", null, "+ ", t.regFee, ": ", formatCurrency(getRegFee(res.clinic))),
+                                                    shippingCost > 0 ? React.createElement("span", null, "+ ", t.shipFee, ": ", formatCurrency(shippingCost)) : (isOffline && React.createElement("span", {className: "text-gold-600 font-bold flex items-center gap-1"}, React.createElement(Icons.MapPin, {size: 10}), " ", t.shippingOffline)),
+                                                    offlineDiscount > 0 && React.createElement("span", {className: "text-green-600 font-bold"}, " - ", formatCurrency(offlineDiscount), " (Off)"),
+                                                    onlineFee > 0 && React.createElement("span", {className: "text-red-500 font-bold"}, " + ", t.onlineFee, ": ", formatCurrency(onlineFee))
+                                                )
+                                            ),
+                                            React.createElement("div", {className: "text-right w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0 mt-2 md:mt-0"},
+                                                React.createElement("span", {className: "text-xs text-stone-400 uppercase block mb-1"}, t.calcTotal),
+                                                React.createElement("span", {className: `text-3xl font-sans font-light tracking-tight ${idx === 0 ? 'text-stone-900' : 'text-stone-600'}`}, formatCurrency(res.total))
+                                            )
+                                        );
+                                    }),
+                                    calcResults.length === 0 && Object.values(cart).some(x => x > 0) && React.createElement("div", {className: "text-center py-12 text-stone-400 font-serif italic bg-white rounded-xl border border-dashed border-stone-200"}, t.noData)
+                                )
+                            ),
+
+                            mode === 'standard' && React.createElement("div", {className: "animate-fade-up"},
+                                React.createElement("div", {className: "flex flex-col items-center mb-12 gap-2"},
+                                    React.createElement("div", {className: "bg-white border border-stone-200 px-6 py-3 flex items-center gap-3 shadow-sm rounded-full"},
+                                        React.createElement("div", {className: "text-stone-400"}, React.createElement(Icons.Info)),
+                                        React.createElement("p", {className: "text-xs text-stone-500 uppercase tracking-wider font-sans"}, t.disclaimer, " ", React.createElement("span", {className: "text-stone-900 font-bold border-b border-stone-300"}, t.disclaimerHighlight), ".")
+                                    ),
+                                    React.createElement("div", {className: "flex items-center gap-1 text-xs text-stone-400 font-sans tracking-wide animate-pulse"}, React.createElement(Icons.Sort, {size: 12}), " ", t.sortNote)
+                                ),
+                                sortedClinics.length === 0 && React.createElement("div", {className: "text-center py-20 animate-fade-up"},
+                                    React.createElement("div", {className: "inline-flex items-center justify-center w-16 h-16 rounded-full bg-stone-100 text-stone-400 mb-4"}, React.createElement(Icons.Info, {size: 24})),
+                                    React.createElement("p", {className: "text-stone-500 font-serif italic max-w-md mx-auto"}, t.noData)
+                                ),
+                                React.createElement("div", {className: "grid gap-8 md:gap-10"},
+                                    sortedClinics.map((clinic, clinicIndex) => {
+                                        const displayPrices = getSmartPrices(clinic, activeDosage, activeDuration);
+                                        let rankColor = '';
+                                        if (clinicIndex === 0) rankColor = 'bg-gold-400 text-white';
+                                        else if (clinicIndex === 1) rankColor = 'bg-stone-400 text-white';
+                                        else if (clinicIndex === 2) rankColor = 'bg-stone-300 text-white';
+
+                                        return React.createElement("div", {key: clinic.id, className: "group animate-fade-up bg-white shadow-sm border border-stone-100 hover:shadow-md transition-all duration-500 relative"},
+                                            rankColor && React.createElement("div", {className: `absolute -top-3 -left-3 ${rankColor} w-8 h-8 flex items-center justify-center font-display font-bold shadow-md z-10 rank-badge rounded-sm`}, clinicIndex + 1),
+                                            React.createElement("div", {className: "flex flex-col md:flex-row md:items-center justify-between p-6 md:p-8 border-b border-stone-100"},
+                                                React.createElement("div", null,
+                                                    React.createElement("div", {className: "flex items-baseline gap-3 mb-2"},
+                                                        React.createElement("h2", {className: "font-serif text-xl md:text-2xl text-stone-900"}, clinic.name[lang]),
+                                                        React.createElement("a", {href: clinic.link, target: "_blank", className: "text-stone-300 hover:text-gold-400 transition-colors"}, React.createElement(Icons.ExternalLink))
+                                                    ),
+                                                    React.createElement("div", {className: "flex flex-wrap gap-2"},
+                                                        clinic.freeShipping ? React.createElement("span", {className: "text-[10px] uppercase tracking-widest border border-stone-200 text-stone-600 px-2 py-1 flex items-center gap-1 font-sans bg-stone-50/50"}, React.createElement(Icons.Truck, {size: 10}), " ", t.shippingIncluded) : React.createElement("span", {className: "text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 flex items-center gap-1 font-sans"}, React.createElement(Icons.Truck, {size: 10}), " ", t.shippingExtra),
+                                                        React.createElement("span", {className: "text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 font-sans"}, t.regFeeLabel, ": ", formatCurrency(getRegFee(clinic))),
+                                                        clinic.tags.map((tagObj, idx) => React.createElement("span", {key: idx, className: "text-[10px] uppercase tracking-widest bg-stone-50 text-stone-400 px-2 py-1 font-sans"}, tagObj[lang]))
+                                                    )
+                                                )
+                                            ),
+                                            React.createElement("div", {className: "p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"},
+                                                displayPrices.map((item, idx) => {
                                                     let isBestPrice = false;
                                                     const monthlyAvg = item.totalPrice / item.months;
                                                     if (activeDuration === 'all') isBestPrice = Math.abs(monthlyAvg - bestPrice) < 10;
@@ -1672,71 +1041,49 @@
                                                     const offlineDiscount = (isOffline && clinic.offlineDiscount) ? clinic.offlineDiscount : 0;
                                                     const onlineFee = ((region === 'all' || !isOffline) && clinic.onlineFee) ? clinic.onlineFee : 0;
 
-                                                    return (
-                                                        <div key={idx} className={`relative p-6 transition-all duration-300 flex flex-col justify-between rounded-sm ${isBestPrice ? 'bg-stone-50 border border-gold-200' : 'bg-white border border-stone-100 opacity-80 hover:opacity-100 hover:border-stone-300'}`}>
-                                                            {isBestPrice && <div className="absolute top-0 right-0 bg-gold-400 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 font-sans rounded-bl-sm">{t.bestValue}</div>}
-                                                            <div className="mb-6">
-                                                                <div className="flex justify-between items-start mb-2">
-                                                                    <span className="font-serif italic text-stone-600 text-lg">{item.label}</span>
-                                                                    <div className="flex flex-col items-end gap-1">
-                                                                        {item.isCalculated && <span className="text-[10px] uppercase text-stone-300 border border-stone-200 px-1 font-sans">{t.est}</span>}
-                                                                        {item.months === 0.5 && <span className="text-[10px] text-red-400 border border-red-200 bg-red-50 px-1 font-sans">{t.firstTime}</span>}
-                                                                        {item.type === 'initial' && <span className="text-[10px] text-gold-600 border border-gold-200 bg-gold-50 px-1 font-sans">{t.firstTime}</span>}
-                                                                    </div>
-                                                                </div>
-                                                                <div className="flex items-baseline gap-1">
-                                                                    <span className={`text-3xl font-light tracking-tight font-sans ${isBestPrice ? 'text-stone-900' : 'text-stone-600'}`}>{formatCurrency(item.totalPrice)}</span>
-                                                                    <span className="text-xs text-stone-400 uppercase font-sans">{t.total}</span>
-                                                                </div>
-                                                                <div className="mt-2 pt-2 border-t border-stone-100 text-[10px] text-stone-400 flex flex-col gap-0.5 font-sans">
-                                                                    <div className="flex justify-between"><span>{t.meds}</span><span>{formatCurrency(item.drugPriceOnly)}</span></div>
-                                                                    {getRegFee(clinic) > 0 && <div className="flex justify-between"><span>{t.regFee}</span><span>+ {formatCurrency(getRegFee(clinic))}</span></div>}
-                                                                    {shippingCost > 0 ? (
-                                                                        <div className="flex justify-between"><span>{t.shipFee}</span><span>+ {formatCurrency(shippingCost)}</span></div>
-                                                                    ) : (
-                                                                        isOffline && (
-                                                                            <div className="flex flex-col items-end mt-1">
-                                                                                <div className="flex justify-end text-gold-600 font-bold"><Icons.MapPin size={10} className="mr-1"/>{t.shippingOffline}</div>
-                                                                                {offlineDiscount > 0 && <div className="text-[10px] text-green-600 font-bold">(-{formatCurrency(offlineDiscount)})</div>}
-                                                                            </div>
-                                                                        )
-                                                                    )}
-                                                                    {onlineFee > 0 && <div className="flex justify-between text-red-500 font-bold"><span>{t.onlineFee}</span><span>+ {formatCurrency(onlineFee)}</span></div>}
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex items-end justify-between">
-                                                                {item.months !== 1 && activeDuration === 'all' ? (
-                                                                    <div className="text-right w-full">
-                                                                        <p className="text-[10px] uppercase text-stone-400 tracking-widest mb-1 font-sans">{t.monthlyAvg}</p>
-                                                                        <p className={`font-sans font-bold ${isBestPrice ? 'text-gold-600' : 'text-stone-500'}`}>{formatCurrency(monthlyAvg)}</p>
-                                                                    </div>
-                                                                ) : (
-                                                                    <div className="w-full">
-                                                                        {item.isCalculated && <p className="text-[10px] text-stone-400 italic text-right font-serif">* {item.calculationNote}</p>}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-
-                    <footer className="mt-20 pt-10 border-t border-stone-200 text-center text-stone-400">
-                        <p className="font-serif italic text-sm mb-2">{t.footerNote} {rateDate && `(${t.rateDateLabel}: ${rateDate})`}</p>
-                    </footer>
-                </div>
+                                                    return React.createElement("div", {key: idx, className: `relative p-6 transition-all duration-300 flex flex-col justify-between rounded-sm ${isBestPrice ? 'bg-stone-50 border border-gold-200' : 'bg-white border border-stone-100 opacity-80 hover:opacity-100 hover:border-stone-300'}`},
+                                                        isBestPrice && React.createElement("div", {className: "absolute top-0 right-0 bg-gold-400 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 font-sans rounded-bl-sm"}, t.bestValue),
+                                                        React.createElement("div", {className: "mb-6"},
+                                                            React.createElement("div", {className: "flex justify-between items-start mb-2"},
+                                                                React.createElement("span", {className: "font-serif italic text-stone-600 text-lg"}, item.label),
+                                                                React.createElement("div", {className: "flex flex-col items-end gap-1"},
+                                                                    item.isCalculated && React.createElement("span", {className: "text-[10px] uppercase text-stone-300 border border-stone-200 px-1 font-sans"}, t.est),
+                                                                    item.months === 0.5 && React.createElement("span", {className: "text-[10px] text-red-400 border border-red-200 bg-red-50 px-1 font-sans"}, t.firstTime),
+                                                                    item.type === 'initial' && React.createElement("span", {className: "text-[10px] text-gold-600 border border-gold-200 bg-gold-50 px-1 font-sans"}, t.firstTime)
+                                                                )
+                                                            ),
+                                                            React.createElement("div", {className: "flex items-baseline gap-1"},
+                                                                React.createElement("span", {className: `text-3xl font-light tracking-tight font-sans ${isBestPrice ? 'text-stone-900' : 'text-stone-600'}`}, formatCurrency(item.totalPrice)),
+                                                                React.createElement("span", {className: "text-xs text-stone-400 uppercase font-sans"}, t.total)
+                                                            ),
+                                                            React.createElement("div", {className: "mt-2 pt-2 border-t border-stone-100 text-[10px] text-stone-400 flex flex-col gap-0.5 font-sans"},
+                                                                React.createElement("div", {className: "flex justify-between"}, React.createElement("span", null, t.meds), React.createElement("span", null, formatCurrency(item.drugPriceOnly))),
+                                                                getRegFee(clinic) > 0 && React.createElement("div", {className: "flex justify-between"}, React.createElement("span", null, t.regFee), React.createElement("span", null, "+ ", formatCurrency(getRegFee(clinic)))),
+                                                                shippingCost > 0 ? React.createElement("div", {className: "flex justify-between"}, React.createElement("span", null, t.shipFee), React.createElement("span", null, "+ ", formatCurrency(shippingCost))) : (isOffline && React.createElement("div", {className: "flex flex-col items-end mt-1"}, React.createElement("div", {className: "flex justify-end text-gold-600 font-bold"}, React.createElement(Icons.MapPin, {size: 10, className: "mr-1"}), t.shippingOffline), offlineDiscount > 0 && React.createElement("div", {className: "text-[10px] text-green-600 font-bold"}, "(-", formatCurrency(offlineDiscount), ")"))),
+                                                                onlineFee > 0 && React.createElement("div", {className: "flex justify-between text-red-500 font-bold"}, React.createElement("span", null, t.onlineFee), React.createElement("span", null, "+ ", formatCurrency(onlineFee)))
+                                                            )
+                                                        ),
+                                                        React.createElement("div", {className: "flex items-end justify-between"},
+                                                            item.months !== 1 && activeDuration === 'all' ? React.createElement("div", {className: "text-right w-full"}, React.createElement("p", {className: "text-[10px] uppercase text-stone-400 tracking-widest mb-1 font-sans"}, t.monthlyAvg), React.createElement("p", {className: `font-sans font-bold ${isBestPrice ? 'text-gold-600' : 'text-stone-500'}`}, formatCurrency(monthlyAvg))) : React.createElement("div", {className: "w-full"}, item.isCalculated && React.createElement("p", {className: "text-[10px] text-stone-400 italic text-right font-serif"}, "* ", item.calculationNote))
+                                                        )
+                                                    )
+                                                })
+                                            )
+                                        )
+                                    })
+                                )
+                            )
+                        )
+                    ),
+                    React.createElement("footer", {className: "mt-20 pt-10 border-t border-stone-200 text-center text-stone-400"},
+                        React.createElement("p", {className: "font-serif italic text-sm mb-2"}, t.footerNote, " ", rateDate && `(${t.rateDateLabel}: ${rateDate})`)
+                    )
+                )
             );
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<MounjaroBoutique />);
+        root.render(React.createElement(MounjaroBoutique));
     </script>
 </body>
 </html>
-
