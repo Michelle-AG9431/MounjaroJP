@@ -169,20 +169,38 @@
         import React from "https://esm.sh/react@18";
         import ReactDOM from "https://esm.sh/react-dom@18";
 
-        // --- Firebase Initialization ---
+        // --- Firebase Config Logic for Dual Environment ---
+        // 1. 嘗試讀取 Canvas 環境變數 (預覽用)
+        // 2. 若無，則使用下方的自定義設定 (部署用)
+        // 請將下方 'YOUR_...' 替換為您的 Firebase Console 設定
         const firebaseConfig = {
   apiKey: "AIzaSyBAJHidheRJbj2EdX2Tjn7AVgYBtdkdFGY",
   authDomain: "mounjarojp.firebaseapp.com",
   projectId: "mounjarojp",
   storageBucket: "mounjarojp.firebasestorage.app",
   messagingSenderId: "759300377829",
+  appId: "1:759300377829:web:0cac80f81201a3f8fcd80c",
   measurementId: "G-SVR2D7JYS6"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app);
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : externalConfig;
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Helper to determine collection path based on environment
+        const getClinicsCollection = () => {
+            if (typeof __app_id !== 'undefined') {
+                // Canvas Environment
+                return collection(db, 'artifacts', __app_id, 'public', 'data', 'clinics');
+            } else {
+                // Production / External Environment
+                // 確保您的 Firebase Firestore 中有一個名為 'clinics' 的集合
+                return collection(db, 'clinics');
+            }
+        };
 
         // --- Icons ---
         const Icons = {
@@ -408,8 +426,10 @@ const db = getFirestore(app);
 
             React.useEffect(() => {
                 if (!user) return;
-                // Query Rule: Use simple collection query
-                const q = collection(db, 'clinics');
+                
+                // Use dynamic collection path
+                const q = getClinicsCollection();
+                
                 const unsubscribe = onSnapshot(q, (snapshot) => {
                     const loadedClinics = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     setClinics(loadedClinics);
