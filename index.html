@@ -174,18 +174,18 @@
         };
 
         const REGIONS = [
-            { id: 'all', zh: '全部地區 (All)', en: 'All Regions' },
-            { id: 'hokkaido', zh: '北海道', en: 'Hokkaido' },
-            { id: 'tohoku', zh: '東北 (Tohoku)', en: 'Tohoku' },
-            { id: 'kanto', zh: '關東 (Kanto/Tokyo)', en: 'Kanto' },
-            { id: 'shinetsu', zh: '信越 (Shinetsu)', en: 'Shinetsu' },
-            { id: 'hokuriku', zh: '北陸 (Hokuriku)', en: 'Hokuriku' },
-            { id: 'chubu', zh: '中部 (Chubu/Nagoya)', en: 'Chubu' },
-            { id: 'kansai', zh: '關西 (Kansai/Osaka)', en: 'Kansai' },
-            { id: 'chugoku', zh: '中國 (Chugoku)', en: 'Chugoku' },
-            { id: 'shikoku', zh: '四國 (Shikoku)', en: 'Shikoku' },
-            { id: 'kyushu', zh: '九州 (Kyushu)', en: 'Kyushu' },
-            { id: 'okinawa', zh: '沖繩 (Okinawa)', en: 'Okinawa' },
+            { id: 'all', zh: '全部地區', en: 'All Regions' },
+            { id: 'hokkaido', zh: '北海道(札幌/函館)', en: 'Hokkaido' },
+            { id: 'tohoku', zh: '東北 (仙台/青森/福島)', en: 'Tohoku' },
+            { id: 'kanto', zh: '關東 (東京/橫濱)', en: 'Kanto' },
+            { id: 'shinetsu', zh: '信越 (新瀉/湯澤)', en: 'Shinetsu' },
+            { id: 'hokuriku', zh: '北陸 (金澤/福井)', en: 'Hokuriku' },
+            { id: 'chubu', zh: '中部 (名古屋/靜岡)', en: 'Chubu' },
+            { id: 'kansai', zh: '關西 (京阪神)', en: 'Kansai' },
+            { id: 'chugoku', zh: '中國 (廣島/岡山/鳥取)', en: 'Chugoku' },
+            { id: 'shikoku', zh: '四國 (高松/德島)', en: 'Shikoku' },
+            { id: 'kyushu', zh: '九州 (福岡/長崎/熊本)', en: 'Kyushu' },
+            { id: 'okinawa', zh: '沖繩 (那霸)', en: 'Okinawa' },
         ];
 
         const TEXTS = {
@@ -593,7 +593,8 @@
                     id: 'yamamoto',
                     name: { zh: '山本診所', en: 'Yamamoto Clinic' },
                     tags: [
-                        { zh: '線下診療', en: 'Offline Clinic' },
+                        { zh: '線下診療', en: 'Offline Clinic' },
+
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['shikoku'], 
@@ -614,7 +615,8 @@
                     id: 'theclinic',
                     name: { zh: 'The Clinic(大阪/福岡）', en: 'The Clinic（Osaka/Fukuoka)' },
                     tags: [
-                        { zh: '線下診療', en: 'Offline Clinic' },
+                        { zh: '線下診療', en: 'Offline Clinic' },
+
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kansai', 'kyushu'], 
@@ -1737,3 +1739,4 @@
     </script>
 </body>
 </html>
+
