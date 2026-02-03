@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Admin | Mounjaro Comparison</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM (UMD for simple HTML usage without build step, or use ESM below) -->
+    <!-- We will use ESM imports in the script module below for better compatibility with the Firebase v9+ SDKs -->
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+    <div id="root"></div>
+
+    <!-- Babel for JSX transformation in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel" data-type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Import React and ReactDOM from esm.sh to work with ES modules
+        import React from "https://esm.sh/react@18";
+        import ReactDOM from "https://esm.sh/react-dom@18/client";
+
+        // --- Firebase Config ---
+        // Checks for global config provided by the environment, otherwise falls back to empty object
+        const firebaseConfig = {
+  apiKey: "AIzaSyBAJHidheRJbj2EdX2Tjn7AVgYBtdkdFGY",
+  authDomain: "mounjarojp.firebaseapp.com",
+  projectId: "mounjarojp",
+  storageBucket: "mounjarojp.firebasestorage.app",
+  messagingSenderId: "759300377829",
+  measurementId: "G-SVR2D7JYS6"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+        // --- Initial Hardcoded Data (For Seeding) ---
+        const INITIAL_CLINICS = [
+             {
+                id: 'Lafee',
+                name: { zh: 'La Fee醫美診所(e-life shop特惠)', en: 'La Fee Clinic (Special Deal on e-life shop)' },
+                tags: [{ zh: '線下診療', en: 'Offline Clinic' }, { zh: '需通日文', en: 'Japanese Speakers only' }, { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' }],
+                locations: ['kanto'], offlineOnly: true,
+                link: 'https://shop.elife.clinic/search?q=%E3%83%9E%E3%83%B3%E3%82%B8%E3%83%A3%E3%83%AD&options%5Bprefix%5D=last',
+                fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } }, freeShipping: false,
+                prices: { '2.5mg': [{ price: 9980, months: 1 }], '5mg': [{ price: 17980, months: 1 }], '7.5mg': [{ price: 26980, months: 1 }], '10mg': [{ price: 35980, months: 1 }], '12.5mg': [{ price: 51980, months: 1 }] }
+            },
+            {
+                id: 'tokyosilk',
+                name: { zh: '東京Silk診所', en: 'Tokyo Silk Clinic' },
+                tags: [{ zh: '線上診療', en: 'Online Clinic' }, { zh: '全國配送', en: 'Nationwide Delivery' }, { zh: '總量需買滿3個月', en: 'Min Purchase: 3 Months' }],
+                locations: [], link: 'https://x.com/tokyosilkclinic',
+                fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } }, freeShipping: true, minTotalMonths: 3,
+                prices: { '2.5mg': [{ price: 12000, months: 1 }], '5mg': [{ price: 21500, months: 1 }], '7.5mg': [{ price: 31500, months: 1 }] }
+            },
+            {
+                id: 'ikegawa',
+                name: { zh: '池川内科', en: 'Ikegawa Internal Medicine' },
+                tags: [{ zh: 'Google Meet看診', en: 'Google Meet Clinic' }],
+                link: 'https://lin.ee/AX891RZ',
+                fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } }, locations: ['kansai'], freeShipping: false,
+                shipping_rules: { 'hokkaido': 2500, 'tohoku': 1500, 'kanto': 1500, 'shinetsu': 1500, 'kansai': 1000, 'chubu': 1000, 'hokuriku': 1000, 'shikoku': 1000, 'chugoku': 1000, 'kyushu': 1000, 'okinawa': 2000, 'default': 1500 },
+                prices: { '2.5mg': [{ price: 12500, months: 1 }, { price: 6250, months: 0.5 }], '5mg': [{ price: 24500, months: 1 }, { price: 12250, months: 0.5 }], '7.5mg': [{ price: 37500, months: 1 }, { price: 18750, months: 0.5 }], '10mg': [{ price: 42000, months: 1 }, { price: 21000, months: 0.5 }], '12.5mg': [{ price: 55000, months: 1 }, { price: 27500, months: 0.5 }], '15mg': [{ price: 80000, months: 1 }, { price: 40000, months: 0.5 }] }
+            },
+            {
+                id: 'ikegami',
+                name: { zh: '池上陽光診所', en: 'Ikegami Ohisama Clinic' },
+                tags: [{ zh: '線上診療', en: 'Online Clinic' }, { zh: '預約須日本門號', en: 'Need JP Phone#' }],
+                link: 'https://ikegamiohisama.jp/', locations: ['kanto'],
+                fees: { initialNum: 0, shippingNum: 1500, note: { zh: '初診0元+運費1500', en: 'Reg 0 + Ship 1500' } }, freeShipping: false,
+                prices: { '2.5mg': [{ price: 14000, months: 1, type: 'initial' }, { price: 18000, months: 1, type: 'regular' }], '5mg': [{ price: 21000, months: 1, type: 'initial' }, { price: 25000, months: 1, type: 'regular' }], '7.5mg': [{ price: 29000, months: 1, type: 'initial' }, { price: 33000, months: 1, type: 'regular' }], '10mg': [{ price: 37000, months: 1, type: 'initial' }, { price: 41000, months: 1, type: 'regular' }], '12.5mg': [{ price: 44000, months: 1, type: 'initial' }, { price: 48000, months: 1, type: 'regular' }] }
+            },
+            {
+                id: 'tkevery',
+                name: { zh: 'TK Every', en: 'TK Every Clinic' },
+                tags: [{ zh: '中文服務', en: 'Chinese Support'}, { zh: '線下/線上', en: 'Offline/Online'}, { zh: '線上需另加1100使用費+自付運費', en: 'Shipping fee/Online fee extra' }],
+                locations: ['kanto'], link: 'https://threads.com/@tk.every',
+                fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需另加1100使用費+自付運費', en: 'Shipping fee/Online fee extra' } }, freeShipping: false, onlineFee: 1100,
+                prices: { '2.5mg': [{ price: 13100, months: 1 }], '5mg': [{ price: 26300, months: 1 }], '7.5mg': [{ price: 39500, months: 1 }], '10mg': [{ price: 52700, months: 1 }] }
+            },
+            {
+                id: 'pococlinic',
+                name: { zh: '狸貓診所 (Poco)', en: 'Poco Clinic' },
+                tags: [{ zh: '用Zoom線上診療', en: 'Online Clinic Via Zoom' }, { zh: '預約須日本門號', en: 'Need JP Phone#' }, { zh: '只有購買證明', en: 'Purchase Invoice Only' }],
+                link: 'https://x.com/poco_clinic?t=J1lyy3oqNA6Ozcv3lpg18A&s=09', locations: [],
+                fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費/含運', en: 'Free Reg/Ship' } }, freeShipping: true,
+                prices: { '2.5mg': [{ price: 13500, months: 1 }, { price: 26000, months: 2 }, { price: 36000, months: 3 }], '5mg': [{ price: 23500, months: 1 }, { price: 45500, months: 2 }, { price: 64000, months: 3 }], '7.5mg': [{ price: 36000, months: 1 }, { price: 66000, months: 2 }, { price: 88000, months: 3 }], '10mg': [{ price: 42000, months: 1 }, { price: 81500, months: 2 }, { price: 116000, months: 3 }], '12.5mg': [{ price: 51000, months: 1 }, { price: 100000, months: 2 }, { price: 144000, months: 3 }], '15mg': [{ price: 58000, months: 1 }, { price: 114500, months: 2 }, { price: 165000, months: 3 }], '2.5mg+5mg': [{ price: 18500, months: 1 }, { price: 35750, months: 2 }], '5mg+7.5mg': [{ price: 29750, months: 1 }, { price: 55750, months: 2 }], '7.5mg+10mg': [{ price: 39000, months: 1 }, { price: 73750, months: 2 }], '10mg+12.5mg': [{ price: 46500, months: 1 }, { price: 90750, months: 2 }], '12.5mg+15mg': [{ price: 54500, months: 1 }, { price: 107250, months: 2 }] }
+            },
+            {
+                id: 'osaka-light',
+                name: { zh: 'Light Clinic', en: 'Light Clinic' },
+                tags: [{ zh: '用Zoom線上診療', en: 'Online Clinic Via Zoom' }, { zh: '需冷藏配送須事先告知', en: 'Chilled Delivery: Need to Notify Clinic' }, { zh: '只有購買證明', en: 'Purchase Invoice Only' }],
+                locations: [], link: 'https://x.com/OsakaLight?t=AMGZj7ZfXqaGQ4T9Fz7-Kg&s=09',
+                fees: { initialNum: 0, shippingNum: 2200, note: { zh: '免掛號費+運費¥2,200', en: 'Free Reg + Ship ¥2,200' } }, freeShipping: false,
+                prices: { '2.5mg': [{ price: 14000, months: 1 }], '5mg': [{ price: 21000, months: 1 }], '7.5mg': [{ price: 29000, months: 1 }], '10mg': [{ price: 37000, months: 1 }], '12.5mg': [{ price: 44000, months: 1 }], '15mg': [{ price: 52000, months: 1 }] }
+            },
+            {
+                id: 'noname',
+                name: { zh: 'Noname醫美線上診所', en: 'Noname Beauty Clinic' },
+                tags: [{ zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' }, { zh: '預約須日本門號', en: 'Need JP Phone#' }, { zh: '只有購買證明', en: 'Purchase Invoice Only' }],
+                locations: [], link: 'https://t.co/wzT0jScIqw',
+                fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } }, freeShipping: true,
+                prices: { '2.5mg': [{ price: 13000, months: 1 }, { price: 25500, months: 2 }, { price: 35000, months: 3 }], '5mg': [{ price: 22850, months: 1 }, { price: 45500, months: 2 }, { price: 63000, months: 3 }], '7.5mg': [{ price: 34000, months: 1 }, { price: 65000, months: 2 }, { price: 96000, months: 3 }] }
+            },
+            {
+                id: 'Yoroshii',
+                name: { zh: '優樂喜醫', en: 'Yoroshii Medical', jp: 'yoroshii_medical' },
+                tags: [{ zh: '中文服務', en: 'Chinese Support'}, { zh: '線下/線上', en: 'Offline/Online'}],
+                locations: ['kanto'], link: 'https://www.threads.net/@yoroshii_medical',
+                fees: { initialNum: 5500, shippingNum: 1800, note: { zh: '含掛號¥5,500+運費¥1,800', en: 'Incl Reg + Ship' } }, freeShipping: false,
+                prices: { '2.5mg': [{ price: 18000, months: 1 }, { price: 45000, months: 3 }, { price: 90000, months: 6 }], '5mg': [{ price: 21000, months: 1 }, { price: 81000, months: 3 }, { price: 162000, months: 6 }] }
+            },
+            {
+                id: 'kirei',
+                name: { zh: 'Kirei Repo 線上診所', en: 'Kirei Repo Online Clinic' },
+                tags: [{ zh: '線下/線上', en: 'Offline/Online'}, { zh: '預約須日本門號', en: 'Need JP Phone#' }, { zh: '只有購買證明', en: 'Purchase Invoice Only' }],
+                locations: [], link: 'https://t.co/hB691i5o7C',
+                fees: { initialNum: 2000, shippingNum: 0, note: { zh: '含掛號+運費¥2,000', en: 'Incl Reg + Ship' } }, freeShipping: false,
+                prices: { '2.5mg': [{ price: 12000, months: 1, type: 'regular' }, { price: 33900, months: 3, type: 'initial' }, { price: 34920, months: 3, type: 'regular' }, { price: 66000, months: 6, type: 'initial' }, { price: 67680, months: 6, type: 'regular' }], '5mg': [{ price: 25000, months: 1, type: 'initial' }, { price: 27000, months: 1, type: 'regular' }, { price: 74000, months: 3, type: 'initial' }, { price: 78570, months: 3, type: 'regular' }, { price: 135000, months: 6, type: 'initial' }, { price: 152280, months: 6, type: 'regular' }], '7.5mg': [{ price: 36000, months: 1, type: 'initial' }, { price: 38000, months: 1, type: 'regular' }, { price: 107000, months: 3, type: 'initial' }, { price: 110500, months: 3, type: 'regular' }, { price: 198000, months: 6, type: 'initial' }, { price: 214320, months: 6, type: 'regular' }], '10mg': [{ price: 45000, months: 1, type: 'initial' }, { price: 47000, months: 1, type: 'regular' }, { price: 131000, months: 3, type: 'initial' }, { price: 136700, months: 3, type: 'regular' }] }
+            },
+            {
+                id: 'light',
+                name: { zh: 'Light Mental Clinic', en: 'Light Mental Clinic' },
+                tags: [{ zh: '線上診療', en: 'Online Clinic' }, { zh: '第17支後送一次CBT', en: 'Free CBT upon 17th pen' }, { zh: '預約須日本門號', en: 'Need JP Phone#' }, { zh: '只有購買證明', en: 'Purchase Invoice Only' }],
+                locations: [], link: 'https://light-clinic.com/',
+                fees: { initialNum: 1100, shippingNum: 1100, note: { zh: '含掛號¥1,100+運費(離島¥2,200)', en: 'Reg 1100 + Ship (Islands 2200)' } }, freeShipping: false,
+                shipping_rules: { 'okinawa': 2200, 'hokkaido': 2200, 'default': 1100 },
+                prices: { '2.5mg': [{ price: 12000, months: 1 }, { price: 36000, months: 3 }, { price: 69000, months: 6 }], '5mg': [{ price: 22000, months: 1 }, { price: 66000, months: 3 }, { price: 126000, months: 6 }] }
+            },
+            {
+                id: 'Wakeari',
+                name: { zh: 'Wakeari診所', en: 'Wakeari Clinic' },
+                tags: [{ zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' }, { zh: '預約須日本門號', en: 'Need JP Phone#' }, { zh: '只有購買證明', en: 'Purchase Invoice Only' }],
+                locations: [], link: 'https://wakeari-diet.com/',
+                fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } }, freeShipping: true,
+                prices: { '2.5mg': [{ price: 7700, months: 0.5, type: 'initial' }, { price: 13200, months: 1 }, { price: 25700, months: 2 }, { price: 35200, months: 3 }, { price: 67300, months: 6 }], '5mg': [{ price: 13600, months: 0.5, type: 'initial' }, { price: 23050, months: 1 }, { price: 45700, months: 2 }, { price: 63200, months: 3 }, { price: 114550, months: 6 }], '7.5mg': [{ price: 34400, months: 1 }, { price: 65200, months: 2 }, { price: 88200, months: 3 }, { price: 161800, months: 6 }], '10mg': [{ price: 42200, months: 1 }, { price: 81700, months: 2 }, { price: 116200, months: 3 }, { price: 202300, months: 6 }], '12.5mg': [{ price: 53800, months: 1 }, { price: 99160, months: 2 }, { price: 132640, months: 3 }, { price: 242800, months: 6 }], '15mg': [{ price: 62800, months: 1 }, { price: 115720, months: 2 }, { price: 154780, months: 3 }, { price: 283300, months: 6 }], '2.5mg+5mg': [{ price: 10650, months: 0.5 }, { price: 18125, months: 1 }, { price: 35700, months: 2 }, { price: 49200, months: 3 }], '5mg+7.5mg': [{ price: 28725, months: 1 }, { price: 55450, months: 2 }], '7.5mg+10mg': [{ price: 38300, months: 1 }, { price: 73450, months: 2 }], '10mg+12.5mg': [{ price: 48000, months: 1 }, { price: 90430, months: 2 }], '12.5mg+15mg': [{ price: 58300, months: 1 }, { price: 107440, months: 2 }] }
+            },
+            {
+                id: 'shibuya',
+                name: { zh: '澀谷 Kimura 診所', en: 'Shibuya Kimura Clinic' },
+                tags: [{ zh: '中文服務', en: 'Chinese Support' }, { zh: '線下/線上', en: 'Offline/Online' }],
+                locations: ['kanto'], offlineOnly: true,
+                link: 'https://www.threads.net/@shibuyakimura_clinic',
+                fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需自付運費', en: 'Shipping fee extra' } }, freeShipping: false,
+                prices: { '2.5mg': [{ price: 13200, months: 1 }], '5mg': [{ price: 26400, months: 1 }], '7.5mg': [{ price: 39600, months: 1 }], '10mg': [{ price: 52800, months: 1 }] }
+            },
+            {
+                id: 'shinjuku',
+                name: { zh: '新宿站前診所', en: 'Shinjuku Station Clinic' },
+                tags: [{ zh: '到院門診限定', en: 'Visit Only' }, { zh: '免預約', en: 'No Appt Needed' }],
+                locations: ['kanto'], offlineOnly: true,
+                link: 'https://x.com/ShinjukuCIinic?t=IK7B4EISNXdiBcoE81lpLQ&s=09',
+                fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } }, freeShipping: false,
+                prices: { '2.5mg': [{ price: 16000, months: 1 }], '5mg': [{ price: 28000, months: 1 }], '7.5mg': [{ price: 36000, months: 1 }], '10mg': [{ price: 44000, months: 1 }] }
+            },
+            {
+                id: 'ckk',
+                name: { zh: 'CKK線上診所', en: 'CKK Online Clinic' },
+                tags: [{ zh: '線上Line診療', en: 'Online Clinic Thru Line' }, { zh: '預約須日本門號', en: 'Need JP Phone#' }, { zh: '只有購買證明', en: 'Purchase Invoice Only' }],
+                locations: [], link: 'https://lin.ee/ujGjFmKU',
+                fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費+運費2000', en: 'No Reg. Fee, Shipping 2000' } }, freeShipping: false,
+                prices: { '2.5mg': [{ price: 12900, months: 1 }], '5mg': [{ price: 20900, months: 1 }], '7.5mg': [{ price: 29990, months: 1 }], '10mg': [{ price: 44200, months: 1 }], '2.5mg+5mg': [{ price: 16900, months: 1 }] }
+            },
+            {
+                id: 'imazu',
+                name: { zh: '醫療法人近江今津站前精神科診所', en: 'Oumi Imazu Station Front Clinic' },
+                tags: [{ zh: '線上/線下診療', en: 'Online/Offline Clinic' }, { zh: '電話看診', en: 'Telemedic Clinic' }, { zh: '預約須日本門號', en: 'Need JP Phone#' }, { zh: '線下再折2000円', en: '2000Yen Off for Offline' }],
+                locations: ['kansai'], link: 'https://jrsandaaga.com/',
+                fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } }, freeShipping: true, offlineDiscount: 2000,
+                prices: { '2.5mg': [{ price: 13000, months: 1 }, { price: 34000, months: 3 }], '5mg': [{ price: 22850, months: 1 }, { price: 63000, months: 3 }], '7.5mg': [{ price: 34000, months: 1 }, { price: 96000, months: 3 }], '10mg': [{ price: 42000, months: 1 }, { price: 120000, months: 3 }], '12.5mg': [{ price: 50000, months: 1 }, { price: 145000, months: 3 }], '15mg': [{ price: 57000, months: 1 }, { price: 168000, months: 3 }] }
+            },
+            {
+                id: 'pokekuri',
+                name: { zh: 'Pokekuri', en: 'Pokekuri' },
+                tags: [{ zh: '線上診療', en: 'Online Clinic' }, { zh: '預約須日本門號', en: 'Need JP Phone#' }],
+                locations: [], link: 'https://x.com/pokekuri?t=v44jYexZkPzy-bYR1k8chA&s=09',
+                fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } }, freeShipping: true,
+                prices: { '2.5mg': [{ price: 15800, months: 1 }, { price: 29600, months: 2 }, { price: 40500, months: 3 }], '5mg': [{ price: 27700, months: 1 }, { price: 52000, months: 2 }, { price: 73200, months: 3 }], '7.5mg': [{ price: 38900, months: 1 }, { price: 72000, months: 2 }, { price: 98700, months: 3 }], '2.5mg+5mg': [{ price: 22200, months: 1 }, { price: 41500, months: 2 }] }
+            }
+        ];
+
+        const ClinicAdmin = () => {
+            const [clinics, setClinics] = React.useState([]);
+            const [selectedClinic, setSelectedClinic] = React.useState(null);
+            const [editJson, setEditJson] = React.useState('');
+            const [status, setStatus] = React.useState('');
+            const [user, setUser] = React.useState(null);
+
+            // Auth
+            React.useEffect(() => {
+                const initAuth = async () => {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                };
+                initAuth();
+                onAuthStateChanged(auth, (u) => setUser(u));
+            }, []);
+
+            // Fetch
+            React.useEffect(() => {
+                if (!user) return;
+                const q = collection(db, 'clinics');
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    const loaded = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    setClinics(loaded);
+                });
+                return () => unsubscribe();
+            }, [user]);
+
+            // Handlers
+            const handleSelect = (clinic) => {
+                setSelectedClinic(clinic);
+                // Pretty print JSON for editing
+                setEditJson(JSON.stringify(clinic, null, 2));
+                setStatus('');
+            };
+
+            const handleNew = () => {
+                const newTemplate = {
+                    id: 'new_clinic_id',
+                    name: { zh: '新診所', en: 'New Clinic' },
+                    tags: [{ zh: '標籤', en: 'Tag' }],
+                    locations: [],
+                    link: 'https://...',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '', en: '' } },
+                    freeShipping: false,
+                    prices: { '2.5mg': [{ price: 10000, months: 1 }] }
+                };
+                setSelectedClinic({ id: 'new' });
+                setEditJson(JSON.stringify(newTemplate, null, 2));
+                setStatus('');
+            };
+
+            const handleSave = async () => {
+                try {
+                    const data = JSON.parse(editJson);
+                    if (!data.id) throw new Error("Missing 'id' field");
+                    
+                    const docRef = doc(db, 'clinics', data.id);
+                    await setDoc(docRef, data);
+                    setStatus('Saved successfully!');
+                    setSelectedClinic(null); // Close editor
+                } catch (err) {
+                    setStatus('Error: ' + err.message);
+                }
+            };
+
+            const handleDelete = async (id) => {
+                if (!confirm('Are you sure you want to delete this clinic?')) return;
+                try {
+                    await deleteDoc(doc(db, 'clinics', id));
+                    setStatus('Deleted.');
+                } catch (err) {
+                    setStatus('Error: ' + err.message);
+                }
+            };
+
+            const handleInitialize = async () => {
+                if (!confirm('This will overwrite/add all initial clinics to the database. Continue?')) return;
+                setStatus('Initializing...');
+                try {
+                    for (const clinic of INITIAL_CLINICS) {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'clinics', clinic.id);
+                        await setDoc(docRef, clinic);
+                    }
+                    setStatus('Initialization Complete!');
+                } catch (err) {
+                    setStatus('Error: ' + err.message);
+                }
+            };
+
+            return React.createElement("div", {className: "max-w-4xl mx-auto p-6"},
+                React.createElement("div", {className: "flex justify-between items-center mb-8"},
+                    React.createElement("h1", {className: "text-2xl font-bold"}, "Clinic Admin Panel"),
+                    React.createElement("div", {className: "space-x-2"},
+                        React.createElement("button", {onClick: handleNew, className: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"}, "+ Add New"),
+                        clinics.length === 0 && React.createElement("button", {onClick: handleInitialize, className: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"}, "Initialize Data")
+                    )
+                ),
+                
+                status && React.createElement("div", {className: `p-4 mb-4 rounded ${status.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}, status),
+
+                // Editor
+                selectedClinic ? React.createElement("div", {className: "bg-white p-6 rounded shadow-lg border border-gray-200"},
+                    React.createElement("h2", {className: "text-xl font-bold mb-4"}, selectedClinic.id === 'new' ? 'New Clinic' : `Editing: ${selectedClinic.name?.en || selectedClinic.id}`),
+                    React.createElement("div", {className: "mb-2 text-sm text-gray-500"}, "Edit the JSON directly. Ensure valid JSON syntax."),
+                    React.createElement("textarea", {
+                        className: "w-full h-96 p-4 font-mono text-sm border rounded bg-gray-50",
+                        value: editJson,
+                        onChange: (e) => setEditJson(e.target.value)
+                    }),
+                    React.createElement("div", {className: "flex justify-end gap-3 mt-4"},
+                        React.createElement("button", {onClick: () => setSelectedClinic(null), className: "px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"}, "Cancel"),
+                        React.createElement("button", {onClick: handleSave, className: "px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"}, "Save Changes")
+                    )
+                ) : (
+                    // List
+                    React.createElement("div", {className: "bg-white rounded shadow overflow-hidden"},
+                        clinics.length === 0 ? React.createElement("div", {className: "p-8 text-center text-gray-500"}, "No clinics found. Click 'Initialize Data' to start.") : 
+                        React.createElement("table", {className: "w-full"},
+                            React.createElement("thead", {className: "bg-gray-50"},
+                                React.createElement("tr", null,
+                                    React.createElement("th", {className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"}, "ID"),
+                                    React.createElement("th", {className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"}, "Name (ZH)"),
+                                    React.createElement("th", {className: "px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"}, "Actions")
+                                )
+                            ),
+                            React.createElement("tbody", {className: "divide-y divide-gray-200"},
+                                clinics.map(c => 
+                                    React.createElement("tr", {key: c.id, className: "hover:bg-gray-50"},
+                                        React.createElement("td", {className: "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"}, c.id),
+                                        React.createElement("td", {className: "px-6 py-4 whitespace-nowrap text-sm text-gray-500"}, c.name?.zh),
+                                        React.createElement("td", {className: "px-6 py-4 whitespace-nowrap text-right text-sm font-medium"},
+                                            React.createElement("button", {onClick: () => handleSelect(c), className: "text-blue-600 hover:text-blue-900 mr-4"}, "Edit"),
+                                            React.createElement("button", {onClick: () => handleDelete(c.id), className: "text-red-600 hover:text-red-900"}, "Delete")
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(ClinicAdmin));
+    </script>
+</body>
+</html>
