@@ -176,16 +176,16 @@
         const REGIONS = [
             { id: 'all', zh: '全部地區 (All)', en: 'All Regions' },
             { id: 'hokkaido', zh: '北海道', en: 'Hokkaido' },
-            { id: 'tohoku', zh: '東北 (Tohoku)', en: 'Tohoku' },
-            { id: 'kanto', zh: '關東 (Kanto/Tokyo)', en: 'Kanto' },
-            { id: 'shinetsu', zh: '信越 (Shinetsu)', en: 'Shinetsu' },
-            { id: 'hokuriku', zh: '北陸 (Hokuriku)', en: 'Hokuriku' },
-            { id: 'chubu', zh: '中部 (Chubu/Nagoya)', en: 'Chubu' },
-            { id: 'kansai', zh: '關西 (Kansai/Osaka)', en: 'Kansai' },
-            { id: 'chugoku', zh: '中國 (Chugoku)', en: 'Chugoku' },
-            { id: 'shikoku', zh: '四國 (Shikoku)', en: 'Shikoku' },
-            { id: 'kyushu', zh: '九州 (Kyushu)', en: 'Kyushu' },
-            { id: 'okinawa', zh: '沖繩 (Okinawa)', en: 'Okinawa' },
+            { id: 'tohoku', zh: '東北 (秋田/青森/福島)', en: 'Tohoku' },
+            { id: 'kanto', zh: '關東 (東京/橫濱)', en: 'Kanto' },
+            { id: 'shinetsu', zh: '信越 (長野/新瀉/越後)', en: 'Shinetsu' },
+            { id: 'hokuriku', zh: '北陸 (金澤/福井)', en: 'Hokuriku' },
+            { id: 'chubu', zh: '中部 (名古屋/靜岡/河口湖)', en: 'Chubu' },
+            { id: 'kansai', zh: '關西 (京阪神)', en: 'Kansai' },
+            { id: 'chugoku', zh: '中國 (廣島/鳥取)', en: 'Chugoku' },
+            { id: 'shikoku', zh: '四國 (松山/德島)', en: 'Shikoku' },
+            { id: 'kyushu', zh: '九州 (福岡/長崎)', n: 'Kyushu' },
+            { id: 'okinawa', zh: '沖繩', en: 'Okinawa' },
         ];
 
         const TEXTS = {
@@ -596,7 +596,7 @@
                         { zh: '線下診療', en: 'Offline Clinic' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
-                    locations: ['shikoku'], 
+                    locations: ['chukoku'], 
                     link: 'https://page.line.me/kvi9221d',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'Free Reg' } },
                     freeShipping: false,
@@ -1738,4 +1738,5 @@
     </script>
 </body>
 </html>
+
 
