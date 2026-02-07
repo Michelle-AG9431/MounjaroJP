@@ -474,11 +474,11 @@
                     id: 'ikegami',
                     name: { zh: '池上陽光診所', en: 'Ikegami Ohisama Clinic' },
                     tags: [
-                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '線上/線下', en: 'Online Clinic' },
                         { zh: '預約須日本門號', en: 'Need JP Phone#' }
                     ],
                     link: 'https://ikegamiohisama-clinic.com/', 
-                    locations: [],
+                    locations: ['kanto'],
                     fees: { initialNum: 0, shippingNum: 1500, note: { zh: '初診0元+運費1500', en: 'Reg 0 + Ship 1500' } },
                     freeShipping: false,
                     prices: {
@@ -608,6 +608,28 @@
                         '10mg':  [{ price: 41000, months: 1 }],
                         '12.5mg':[{ price: 52000, months: 1 }],
                         '15mg':  [{ price: 62000, months: 1 }]
+                    }
+                },
+    {
+                    id: 'babafukuoka',
+                    name: { zh: '馬場全方位照護診所', en: 'Baba Total Care Clinic' },
+                    tags: [
+                        { zh: '線下診療', en: 'Offline Clinic' },
+{ zh: '高劑量需先詢問', en: 'High Dose Need Inquiry' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                    ],
+                    locations: ['kyushu'], 
+                    link: 'https://baba-totalcareclinic.com/private-practice/',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'Free Reg' } },
+                    freeShipping: false,
+                    offlineOnly: true,
+                    prices: {
+                        '2.5mg': [{ price: 8000, months: 0.5 }, { price: 16000, months: 1 }],
+                        '5mg':   [{ price: 11000, months: 0.5 }, { price: 22000, months: 1 }],
+                        '7.5mg': [{ price: 15000, months: 0.5 }, { price: 30000, months: 1 }],
+                        '10mg':  [{ price: 19000, months: 0.5 },{ price: 38000, months: 1 }],
+                        '12.5mg':[{ price: 23000, months: 0.5 },{ price: 46000, months: 1 }],
+                        '15mg':  [{ price: 26500, months: 0.5 },{ price: 53000, months: 1 }]
                     }
                 },
 {
