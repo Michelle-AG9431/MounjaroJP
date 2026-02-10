@@ -207,7 +207,7 @@
                 shippingIncluded: '含運費',
                 shippingExtra: '運費另計',
                 shippingOffline: '線下免運',
-                visitOnly: '到院限定',
+                visitOnly: '線下看診限定',
                 regFeeLabel: '初診費',
                 freeReg: '免掛號費',
                 footerNote: '價格僅供參考。',
@@ -281,7 +281,7 @@
                 shippingIncluded: 'Shipping Included',
                 shippingExtra: 'Shipping Extra',
                 shippingOffline: 'Offline Free Ship',
-                visitOnly: 'Offline Only',
+                visitOnly: 'Offline Visit Only',
                 regFeeLabel: 'Reg.',
                 freeReg: 'Free Reg.',
                 footerNote: 'Prices are for reference only.',
@@ -758,7 +758,7 @@
                         { zh: '線下/線上', en: 'Offline/Online' }
                     ],
                     locations: ['kanto'],
-                    offlineOnly: true, // Mark as offline only
+                    // offlineOnly: true, REMOVED per user request
                     link: 'https://www.threads.net/@shibuyakimura_clinic',
                     fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需自付運費', en: 'Shipping fee extra' } },
                     freeShipping: false,
@@ -1639,7 +1639,11 @@
                                                     {shippingCost > 0 ? (
                                                         <span>+ {t.shipFee}: {formatCurrency(shippingCost)}</span>
                                                     ) : (
-                                                        (isOffline || res.clinic.offlineOnly) && <span className="text-gold-600 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.shippingOffline}</span>
+                                                        res.clinic.offlineOnly ? (
+                                                            <span className="text-stone-500 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.visitOnly}</span>
+                                                        ) : (
+                                                            isOffline && <span className="text-gold-600 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.shippingOffline}</span>
+                                                        )
                                                     )}
                                                     {offlineDiscount > 0 && <span className="text-green-600 font-bold"> - {formatCurrency(offlineDiscount)} (Off)</span>}
                                                     {onlineFee > 0 && <span className="text-red-500 font-bold"> + {t.onlineFee}: {formatCurrency(onlineFee)}</span>}
@@ -1686,7 +1690,7 @@
                                     else if (clinicIndex === 2) rankColor = 'bg-stone-300 text-white';
                                     
                                     return (
-                                        <div key={clinic.id} className="group animate-fade-up bg-white shadow-sm border border-stone-100 hover:shadow-md transition-all duration-500 relative overflow-hidden">
+                                        <div key={clinic.id} className="group animate-fade-up bg-white shadow-sm border border-stone-100 hover:shadow-md transition-all duration-500 relative">
                                             {/* Rank Badge */}
                                             {rankColor && <div className={`absolute -top-3 -left-3 ${rankColor} w-8 h-8 flex items-center justify-center font-display font-bold shadow-md z-10 rank-badge rounded-sm`}>{clinicIndex + 1}</div>}
                                             
