@@ -207,6 +207,7 @@
                 shippingIncluded: '含運費',
                 shippingExtra: '運費另計',
                 shippingOffline: '線下免運',
+                visitOnly: '到院限定',
                 regFeeLabel: '初診費',
                 freeReg: '免掛號費',
                 footerNote: '價格僅供參考。',
@@ -280,6 +281,7 @@
                 shippingIncluded: 'Shipping Included',
                 shippingExtra: 'Shipping Extra',
                 shippingOffline: 'Offline Free Ship',
+                visitOnly: 'Offline Only',
                 regFeeLabel: 'Reg.',
                 freeReg: 'Free Reg.',
                 footerNote: 'Prices are for reference only.',
@@ -400,6 +402,18 @@
                 if (months === 3) return t.labels.m3;
                 if (months === 6) return t.labels.m6;
                 return `${months} ${t.months}`;
+            };
+
+            const getLocationName = (clinic) => {
+                if (!clinic.locations || clinic.locations.length === 0) {
+                    return lang === 'zh' ? '線上' : 'Online';
+                }
+                return clinic.locations.map(locId => {
+                    const regionData = REGIONS.find(r => r.id === locId);
+                    if (!regionData) return locId;
+                    const name = lang === 'zh' ? regionData.zh.split(' ')[0] : regionData.en;
+                    return name;
+                }).join(' / ');
             };
 
             // --- Data ---
@@ -596,7 +610,7 @@
                         { zh: '線下診療', en: 'Offline Clinic' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
-                    locations: ['chukoku'], 
+                    locations: ['chugoku'], 
                     link: 'https://page.line.me/kvi9221d',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'Free Reg' } },
                     freeShipping: false,
@@ -1608,7 +1622,11 @@
                                     return (
                                         <div key={res.clinic.id} className="bg-white border border-stone-100 rounded-lg p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all">
                                             {idx === 0 && <div className="absolute top-0 left-0 w-1 h-full bg-gold-400"></div>}
-                                            <div className="flex-1 w-full">
+                                            {/* Location Badge for Calc Mode */}
+                                            <div className="absolute top-0 right-0 bg-stone-100 text-stone-500 text-[10px] font-bold px-2 py-1 rounded-bl-lg z-10 border-b border-l border-stone-200">
+                                                {getLocationName(res.clinic)}
+                                            </div>
+                                            <div className="flex-1 w-full pt-4 md:pt-0">
                                                 <div className="flex items-center justify-between md:justify-start gap-3 mb-2">
                                                     <h3 className="font-serif text-xl text-stone-900">{res.clinic.name[lang]}</h3>
                                                     {idx === 0 && <span className="bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">{t.bestValue}</span>}
@@ -1621,7 +1639,7 @@
                                                     {shippingCost > 0 ? (
                                                         <span>+ {t.shipFee}: {formatCurrency(shippingCost)}</span>
                                                     ) : (
-                                                        isOffline && <span className="text-gold-600 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.shippingOffline}</span>
+                                                        (isOffline || res.clinic.offlineOnly) && <span className="text-gold-600 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.shippingOffline}</span>
                                                     )}
                                                     {offlineDiscount > 0 && <span className="text-green-600 font-bold"> - {formatCurrency(offlineDiscount)} (Off)</span>}
                                                     {onlineFee > 0 && <span className="text-red-500 font-bold"> + {t.onlineFee}: {formatCurrency(onlineFee)}</span>}
@@ -1668,16 +1686,33 @@
                                     else if (clinicIndex === 2) rankColor = 'bg-stone-300 text-white';
                                     
                                     return (
-                                        <div key={clinic.id} className="group animate-fade-up bg-white shadow-sm border border-stone-100 hover:shadow-md transition-all duration-500 relative">
+                                        <div key={clinic.id} className="group animate-fade-up bg-white shadow-sm border border-stone-100 hover:shadow-md transition-all duration-500 relative overflow-hidden">
+                                            {/* Rank Badge */}
                                             {rankColor && <div className={`absolute -top-3 -left-3 ${rankColor} w-8 h-8 flex items-center justify-center font-display font-bold shadow-md z-10 rank-badge rounded-sm`}>{clinicIndex + 1}</div>}
-                                            <div className="flex flex-col md:flex-row md:items-center justify-between p-6 md:p-8 border-b border-stone-100">
+                                            
+                                            {/* Location Badge (Top Right) */}
+                                            <div className="absolute top-0 right-0 bg-stone-100 text-stone-500 text-[10px] font-bold px-2 py-1 rounded-bl-lg z-10 border-b border-l border-stone-200">
+                                                {getLocationName(clinic)}
+                                            </div>
+
+                                            <div className="flex flex-col md:flex-row md:items-center justify-between p-6 md:p-8 border-b border-stone-100 pt-8 md:pt-8">
                                                 <div>
                                                     <div className="flex items-baseline gap-3 mb-2">
                                                         <h2 className="font-serif text-xl md:text-2xl text-stone-900">{clinic.name[lang]}</h2>
                                                         <a href={clinic.link} target="_blank" className="text-stone-300 hover:text-gold-400 transition-colors"><Icons.ExternalLink /></a>
                                                     </div>
                                                     <div className="flex flex-wrap gap-2">
-                                                        {clinic.freeShipping ? <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-600 px-2 py-1 flex items-center gap-1 font-sans bg-stone-50/50"><Icons.Truck size={10}/> {t.shippingIncluded}</span> : <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 flex items-center gap-1 font-sans"><Icons.Truck size={10}/> {t.shippingExtra}</span>}
+                                                        {(() => {
+                                                            if (clinic.freeShipping) {
+                                                                return <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-600 px-2 py-1 flex items-center gap-1 font-sans bg-stone-50/50"><Icons.Truck size={10}/> {t.shippingIncluded}</span>;
+                                                            } else if (clinic.offlineOnly) {
+                                                                 return <span className="text-[10px] uppercase tracking-widest border border-gold-200 text-gold-600 bg-gold-50 px-2 py-1 flex items-center gap-1 font-sans font-bold"><Icons.MapPin size={10}/> {t.visitOnly}</span>;
+                                                            } else if (region !== 'all' && clinic.locations && clinic.locations.includes(region)) {
+                                                                 return <span className="text-[10px] uppercase tracking-widest border border-gold-200 text-gold-600 bg-gold-50 px-2 py-1 flex items-center gap-1 font-sans font-bold"><Icons.MapPin size={10}/> {t.shippingOffline}</span>;
+                                                            } else {
+                                                                return <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 flex items-center gap-1 font-sans"><Icons.Truck size={10}/> {t.shippingExtra}</span>;
+                                                            }
+                                                        })()}
                                                         <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 font-sans">{t.regFeeLabel}: {formatCurrency(getRegFee(clinic))}</span>
                                                         {clinic.tags.map((tagObj, idx) => <span key={idx} className="text-[10px] uppercase tracking-widest bg-stone-50 text-stone-400 px-2 py-1 font-sans">{tagObj[lang]}</span>)}
                                                     </div>
@@ -1717,7 +1752,7 @@
                                                                     {shippingCost > 0 ? (
                                                                         <div className="flex justify-between"><span>{t.shipFee}</span><span>+ {formatCurrency(shippingCost)}</span></div>
                                                                     ) : (
-                                                                        isOffline && (
+                                                                        (isOffline || clinic.offlineOnly) && (
                                                                             <div className="flex flex-col items-end mt-1">
                                                                                 <div className="flex justify-end text-gold-600 font-bold"><Icons.MapPin size={10} className="mr-1"/>{t.shippingOffline}</div>
                                                                                 {offlineDiscount > 0 && <div className="text-[10px] text-green-600 font-bold">(-{formatCurrency(offlineDiscount)})</div>}
@@ -1762,5 +1797,3 @@
     </script>
 </body>
 </html>
-
-
