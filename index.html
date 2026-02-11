@@ -635,7 +635,7 @@
                         { zh: '線下診療', en: 'Offline Clinic' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
-                    locations: ['chukoku'], 
+                    locations: ['chugoku'], 
                     link: 'https://page.line.me/kvi9221d',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'Free Reg' } },
                     freeShipping: false,
@@ -1371,12 +1371,17 @@
                                     </p>
                                     <p className="font-bold text-stone-800 bg-stone-50 p-3 rounded-lg border border-stone-200">
                                         {lang === 'zh'
-                                            ? '2. 請注意：大部分日本診所（包含本站列出者）僅提供日本國內醫療服務，通常「不提供」用於海外通關的處方籤或診斷證明書。'
-                                            : '2. Note: Most Japanese clinics DO NOT provide prescriptions or medical certificates specifically for customs clearance.'}
+                                            ? '2. 請注意：由於猛健樂於日本為適用症外自由診療，大部分日本診所（包含本站列出者）「不提供」處方籤或診斷證明書。'
+                                            : '2. Note: Most Japanese clinics DO NOT provide prescriptions or medical certificates for Moujaro prescription.'}
                                     </p>
                                     <p>
                                         {lang === 'zh'
-                                            ? '3. 本網站僅供價格比較，不負擔任何法律責任。'
+                                            ? '3. 各診所是否接待外國遊客，以及看診方式等請向診所確認，本網站資訊僅供參考。'
+                                            : '3. Actual practice of each clinic may change according to clinic policy,the information of this site may not be the most updated.'}
+                                    </p>
+<p>
+                                        {lang === 'zh'
+                                            ? '4. 本網站僅供價格比較，不負擔任何法律責任。'
                                             : '3. This site is for price comparison only and assumes no legal liability.'}
                                     </p>
                                 </div>
