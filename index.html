@@ -353,6 +353,18 @@
             const [exchangeRates, setExchangeRates] = React.useState(FALLBACK_RATES);
             const [rateDate, setRateDate] = React.useState('');
             const [showMobileFilters, setShowMobileFilters] = React.useState(false);
+            
+            // Initialize disclaimer modal state based on localStorage
+            const [showDisclaimerModal, setShowDisclaimerModal] = React.useState(() => {
+                try {
+                    const savedDate = localStorage.getItem('mounjaro_disclaimer_date');
+                    const today = new Date().toLocaleDateString();
+                    return savedDate !== today;
+                } catch (e) {
+                    return true;
+                }
+            });
+            const [dontShowToday, setDontShowToday] = React.useState(false);
 
             const t = TEXTS[lang];
 
@@ -381,6 +393,19 @@
                 };
                 fetchRates();
             }, []);
+
+            // Handle Modal Close
+            const handleCloseModal = () => {
+                if (dontShowToday) {
+                    try {
+                        const today = new Date().toLocaleDateString();
+                        localStorage.setItem('mounjaro_disclaimer_date', today);
+                    } catch (e) {
+                        console.error("Local storage error", e);
+                    }
+                }
+                setShowDisclaimerModal(false);
+            };
 
             // Currency Helper
             const formatCurrency = (price) => {
@@ -610,7 +635,7 @@
                         { zh: '線下診療', en: 'Offline Clinic' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
-                    locations: ['chugoku'], 
+                    locations: ['chukoku'], 
                     link: 'https://page.line.me/kvi9221d',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'Free Reg' } },
                     freeShipping: false,
@@ -1329,6 +1354,54 @@
 
             return (
                 <div className="max-w-5xl mx-auto px-6 py-10 md:py-16">
+                    {/* Disclaimer Modal */}
+                    {showDisclaimerModal && (
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => {}}></div>
+                            <div className="relative bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 md:p-8 animate-fade-up">
+                                <h2 className="text-xl font-serif font-bold text-stone-900 mb-4 flex items-center gap-2">
+                                    <Icons.Alert className="text-gold-500" /> 
+                                    {lang === 'zh' ? '重要須知：海外帶藥與處方' : 'Important Notice'}
+                                </h2>
+                                <div className="space-y-4 text-sm text-stone-600 font-sans leading-relaxed">
+                                    <p>
+                                        {lang === 'zh' 
+                                            ? '1. 關於海外攜帶藥物回國（如台灣），請務必自行確認海關「自用藥物限量」規範。'
+                                            : '1. Please verify your country\'s customs regulations regarding bringing personal medication from overseas.'}
+                                    </p>
+                                    <p className="font-bold text-stone-800 bg-stone-50 p-3 rounded-lg border border-stone-200">
+                                        {lang === 'zh'
+                                            ? '2. 請注意：大部分日本診所（包含本站列出者）僅提供日本國內醫療服務，通常「不提供」用於海外通關的處方籤或診斷證明書。'
+                                            : '2. Note: Most Japanese clinics DO NOT provide prescriptions or medical certificates specifically for customs clearance.'}
+                                    </p>
+                                    <p>
+                                        {lang === 'zh'
+                                            ? '3. 本網站僅供價格比較，不負擔任何法律責任。'
+                                            : '3. This site is for price comparison only and assumes no legal liability.'}
+                                    </p>
+                                </div>
+                                <div className="mt-6 flex items-center gap-2">
+                                    <input 
+                                        type="checkbox" 
+                                        id="dontShowToday" 
+                                        checked={dontShowToday} 
+                                        onChange={(e) => setDontShowToday(e.target.checked)}
+                                        className="w-4 h-4 text-gold-500 rounded border-stone-300 focus:ring-gold-500"
+                                    />
+                                    <label htmlFor="dontShowToday" className="text-sm text-stone-500 cursor-pointer select-none">
+                                        {lang === 'zh' ? '今日不再顯示' : "Don't show again today"}
+                                    </label>
+                                </div>
+                                <button 
+                                    onClick={handleCloseModal}
+                                    className="w-full mt-4 bg-stone-900 text-white py-3 rounded-lg font-bold hover:bg-stone-800 transition-colors"
+                                >
+                                    {lang === 'zh' ? '我已了解並繼續' : 'I Understand'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Filter Drawer (Mobile) */}
                     {showMobileFilters && (
                         <div className="fixed inset-0 z-50 flex justify-end">
@@ -1376,7 +1449,9 @@
                                                 <div className="custom-select-wrapper">
                                                     <select className="custom-select" value={activeDosage} onChange={(e) => setActiveDosage(e.target.value)}>
                                                         <optgroup label={t.dosageLabel}>
-                                                            {['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg'].map(d => <option key={d} value={d}>{d}</option>)}
+                                                            {['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg'].map(d => (
+                                                                <option key={d} value={d}>{d}</option>
+                                                            ))}
                                                         </optgroup>
                                                         <optgroup label={t.transitPlan}>
                                                             {['2.5mg+5mg', '5mg+7.5mg', '7.5mg+10mg', '10mg+12.5mg', '12.5mg+15mg'].map(combo => (
@@ -1639,11 +1714,7 @@
                                                     {shippingCost > 0 ? (
                                                         <span>+ {t.shipFee}: {formatCurrency(shippingCost)}</span>
                                                     ) : (
-                                                        res.clinic.offlineOnly ? (
-                                                            <span className="text-stone-500 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.visitOnly}</span>
-                                                        ) : (
-                                                            isOffline && <span className="text-gold-600 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.shippingOffline}</span>
-                                                        )
+                                                        (isOffline && !res.clinic.offlineOnly) && <span className="text-gold-600 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.shippingOffline}</span>
                                                     )}
                                                     {offlineDiscount > 0 && <span className="text-green-600 font-bold"> - {formatCurrency(offlineDiscount)} (Off)</span>}
                                                     {onlineFee > 0 && <span className="text-red-500 font-bold"> + {t.onlineFee}: {formatCurrency(onlineFee)}</span>}
@@ -1756,7 +1827,7 @@
                                                                     {shippingCost > 0 ? (
                                                                         <div className="flex justify-between"><span>{t.shipFee}</span><span>+ {formatCurrency(shippingCost)}</span></div>
                                                                     ) : (
-                                                                        (isOffline || clinic.offlineOnly) && (
+                                                                        (isOffline && !clinic.offlineOnly) && (
                                                                             <div className="flex flex-col items-end mt-1">
                                                                                 <div className="flex justify-end text-gold-600 font-bold"><Icons.MapPin size={10} className="mr-1"/>{t.shippingOffline}</div>
                                                                                 {offlineDiscount > 0 && <div className="text-[10px] text-green-600 font-bold">(-{formatCurrency(offlineDiscount)})</div>}
