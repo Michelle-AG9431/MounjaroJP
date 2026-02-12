@@ -322,6 +322,7 @@
                 mobileFilterBtn: 'Filters',
                 closeFilter: 'Close',
                 applyFilter: 'Apply',
+                customsLink: 'Taiwan Customs Medication Allowance',
                 calcNotes: {
                     base3x2: 'Based on 3-Month Plan x 2',
                     base2x3: 'Based on 2-Month Plan x 3',
@@ -442,7 +443,7 @@
                 }).join(' / ');
             };
 
-            // --- Data ---
+             // --- Data ---
              const clinics = [
                 {
                     id: 'Lafee',
@@ -1377,20 +1378,17 @@
                                             ? '1. 關於海外攜帶藥物回國（如台灣），請務必自行確認海關「自用藥物限量」規範。'
                                             : '1. Please verify your country\'s customs regulations regarding bringing personal medication from overseas.'}
                                         <a href="https://web.customs.gov.tw/taipei/singlehtml/3392?cntId=cus2_3392_3392_1347" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 text-gold-600 hover:text-gold-700 ml-1 font-bold underline decoration-gold-300 underline-offset-2">
+                                            {t.customsLink}
+                                        </a>
                                     </p>
                                     <p className="font-bold text-stone-800 bg-stone-50 p-3 rounded-lg border border-stone-200">
                                         {lang === 'zh'
-                                            ? '2. 請注意：由於猛健樂於日本為適用症外自由診療，大部分日本診所（包含本站列出者）「不提供」處方籤或診斷證明書。'
-                                            : '2. Note: Most Japanese clinics DO NOT provide prescriptions or medical certificates for Moujaro prescription.'}
+                                            ? '2. 請注意：大部分日本診所（包含本站列出者）僅提供日本國內醫療服務，通常「不提供」用於海外通關的處方籤或診斷證明書。'
+                                            : '2. Note: Most Japanese clinics DO NOT provide prescriptions or medical certificates specifically for customs clearance.'}
                                     </p>
                                     <p>
                                         {lang === 'zh'
-                                            ? '3. 各診所是否接待外國遊客，以及看診方式等請向診所確認，本網站資訊僅供參考。'
-                                            : '3. Actual practice of each clinic may change according to clinic policy,the information of this site may not be the most updated.'}
-                                    </p>
-<p>
-                                        {lang === 'zh'
-                                            ? '4. 本網站僅供價格比較，不負擔任何法律責任。'
+                                            ? '3. 本網站僅供價格比較，不負擔任何法律責任。'
                                             : '3. This site is for price comparison only and assumes no legal liability.'}
                                     </p>
                                 </div>
@@ -1517,8 +1515,10 @@
 
                     <header className="text-center mb-10">
                         <h1 className="font-display text-2xl md:text-3xl tracking-widest text-stone-900 uppercase mb-2">Mounjaro</h1>
-                        <p className="font-serif text-xs text-stone-500 italic">{t.subtitle}</p>
+                        <p className="font-serif text-xs text-stone-500 italic mb-4">{t.subtitle}</p>
                         <a href="https://web.customs.gov.tw/taipei/singlehtml/3392?cntId=cus2_3392_3392_1347" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 text-[11px] text-gold-700 bg-gold-50 border border-gold-200 px-3 py-1.5 rounded-full hover:bg-gold-100 transition-colors font-sans font-bold shadow-sm">
+                            <Icons.Info size={12}/> {t.customsLink} <Icons.ExternalLink size={10}/>
+                        </a>
                     </header>
 
                     {/* Standard Mode - Sticky Bar */}
@@ -1887,5 +1887,3 @@
     </script>
 </body>
 </html>
-
-
