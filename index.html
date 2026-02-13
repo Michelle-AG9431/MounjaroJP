@@ -778,6 +778,28 @@
                     }
                 },
                 {
+                    id: 'Central',
+                    name: { zh: '新宿Central外來診所', en: 'Shinjuku Central Clinic' },
+                    tags: [
+                        { zh: '中文服務', en: 'Chinese Support' },
+                        { zh: '線下看診', en: 'Offline Clinic' },
+                        { zh: '此為現金價, en: 'Cash Payment Only' }
+                    ],
+                    locations: ['kanto'],
+                    offlineOnly: true,
+                    link: 'https://www.threads.com/@centralhikashi',
+                    fees: { initialNum: 0, returningNum: 0, shippingNum: 0, note: { zh: '現金價', en: 'Cash Only' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 13000, months: 1 }],
+                        '5mg':   [{ price: 26000, months: 1 }],
+                        '7.5mg': [{ price: 39100, months: 1 }],
+                        '10mg':  [{ price: 50000, months: 1 }],
+                        '12.5mg':  [{ price: 63000, months: 1 }],
+                        '15mg':  [{ price: 86000, months: 1 }]
+                    }
+                },
+                 {
                     id: 'shibuya',
                     name: { zh: '澀谷 Kimura 診所', en: 'Shibuya Kimura Clinic' },
                     tags: [
@@ -1880,5 +1902,6 @@
     </script>
 </body>
 </html>
+
 
 
