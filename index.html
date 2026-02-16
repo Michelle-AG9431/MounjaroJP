@@ -452,6 +452,7 @@
                         { zh: '線下診療', en: 'Offline Clinic' },
                         { zh: '需通日文', en: 'Japanese Speakers only' },
                         { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' },
+{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kanto'], 
                     offlineOnly: true, // Mark as offline only
@@ -466,13 +467,34 @@
                         '12.5mg': [{ price: 51980, months: 1 }]
                     }
                 },
+{
+                    id: 'UB',
+                    name: { zh: '美容皮膚科UB Clinic澀谷', en: 'UB Clinic Shibuya' },
+                    tags: [
+                        { zh: '線下診療', en: 'Offline Clinic' },
+                        { zh: '需通日文', en: 'Japanese Speakers only' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' },
+{ zh: '+200円可加購保冷劑+保冷袋', en: 'ice pack and cooler bag at +200 yen' }
+                    ],
+                    locations: ['kanto'], 
+                    offlineOnly: true, // Mark as offline only
+                    link: 'https://ubshinjuku.b4a.clinic/clinics/301/bookings/new/select/menu/',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 12000, months: 1 }],
+                        '5mg': [{ price: 22000, months: 1 }],
+                        '7.5mg': [{ price: 32000, months: 1 }]
+                    }
+                },
                 {
                     id: 'tokyosilk',
                     name: { zh: '東京Silk診所', en: 'Tokyo Silk Clinic' },
                     tags: [
                         { zh: '線上診療', en: 'Online Clinic' },
                         { zh: '全國配送', en: 'Nationwide Delivery' },
-                        { zh: '總量需買滿3個月', en: 'Min Purchase: 3 Months' }
+                        { zh: '總量需買滿3個月', en: 'Min Purchase: 3 Months' },
+{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [], // Online
                     link: 'https://x.com/tokyosilkclinic',
@@ -489,7 +511,8 @@
                     id: 'ikegawa',
                     name: { zh: '池川内科', en: 'Ikegawa Internal Medicine' },
                     tags: [
-                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' }
+                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' },
+{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     link: 'https://lin.ee/AX891RZ',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } }, // Shipping calculated dynamically
@@ -514,6 +537,7 @@
                 {
                     id: 'ikegami',
                     name: { zh: '池上陽光診所', en: 'Ikegami Ohisama Clinic' },
+{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     tags: [
                         { zh: '線上/線下', en: 'Online Clinic' },
                         { zh: '預約須日本門號', en: 'Need JP Phone#' }
