@@ -164,7 +164,8 @@
             User: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>,
             MapPin: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>,
             Filter: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>,
-            X: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            X: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>,
+            ChevronDown: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="6 9 12 15 18 9"></polyline></svg>
         };
 
         // Fallback Exchange Rates
@@ -203,6 +204,7 @@
                 total: '總計',
                 monthlyAvg: '平均月費',
                 est: '推算',
+                from: '起',
                 bestValue: 'CP值最高',
                 shippingIncluded: '含運費',
                 shippingExtra: '運費另計',
@@ -278,6 +280,7 @@
                 total: 'Total',
                 monthlyAvg: 'Monthly Avg',
                 est: 'Est.',
+                from: 'From',
                 bestValue: 'Best Value',
                 shippingIncluded: 'Shipping Included',
                 shippingExtra: 'Shipping Extra',
@@ -355,6 +358,7 @@
             const [exchangeRates, setExchangeRates] = React.useState(FALLBACK_RATES);
             const [rateDate, setRateDate] = React.useState('');
             const [showMobileFilters, setShowMobileFilters] = React.useState(false);
+            const [expandedItems, setExpandedItems] = React.useState({});
             
             // Initialize disclaimer modal state based on localStorage
             const [showDisclaimerModal, setShowDisclaimerModal] = React.useState(() => {
@@ -413,10 +417,10 @@
             const formatCurrency = (price) => {
                 if (lang === 'zh') {
                     const twd = Math.round(price * exchangeRates.TWD).toLocaleString();
-                    return <span><span className="text-xs text-stone-400">NT$</span> {twd} <span className="text-xs text-stone-500 font-normal ml-1">(¥{price.toLocaleString()})</span></span>;
+                    return <span><span className="text-xs text-stone-400">NT$</span> {twd} <span className="text-xs text-stone-500 font-normal ml-1 whitespace-nowrap">(¥{price.toLocaleString()})</span></span>;
                 } else if (lang === 'en') {
                     const usd = (price * exchangeRates.USD).toFixed(2);
-                    return <span><span className="text-xs text-stone-400">$</span> {usd} <span className="text-xs text-stone-500 font-normal ml-1">(¥{price.toLocaleString()})</span></span>;
+                    return <span><span className="text-xs text-stone-400">$</span> {usd} <span className="text-xs text-stone-500 font-normal ml-1 whitespace-nowrap">(¥{price.toLocaleString()})</span></span>;
                 } else {
                     return `¥${price.toLocaleString()}`;
                 }
@@ -483,7 +487,8 @@
                     prices: {
                         '2.5mg': [{ price: 12000, months: 1 }],
                         '5mg': [{ price: 22000, months: 1 }],
-                        '7.5mg': [{ price: 32000, months: 1 }],
+                        '7.5mg': [{ price: 32000, months: 1 }],
+
                     }
                 },
                 {
@@ -922,7 +927,6 @@
                     }
                 }
             ];
-
             const getRegFee = (clinic) => {
                 if (userType === 'new') return clinic.fees.initialNum;
                 // If returning fee is not defined, default to initial fee (assuming same price)
@@ -1499,9 +1503,7 @@
                                                 <div className="custom-select-wrapper">
                                                     <select className="custom-select" value={activeDosage} onChange={(e) => setActiveDosage(e.target.value)}>
                                                         <optgroup label={t.dosageLabel}>
-                                                            {['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg'].map(d => (
-                                                                <option key={d} value={d}>{d}</option>
-                                                            ))}
+                                                            {['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg'].map(d => <option key={d} value={d}>{d}</option>)}
                                                         </optgroup>
                                                         <optgroup label={t.transitPlan}>
                                                             {['2.5mg+5mg', '5mg+7.5mg', '7.5mg+10mg', '10mg+12.5mg', '12.5mg+15mg'].map(combo => (
@@ -1652,21 +1654,21 @@
                     {/* Calculator Mode - Controls */}
                     {mode === 'calculator' && (
                         <div className="mb-8 max-w-5xl mx-auto">
-                            {/* Desktop Calc Controls */}
-                            <div className="hidden md:flex flex-row gap-4 justify-start bg-white p-3 rounded-lg border border-stone-100 shadow-sm">
-                                <div className="custom-select-wrapper w-auto">
+                            {/* Desktop Calc Controls (Aligned with Standard layout) */}
+                            <div className="hidden md:flex flex-row gap-4 justify-center px-1">
+                                <div className="custom-select-wrapper min-w-[160px]">
                                     <select className="custom-select" value={userType} onChange={(e) => setUserType(e.target.value)}>
                                         <option value="new">{t.userNew}</option>
                                         <option value="returning">{t.userReturning}</option>
                                     </select>
                                 </div>
-                                <div className="custom-select-wrapper w-auto">
+                                <div className="custom-select-wrapper min-w-[160px]">
                                     <select className="custom-select" value={chineseFilter ? 'chinese' : 'all'} onChange={(e) => setChineseFilter(e.target.value === 'chinese')}>
                                         <option value="all">{t.filterAll}</option>
                                         <option value="chinese">{t.filterChinese}</option>
                                     </select>
                                 </div>
-                                <div className="custom-select-wrapper w-auto">
+                                <div className="custom-select-wrapper min-w-[160px]">
                                     <select className="custom-select bg-gold-100/30 border-gold-200 text-stone-700" value={region} onChange={(e) => setRegion(e.target.value)}>
                                         {REGIONS.map(r => (<option key={r.id} value={r.id}>{lang === 'zh' ? r.zh : r.en}</option>))}
                                     </select>
@@ -1740,44 +1742,71 @@
                                     <button onClick={() => setCart({'2.5mg': 0, '5mg': 0, '7.5mg': 0, '10mg': 0, '12.5mg': 0, '15mg': 0})} className="text-xs text-stone-400 hover:text-red-500 font-sans border-b border-transparent hover:border-red-500 transition-all">{t.reset}</button>
                                 </div>
                             </div>
-                            <div className="grid gap-6">
+                            <div className="grid gap-4 md:gap-6">
                                 {calcResults.map((res, idx) => {
                                     const shippingCost = getShippingFee(res.clinic, region, totalSelectedMonths);
                                     const isOffline = shippingCost === 0 && res.clinic.locations && res.clinic.locations.includes(region);
                                     const offlineDiscount = (isOffline && res.clinic.offlineDiscount) ? res.clinic.offlineDiscount : 0;
                                     const onlineFee = ((region === 'all' || !isOffline) && res.clinic.onlineFee) ? res.clinic.onlineFee : 0;
-                                    
+                                    const cardId = `calc-${res.clinic.id}`;
+
                                     return (
-                                        <div key={res.clinic.id} className="bg-white border border-stone-100 rounded-lg p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all">
-                                            {idx === 0 && <div className="absolute top-0 left-0 w-1 h-full bg-gold-400"></div>}
+                                        <div key={res.clinic.id} className="bg-white border border-stone-100 rounded-lg p-4 md:p-6 shadow-sm flex flex-col relative overflow-hidden group hover:shadow-md transition-all">
+                                            {idx === 0 && <div className="absolute top-0 left-0 w-1 h-full bg-gold-400 z-10"></div>}
                                             {/* Location Badge for Calc Mode */}
                                             <div className="absolute top-0 right-0 bg-stone-100 text-stone-500 text-[10px] font-bold px-2 py-1 rounded-bl-lg z-10 border-b border-l border-stone-200">
                                                 {getLocationName(res.clinic)}
                                             </div>
-                                            <div className="flex-1 w-full pt-4 md:pt-0">
-                                                <div className="flex items-center justify-between md:justify-start gap-3 mb-2">
-                                                    <h3 className="font-serif text-xl text-stone-900">{res.clinic.name[lang]}</h3>
-                                                    {idx === 0 && <span className="bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">{t.bestValue}</span>}
-                                                    {res.isBundle && <span className="bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 flex items-center gap-1"><Icons.Star size={10}/> {t.bundleApplied}</span>}
+
+                                            {/* Clickable Mobile Header */}
+                                            <div 
+                                                className="flex justify-between items-center w-full cursor-pointer md:cursor-default"
+                                                onClick={() => {
+                                                    if (window.innerWidth < 768) {
+                                                        setExpandedItems(prev => ({...prev, [cardId]: !prev[cardId]}));
+                                                    }
+                                                }}
+                                            >
+                                                <div className="flex items-center gap-2 pt-2 md:pt-0 flex-1 min-w-0 pr-3">
+                                                    <h3 className={`font-serif text-lg md:text-xl text-stone-900 ${!expandedItems[cardId] ? 'truncate' : ''} min-w-0 block`}>{res.clinic.name[lang]}</h3>
+                                                    {idx === 0 && <span className="hidden md:inline-block bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">{t.bestValue}</span>}
+                                                    {res.isBundle && <span className="hidden md:inline-flex bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 items-center gap-1"><Icons.Star size={10}/> {t.bundleApplied}</span>}
                                                 </div>
-                                                <p className="text-sm text-stone-500 font-sans mb-3 flex items-center gap-2"><span className="bg-stone-100 px-2 py-1 rounded text-xs break-all">{res.breakdown}</span></p>
-                                                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-400 font-sans">
-                                                    <span>{t.meds}: {formatCurrency(res.meds)}</span>
-                                                    {getRegFee(res.clinic) > 0 && <span>+ {t.regFee}: {formatCurrency(getRegFee(res.clinic))}</span>}
-                                                    {shippingCost > 0 ? (
-                                                        <span>+ {t.shipFee}: {formatCurrency(shippingCost)}</span>
-                                                    ) : (
-                                                        (isOffline && !res.clinic.offlineOnly) && <span className="text-gold-600 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.shippingOffline}</span>
+                                                <div className="md:hidden flex items-center justify-end gap-2 pt-2 shrink-0">
+                                                    {!expandedItems[cardId] && (
+                                                        <span className="font-sans font-bold text-sm text-stone-900 whitespace-nowrap flex items-baseline">{formatCurrency(res.total)}</span>
                                                     )}
-                                                    {offlineDiscount > 0 && <span className="text-green-600 font-bold"> - {formatCurrency(offlineDiscount)} (Off)</span>}
-                                                    {onlineFee > 0 && <span className="text-red-500 font-bold"> + {t.onlineFee}: {formatCurrency(onlineFee)}</span>}
+                                                    <Icons.ChevronDown className={`text-stone-400 shrink-0 transition-transform ${expandedItems[cardId] ? 'rotate-180' : ''}`} size={16} />
                                                 </div>
                                             </div>
-                                            <div className="text-right w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0 mt-2 md:mt-0">
-                                                <span className="text-xs text-stone-400 uppercase block mb-1">{t.calcTotal}</span>
-                                                <span className={`text-3xl font-sans font-light tracking-tight ${idx === 0 ? 'text-stone-900' : 'text-stone-600'}`}>
-                                                    {formatCurrency(res.total)}
-                                                </span>
+
+                                            {/* Content Area (Hidden on mobile when collapsed) */}
+                                            <div className={`mt-3 md:mt-2 flex-col md:flex-row justify-between items-start md:items-center gap-4 ${expandedItems[cardId] ? 'flex' : 'hidden'} md:flex`}>
+                                                <div className="flex-1 w-full">
+                                                    <div className="md:hidden flex flex-wrap gap-2 mb-2">
+                                                        {idx === 0 && <span className="bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">{t.bestValue}</span>}
+                                                        {res.isBundle && <span className="bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 flex items-center gap-1"><Icons.Star size={10}/> {t.bundleApplied}</span>}
+                                                    </div>
+                                                    <p className="text-sm text-stone-500 font-sans mb-3 flex items-center gap-2"><span className="bg-stone-100 px-2 py-1 rounded text-xs break-all">{res.breakdown}</span></p>
+                                                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-400 font-sans">
+                                                        <span>{t.meds}: {formatCurrency(res.meds)}</span>
+                                                        {getRegFee(res.clinic) > 0 && <span>+ {t.regFee}: {formatCurrency(getRegFee(res.clinic))}</span>}
+                                                        {shippingCost > 0 ? (
+                                                            <span>+ {t.shipFee}: {formatCurrency(shippingCost)}</span>
+                                                        ) : (
+                                                            (isOffline && !res.clinic.offlineOnly) && <span className="text-gold-600 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.shippingOffline}</span>
+                                                        )}
+                                                        {offlineDiscount > 0 && <span className="text-green-600 font-bold"> - {formatCurrency(offlineDiscount)} (Off)</span>}
+                                                        {onlineFee > 0 && <span className="text-red-500 font-bold"> + {t.onlineFee}: {formatCurrency(onlineFee)}</span>}
+                                                    </div>
+                                                </div>
+                                                <div className="text-right w-full md:w-auto border-t md:border-t-0 border-stone-100 pt-3 md:pt-0 mt-1 md:mt-0">
+                                                    <span className="hidden md:block text-xs text-stone-400 uppercase mb-1">{t.calcTotal}</span>
+                                                    <span className="md:hidden text-[10px] text-stone-400 uppercase mr-1">{t.calcTotal}:</span>
+                                                    <span className={`text-2xl md:text-3xl font-sans font-light tracking-tight ${idx === 0 ? 'text-stone-900' : 'text-stone-600'}`}>
+                                                        {formatCurrency(res.total)}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     );
@@ -1805,7 +1834,7 @@
                                     <p className="text-stone-500 font-serif italic max-w-md mx-auto">{t.noData}</p>
                                 </div>
                             )}
-                            <div className="grid gap-8 md:gap-10">
+                            <div className="grid gap-6 md:gap-10">
                                 {sortedClinics.map((clinic, clinicIndex) => {
                                     const displayPrices = getSmartPrices(clinic, activeDosage, activeDuration);
                                     let rankColor = '';
@@ -1823,30 +1852,51 @@
                                                 {getLocationName(clinic)}
                                             </div>
 
-                                            <div className="flex flex-col md:flex-row md:items-center justify-between p-6 md:p-8 border-b border-stone-100 pt-8 md:pt-8">
-                                                <div>
-                                                    <div className="flex items-baseline gap-3 mb-2">
-                                                        <h2 className="font-serif text-xl md:text-2xl text-stone-900">{clinic.name[lang]}</h2>
-                                                        <a href={clinic.link} target="_blank" className="text-stone-300 hover:text-gold-400 transition-colors"><Icons.ExternalLink /></a>
+                                            <div 
+                                                className={`flex flex-col p-4 md:p-8 border-b border-stone-100 ${!expandedItems[clinic.id] ? 'py-4' : 'pt-6'} md:pt-8 cursor-pointer md:cursor-default`}
+                                                onClick={() => {
+                                                    if (window.innerWidth < 768) {
+                                                        setExpandedItems(prev => ({...prev, [clinic.id]: !prev[clinic.id]}));
+                                                    }
+                                                }}
+                                            >
+                                                <div className="flex justify-between items-center w-full">
+                                                    <div className="flex flex-col flex-1 min-w-0 pr-3">
+                                                        <div className={`flex items-center md:items-baseline gap-3 ${expandedItems[clinic.id] ? 'mb-2' : 'mb-0'} md:mb-2 min-w-0 w-full`}>
+                                                            <h2 className={`font-serif text-lg md:text-2xl text-stone-900 ${!expandedItems[clinic.id] ? 'truncate' : ''} min-w-0 max-w-full block`}>{clinic.name[lang]}</h2>
+                                                            <a href={clinic.link} target="_blank" onClick={(e) => e.stopPropagation()} className="hidden md:block text-stone-300 hover:text-gold-400 transition-colors shrink-0"><Icons.ExternalLink /></a>
+                                                        </div>
+                                                        <div className={`flex-wrap gap-2 ${expandedItems[clinic.id] ? 'flex' : 'hidden'} md:flex mt-1 md:mt-0`}>
+                                                            {(() => {
+                                                                if (clinic.freeShipping) {
+                                                                    return <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-600 px-2 py-1 flex items-center gap-1 font-sans bg-stone-50/50"><Icons.Truck size={10}/> {t.shippingIncluded}</span>;
+                                                                } else if (clinic.offlineOnly) {
+                                                                     return <span className="text-[10px] uppercase tracking-widest border border-gold-200 text-gold-600 bg-gold-50 px-2 py-1 flex items-center gap-1 font-sans font-bold"><Icons.MapPin size={10}/> {t.visitOnly}</span>;
+                                                                } else if (region !== 'all' && clinic.locations && clinic.locations.includes(region)) {
+                                                                     return <span className="text-[10px] uppercase tracking-widest border border-gold-200 text-gold-600 bg-gold-50 px-2 py-1 flex items-center gap-1 font-sans font-bold"><Icons.MapPin size={10}/> {t.shippingOffline}</span>;
+                                                                } else {
+                                                                    return <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 flex items-center gap-1 font-sans"><Icons.Truck size={10}/> {t.shippingExtra}</span>;
+                                                                }
+                                                            })()}
+                                                            <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 font-sans">{t.regFeeLabel}: {formatCurrency(getRegFee(clinic))}</span>
+                                                            {clinic.tags.map((tagObj, idx) => <span key={idx} className="text-[10px] uppercase tracking-widest bg-stone-50 text-stone-400 px-2 py-1 font-sans">{tagObj[lang]}</span>)}
+                                                        </div>
                                                     </div>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {(() => {
-                                                            if (clinic.freeShipping) {
-                                                                return <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-600 px-2 py-1 flex items-center gap-1 font-sans bg-stone-50/50"><Icons.Truck size={10}/> {t.shippingIncluded}</span>;
-                                                            } else if (clinic.offlineOnly) {
-                                                                 return <span className="text-[10px] uppercase tracking-widest border border-gold-200 text-gold-600 bg-gold-50 px-2 py-1 flex items-center gap-1 font-sans font-bold"><Icons.MapPin size={10}/> {t.visitOnly}</span>;
-                                                            } else if (region !== 'all' && clinic.locations && clinic.locations.includes(region)) {
-                                                                 return <span className="text-[10px] uppercase tracking-widest border border-gold-200 text-gold-600 bg-gold-50 px-2 py-1 flex items-center gap-1 font-sans font-bold"><Icons.MapPin size={10}/> {t.shippingOffline}</span>;
-                                                            } else {
-                                                                return <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 flex items-center gap-1 font-sans"><Icons.Truck size={10}/> {t.shippingExtra}</span>;
-                                                            }
-                                                        })()}
-                                                        <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 font-sans">{t.regFeeLabel}: {formatCurrency(getRegFee(clinic))}</span>
-                                                        {clinic.tags.map((tagObj, idx) => <span key={idx} className="text-[10px] uppercase tracking-widest bg-stone-50 text-stone-400 px-2 py-1 font-sans">{tagObj[lang]}</span>)}
+                                                    {/* Mobile Preview & Toggle Chevron */}
+                                                    <div className="md:hidden flex items-center justify-end gap-2 shrink-0 pl-2">
+                                                        {!expandedItems[clinic.id] && displayPrices.length > 0 && (
+                                                            <div className="flex items-baseline gap-1 text-stone-900 whitespace-nowrap">
+                                                                <span className="font-sans font-bold text-sm whitespace-nowrap">{formatCurrency(Math.min(...displayPrices.map(i => i.totalPrice)))}</span>
+                                                                <span className="text-[10px] text-stone-400 font-sans whitespace-nowrap">{t.from}</span>
+                                                            </div>
+                                                        )}
+                                                        <Icons.ChevronDown className={`text-stone-400 shrink-0 transition-transform ${expandedItems[clinic.id] ? 'rotate-180' : ''}`} size={16} />
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            
+                                            {/* Details section visible when expanded on mobile, or always on desktop */}
+                                            <div className={`p-4 md:p-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 ${expandedItems[clinic.id] ? 'grid' : 'hidden'} md:grid`}>
                                                 {displayPrices.map((item, idx) => {
                                                     let isBestPrice = false;
                                                     const monthlyAvg = item.totalPrice / item.months;
@@ -1925,7 +1975,3 @@
     </script>
 </body>
 </html>
-
-
-
-
