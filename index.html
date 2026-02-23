@@ -503,14 +503,14 @@
                     tags: [
                         { zh: '線上診療', en: 'Online Clinic' },
                         { zh: '全國配送', en: 'Nationwide Delivery' },
-                        { zh: '總量需買滿2個月', en: 'Min Purchase: 2 Months' },
+                        { zh: '總量需買滿3個月', en: 'Min Purchase: 3 Months' },
 { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [], // Online
                     link: 'https://x.com/tokyosilkclinic',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: true,
-                    minTotalMonths: 2,
+                    minTotalMonths: 3,
                     prices: {
                         '2.5mg': [{ price: 12000, months: 1 }],
                         '5mg': [{ price: 21500, months: 1 }],
@@ -1775,7 +1775,10 @@
                                                 }}
                                             >
                                                 <div className="flex items-center gap-2 pt-2 md:pt-0 flex-1 min-w-0 pr-2 md:pr-0">
-                                                    <h3 className={`font-serif text-lg md:text-xl text-stone-900 ${!expandedItems[cardId] ? 'truncate' : ''} flex-1 min-w-0 block`}>{res.clinic.name[lang]}</h3>
+                                                    <a href={res.clinic.link} target="_blank" rel="noopener noreferrer" onClick={(e) => { if(window.innerWidth < 768) e.stopPropagation(); }} className="flex items-center gap-1.5 group/link flex-1 min-w-0 outline-none">
+                                                        <h3 className={`font-serif text-lg md:text-xl text-stone-900 group-hover/link:text-gold-600 transition-colors ${!expandedItems[cardId] ? 'truncate' : ''} flex-1 min-w-0 block`}>{res.clinic.name[lang]}</h3>
+                                                        <Icons.ExternalLink className="text-stone-300 group-hover/link:text-gold-500 transition-colors shrink-0" size={14}/>
+                                                    </a>
                                                     {idx === 0 && <span className="hidden md:inline-block bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">{t.bestValue}</span>}
                                                     {res.isBundle && <span className="hidden md:inline-flex bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 items-center gap-1"><Icons.Star size={10}/> {t.bundleApplied}</span>}
                                                 </div>
@@ -1871,9 +1874,11 @@
                                             >
                                                 <div className="flex justify-between items-center w-full min-w-0 gap-2">
                                                     <div className="flex flex-col flex-1 min-w-0 pr-2 md:pr-0">
-                                                        <div className={`flex items-center md:items-baseline gap-2 min-w-0 w-full ${expandedItems[clinic.id] ? 'mb-2' : 'mb-0'} md:mb-2`}>
-                                                            <h2 className={`font-serif text-lg md:text-xl text-stone-900 ${!expandedItems[clinic.id] ? 'truncate' : ''} flex-1 min-w-0 block`}>{clinic.name[lang]}</h2>
-                                                            <a href={clinic.link} target="_blank" onClick={(e) => e.stopPropagation()} className="hidden md:block text-stone-300 hover:text-gold-400 transition-colors shrink-0"><Icons.ExternalLink /></a>
+                                                        <div className={`flex items-center gap-2 min-w-0 w-full ${expandedItems[clinic.id] ? 'mb-2' : 'mb-0'} md:mb-2`}>
+                                                            <a href={clinic.link} target="_blank" rel="noopener noreferrer" onClick={(e) => { if(window.innerWidth < 768) e.stopPropagation(); }} className="flex items-center gap-1.5 group/link flex-1 min-w-0 outline-none">
+                                                                <h2 className={`font-serif text-lg md:text-2xl text-stone-900 group-hover/link:text-gold-600 transition-colors ${!expandedItems[clinic.id] ? 'truncate' : ''} flex-1 min-w-0 block`}>{clinic.name[lang]}</h2>
+                                                                <Icons.ExternalLink className="text-stone-300 group-hover/link:text-gold-500 transition-colors shrink-0" size={16}/>
+                                                            </a>
                                                         </div>
                                                         <div className={`flex-wrap gap-2 ${expandedItems[clinic.id] ? 'flex' : 'hidden'} md:flex mt-1 md:mt-0 min-w-0`}>
                                                             {(() => {
