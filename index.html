@@ -455,28 +455,28 @@
 
             // --- Data ---
              const clinics = [
-                {
-                    id: 'Lafee',
-                    name: { zh: 'La Fee醫美診所(e-life shop特惠)', en: 'La Fee Clinic (Special Deal on e-life shop)' },
-                    tags: [
-                        { zh: '線下診療', en: 'Offline Clinic' },
-                        { zh: '需通日文', en: 'Japanese Speakers only' },
-                        { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' },
-{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: ['kanto'], 
-                    offlineOnly: true, // Mark as offline only
-                    link: 'https://shop.elife.clinic/search?q=%E3%83%9E%E3%83%B3%E3%82%B8%E3%83%A3%E3%83%AD&options%5Bprefix%5D=last',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [{ price: 9980, months: 1 }],
-                        '5mg': [{ price: 17980, months: 1 }],
-                        '7.5mg': [{ price: 26980, months: 1 }],
-                        '10mg': [{ price: 35980, months: 1 }],
-                        '12.5mg': [{ price: 51980, months: 1 }]
-                    }
-                },
+             //  {
+                //      id: 'Lafee',
+                //      name: { zh: 'La Fee醫美診所(e-life shop特惠)', en: 'La Fee Clinic (Special Deal on e-life shop)' },
+                //      tags: [
+                  //        { zh: '線下診療', en: 'Offline Clinic' },
+                  //        { zh: '需通日文', en: 'Japanese Speakers only' },
+                   //       { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' },
+                 //         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                  //    ],
+                 //     locations: ['kanto'], 
+                 //     offlineOnly: true, // Mark as offline only
+                 //     link: 'https://shop.elife.clinic/search?q=%E3%83%9E%E3%83%B3%E3%82%B8%E3%83%A3%E3%83%AD&options%5Bprefix%5D=last',
+                 //     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
+                  //    freeShipping: false,
+                  //    prices: {
+                  //        '2.5mg': [{ price: 9980, months: 1 }],
+                //          '5mg': [{ price: 17980, months: 1 }],
+                 //         '7.5mg': [{ price: 26980, months: 1 }],
+                 //         '10mg': [{ price: 35980, months: 1 }],
+                   //       '12.5mg': [{ price: 51980, months: 1 }]
+                  //    }
+                //  },
                {
                     id: 'UB',
                     name: { zh: 'UB美容皮膚科診所', en: 'UB Beauty Clinic' },
@@ -503,14 +503,14 @@
                     tags: [
                         { zh: '線上診療', en: 'Online Clinic' },
                         { zh: '全國配送', en: 'Nationwide Delivery' },
-                        { zh: '總量需買滿3個月', en: 'Min Purchase: 3 Months' },
+                        { zh: '總量需買滿2個月', en: 'Min Purchase: 3 Months' },
 { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [], // Online
                     link: 'https://x.com/tokyosilkclinic',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: true,
-                    minTotalMonths: 3,
+                    minTotalMonths: 2,
                     prices: {
                         '2.5mg': [{ price: 12000, months: 1 }],
                         '5mg': [{ price: 21500, months: 1 }],
@@ -599,6 +599,27 @@
                         '10mg':  [{ price: 52700, months: 1 }],
                     }
                 },
+                 {
+                    id: 'cocomil',
+                    name: { zh: 'CocoMil醫美診所', en: 'CocoMil Clinic' },
+                    tags: [
+                        { zh: '中文服務', en: 'Chinese Support'},
+                        { zh: '線上診療', en: 'Online Clinic'},
+                        { zh: '現在免掛號費', en: 'No Reg Fee Now' },
+                        { zh: '高劑量需詢問', en: 'Higher Dose subject to inquiry' },
+                    ],
+                    locations: [''],
+                    link: 'http://lim.ee/CtzTDojh', 
+                    fees: { initialNum: 0, shippingNum: 2000, note: { zh: '自付運費', en: 'Shipping fee extra' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 12000, months: 1 }],
+                        '5mg':   [{ price: 20500, months: 1 }],
+                        '7.5mg': [{ price: 29500, months: 1 }],
+                        '10mg':  [{ price: 44200, months: 1 }],
+                       '2.5mg+5mg': [{ price: 16500, months: 1 }], 
+                    }
+                },
                 {
                     id: 'pococlinic',
                     name: { zh: '狸貓診所 (Poco)', en: 'Poco Clinic' },
@@ -644,6 +665,45 @@
                         '10mg':  [{ price: 37000, months: 1 }],
                         '12.5mg':[{ price: 44000, months: 1 }],
                         '15mg':  [{ price: 52000, months: 1 }]
+                    }
+                },
+                  {
+                    id: 'phd',
+                    name: { zh: 'Phd線上診所', en: 'PHD Online Clinic' },
+                    tags: [
+                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                    ],
+                    locations: [], // Online only now
+                    link: 'https://x.com/phd_tokyo/status/2027941899538206923',
+                    fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費+運費¥2,000', en: 'Free Reg + Ship ¥2,000' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 12000, months: 1 }],
+                        '5mg':   [{ price: 20000, months: 1 }],
+                        '7.5mg': [{ price: 29000, months: 1 }],
+                        '10mg':  [{ price: 43000, months: 1 }],
+                    }
+                },
+                    {
+                    id: 'reella',
+                    name: { zh: 'Re Ella診所', en: 'Re Ella Clinic' },
+                    tags: [
+                        { zh: 'Line線上診療', en: 'Online Clinic Via Line' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' },
+                        { zh: '2.5mg, 5mg目前不接受新單', en: 'Temporarily No New prescription for 2.5mg and 5mg' },
+                    ],
+                    locations: [], // Online only now
+                    link: 'https://line.me/R/ti/p/@630cugto?oat_content=url',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費+運費', en: 'Free Reg + Ship' } },
+                    freeShipping: true,
+                    prices: {
+                         '2.5mg': [{ price: 12700, months: 1 }, { price: 25200, months: 2 }, { price: 33700, months: 3 }],
+                        '5mg': [{ price: 22550, months: 1 }, { price: 44900, months: 2 }, { price: 62700, months: 3 }],
+                        '7.5mg': [{ price: 31000, months: 1 }, { price: 60000, months: 2 }, { price: 87800, months: 3 }],
+                        '10mg': [{ price: 41600, months: 1 }, { price: 80500, months: 2 }, { price: 115700, months: 3 }],
+                        '12.5mg': [{ price: 49600, months: 1 }, { price: 98000, months: 2 }, { price: 143600, months: 3 }],
+                        '15mg': [{ price: 56700, months: 1 }, { price: 112300, months: 2 }, { price: 164500, months: 3 }],
                     }
                 },
                 {
@@ -2012,3 +2072,4 @@
     </script>
 </body>
 </html>
+
