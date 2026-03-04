@@ -455,35 +455,101 @@
 
             // --- Data ---
              const clinics = [
-               {
-                      id: 'Lafee',
-                      name: { zh: 'La Fee醫美診所(e-life shop特惠)', en: 'La Fee Clinic (Special Deal on e-life shop)' },
+                {
+                    id: 'Lafee',
+                     name: { zh: 'La Fee/Wellness Plus醫美診所(e-life平台特惠)', en: 'La Fee/Wellness Plus Clinic (Special Deal on e-life shop)' },
                       tags: [
                           { zh: '線下診療', en: 'Offline Clinic' },
                           { zh: '需通日文', en: 'Japanese Speakers only' },
                           { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' },
-                          { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                          { zh: '只有購買證明', en: 'Purchase Invoice Only' },
+                          { zh: '同一張優惠券每月限購一次', en: 'limit one purchase per month per coupon' },
                       ],
-                      locations: ['kanto'], 
-                      offlineOnly: true, // Mark as offline only
-                      link: 'https://shop.elife.clinic/search?q=%E3%83%9E%E3%83%B3%E3%82%B8%E3%83%A3%E3%83%AD&options%5Bprefix%5D=last',
-                      fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
-                      freeShipping: false,
-                      prices: {
-                          '2.5mg': [{ price: 9980, months: 1 }],
-                          '5mg': [{ price: 17980, months: 1 }],
-                          '7.5mg': [{ price: 26980, months: 1 }],
-                          '10mg': [{ price: 35980, months: 1 }],
-                          '12.5mg': [{ price: 51980, months: 1 }]
-                      }
-                  },
-               {
+                    locations: ['kanto'], 
+                    offlineOnly: true, // Mark as offline only
+                    singleUsePlans: true, // DP logic constraint: each plan can only be picked once
+                    link: 'https://shop.elife.clinic/search?q=%E3%83%9E%E3%83%B3%E3%82%B8%E3%83%A3%E3%83%AD&options%5Bprefix%5D=last',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [
+                            { price: 9980, months: 1 },
+                            { price: 29940, months: 3 },
+                            { price: 59880, months: 6 }
+                        ],
+                        '5mg': [
+                            { price: 17980, months: 1 },
+                            { price: 53940, months: 3 },
+                            { price: 107880, months: 6 }
+                        ],
+                        '7.5mg': [
+                            { price: 26980, months: 1 },
+                            { price: 80940, months: 3 },
+                            { price: 161880, months: 6 }
+                        ],
+                        '10mg': [
+                            { price: 35980, months: 1 },
+                            { price: 107940, months: 3 },
+                            { price: 215880, months: 6 }
+                        ],
+                        '12.5mg': [
+                            { price: 51980, months: 1 },
+                            { price: 155940, months: 3 },
+                            { price: 311880, months: 6 }
+                        ]
+                    }
+                },
+                 {
+                    id: 'Wellness',
+                     name: { zh: 'La Fee/Wellness Plus醫美診所(Luxora平台特惠)', en: 'La Fee/Wellness Plus Clinic (Special Deal on Luxora shop)' },
+                      tags: [
+                          { zh: '線下診療', en: 'Offline Clinic' },
+                          { zh: '需通日文', en: 'Japanese Speakers only' },
+                          { zh: '加Luxora Line帳號再送2500折價券', en: '2500 Yen Coupon via Luxora Line account' },
+                          { zh: '只有購買證明', en: 'Purchase Invoice Only' },
+                          { zh: '同一張優惠券每月限購一次', en: 'limit one purchase per month per coupon' },
+                      ],
+                    locations: ['kanto'], 
+                    offlineOnly: true, // Mark as offline only
+                    singleUsePlans: true, // DP logic constraint: each plan can only be picked once
+                    link: 'https://www.luxora.shop/collections/%E6%9D%A5%E9%99%A2%E8%80%85%E9%99%90%E5%AE%9A-e%E3%82%AF%E3%83%BC%E3%83%9D%E3%83%B3',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [
+                            { price: 9980, months: 1 },
+                            { price: 29940, months: 3 },
+                            { price: 59880, months: 6 }
+                        ],
+                        '5mg': [
+                            { price: 17980, months: 1 },
+                            { price: 53940, months: 3 },
+                            { price: 107880, months: 6 }
+                        ],
+                        '7.5mg': [
+                            { price: 26980, months: 1 },
+                            { price: 80940, months: 3 },
+                            { price: 161880, months: 6 }
+                        ],
+                        '10mg': [
+                            { price: 35980, months: 1 },
+                            { price: 107940, months: 3 },
+                            { price: 215880, months: 6 }
+                        ],
+                        '12.5mg': [
+                            { price: 51980, months: 1 },
+                            { price: 155940, months: 3 },
+                            { price: 311880, months: 6 }
+                        ]
+                    }
+                },
+                 {
                     id: 'UB',
                     name: { zh: 'UB美容皮膚科診所', en: 'UB Beauty Clinic' },
                     tags: [
                         { zh: '線下診療', en: 'Offline Clinic' },
                         { zh: '需通日文', en: 'Japanese Speakers only' },
-{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kanto'], 
                     offlineOnly: true, // Mark as offline only
@@ -503,8 +569,8 @@
                     tags: [
                         { zh: '線上診療', en: 'Online Clinic' },
                         { zh: '全國配送', en: 'Nationwide Delivery' },
-                        { zh: '總量需買滿2個月', en: 'Min Purchase: 3 Months' },
-{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                        { zh: '總量需買滿2個月', en: 'Min Purchase: 2 Months' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [], // Online
                     link: 'https://x.com/tokyosilkclinic',
@@ -518,39 +584,12 @@
                     }
                 },
                 {
-                    id: 'ikegawa',
-                    name: { zh: '池川内科', en: 'Ikegawa Internal Medicine' },
-                    tags: [
-                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' },
-{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    link: 'https://lin.ee/AX891RZ',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } }, // Shipping calculated dynamically
-                    locations: ['kansai'], // Assumed offline location based on cheapest shipping
-                    freeShipping: false,
-                    shipping_rules: {
-                        'hokkaido': 2500,
-                        'tohoku': 1500, 'kanto': 1500, 'shinetsu': 1500,
-                        'kansai': 1000, 'chubu': 1000, 'hokuriku': 1000, 'shikoku': 1000, 'chugoku': 1000, 'kyushu': 1000,
-                        'okinawa': 2000,
-                        'default': 1500 // Fallback
-                    },
-                    prices: {
-                        '2.5mg': [{ price: 12500, months: 1 }, { price: 6250, months: 0.5 }], // 0.5 month = 2 pens (minimum)
-                        '5mg': [{ price: 24500, months: 1 }, { price: 12250, months: 0.5 }],
-                        '7.5mg': [{ price: 37500, months: 1 }, { price: 18750, months: 0.5 }],
-                        '10mg': [{ price: 42000, months: 1 }, { price: 21000, months: 0.5 }],
-                        '12.5mg': [{ price: 55000, months: 1 }, { price: 27500, months: 0.5 }],
-                        '15mg': [{ price: 80000, months: 1 }, { price: 40000, months: 0.5 }]
-                    }
-                },
-                {
                     id: 'ikegami',
                     name: { zh: '池上陽光診所', en: 'Ikegami Ohisama Clinic' },
                     tags: [
                         { zh: '線上/線下', en: 'Online Clinic' },
                         { zh: '預約須日本門號', en: 'Need JP Phone#' },
-{ zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     link: 'https://ikegamiohisama-clinic.com/', 
                     locations: ['kanto'],
@@ -750,7 +789,7 @@
                     name: { zh: '馬場全方位照護診所', en: 'Baba Total Care Clinic' },
                     tags: [
                         { zh: '線下診療', en: 'Offline Clinic' },
-{ zh: '高劑量需先詢問', en: 'High Dose Need Inquiry' },
+                        { zh: '高劑量需先詢問', en: 'High Dose Need Inquiry' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kyushu'], 
@@ -767,7 +806,7 @@
                         '15mg':  [{ price: 26500, months: 0.5 },{ price: 53000, months: 1 }]
                     }
                 },
-{
+                 {
                     id: 'theclinic',
                     name: { zh: 'The Clinic(大阪/福岡）', en: 'The Clinic（Osaka/Fukuoka)' },
                     tags: [
@@ -800,27 +839,8 @@
                     prices: {
                         '2.5mg': [{ price: 18000, months: 1 },{ price: 45000, months: 3 },{ price: 90000, months: 6 }],
                         '5mg':   [{ price: 21000, months: 1 },{ price: 81000, months: 3 },{ price: 162000, months: 6 }],
-'7.5mg':   [{ price: 40000, months: 1 }],
-'2.5mg+5mg':   [{ price: 22000, months: 1 }],
-                    }
-                },
-                {
-                    id: 'kirei',
-                    name: { zh: 'Kirei Repo 線上診所', en: 'Kirei Repo Online Clinic' },
-                    tags: [
-                        { zh: '線上診療', en: 'Online Only'},
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: [], // Online only
-                    link: 'https://t.co/hB691i5o7C',
-                    fees: { initialNum: 2000, shippingNum: 0, note: { zh: '含掛號+運費¥2,000', en: 'Incl Reg + Ship' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [{ price: 12000, months: 1, type: 'regular' },{ price: 33900, months: 3, type: 'initial' },{ price: 34920, months: 3, type: 'regular' },{ price: 66000, months: 6, type: 'initial' }, { price: 67680, months: 6, type: 'regular' }],
-                        '5mg':   [{ price: 25000, months: 1, type: 'initial' },{ price: 27000, months: 1, type: 'regular' },{ price: 74000, months: 3, type: 'initial' },{ price: 78570, months: 3, type: 'regular' },{ price: 135000, months: 6, type: 'initial' }, { price: 152280, months: 6, type: 'regular' }],
-                        '7.5mg':   [{ price: 36000, months: 1, type: 'initial' },{ price: 38000, months: 1, type: 'regular' },{ price: 107000, months: 3, type: 'initial' },{ price: 110500, months: 3, type: 'regular' },{ price: 198000, months: 6, type: 'initial' }, { price: 214320, months: 6, type: 'regular' }],
-                        '10mg':   [{ price: 45000, months: 1, type: 'initial' },{ price: 47000, months: 1, type: 'regular' },{ price: 131000, months: 3, type: 'initial' },{ price: 136700, months: 3, type: 'regular' }]
+                        '7.5mg':   [{ price: 40000, months: 1 }],
+                        '2.5mg+5mg':   [{ price: 22000, months: 1 }],
                     }
                 },
                 {
@@ -848,7 +868,7 @@
                 },
                 {
                     id: 'Wakeari',
-                    name: { zh: 'Wakeari診所', en: 'Wakeari Clinic' },
+                    name: { zh: 'Wakeari減量堂', en: 'Wakeari Diet Clinic' },
                     tags: [
                         { zh: '線上(電話)診療', en: 'Online(Telemedic) Clinic' },
                         { zh: '預約須日本門號', en: 'Need JP Phone#' },
@@ -899,10 +919,10 @@
                     name: { zh: '澀谷 Kimura 診所', en: 'Shibuya Kimura Clinic' },
                     tags: [
                         { zh: '中文服務', en: 'Chinese Support' },
-                        { zh: '線下/線上', en: 'Offline/Online' }
+                        { zh: '線下/線上', en: 'Offline/Online' },
+                         { zh: '需血檢或提供血檢報告', en: 'Need Blood Test or Porvide Test Result' },
                     ],
                     locations: ['kanto'],
-                    // offlineOnly: true, REMOVED per user request
                     link: 'https://www.threads.net/@shibuyakimura_clinic',
                     fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需自付運費', en: 'Shipping fee extra' } },
                     freeShipping: false,
@@ -975,24 +995,6 @@
                         '15mg': [{ price: 57000, months: 1 }, { price: 168000, months: 3 }]
                     }
                 },
-                {
-                    id: 'pokekuri',
-                    name: { zh: 'Pokekuri', en: 'Pokekuri' },
-                    tags: [
-                        { zh: '線上診療', en: 'Online Clinic' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' }
-                    ],
-                    locations: [],
-                    link: 'https://x.com/pokekuri?t=v44jYexZkPzy-bYR1k8chA&s=09',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
-                    freeShipping: true,
-                    prices: {
-                        '2.5mg': [{ price: 15800, months: 1 }, { price: 29600, months: 2 }, { price: 40500, months: 3 }],
-                        '5mg': [{ price: 27700, months: 1 }, { price: 52000, months: 2 }, { price: 73200, months: 3 }],
-                        '7.5mg': [{ price: 38900, months: 1 }, { price: 72000, months: 2 }, { price: 98700, months: 3 }],
-                        '2.5mg+5mg': [{ price: 22200, months: 1 }, { price: 41500, months: 2 }]
-                    }
-                }
             ];
 
             const getRegFee = (clinic) => {
@@ -1048,6 +1050,64 @@
                         return true;
                     });
                 }
+            };
+            
+            // New Helper: Calculate cheapest combination for target months using DP
+            const calculateOptimalCombination = (clinic, dosage, targetMonths) => {
+                let plans = clinic.prices[dosage];
+                if (!plans) return null;
+                
+                // IMPORTANT: Filter plans by user type for the calculator too!
+                plans = filterPricesByUserType(plans);
+                if (plans.length === 0) return null;
+
+                // Max months is 6. Working in 0.5 steps to support trial plans.
+                // targetMonths is integer from input, but let's be safe.
+                const maxUnits = Math.round(targetMonths * 2);
+                const dp = new Array(maxUnits + 1).fill(null);
+                
+                // Base case: 0 cost for 0 months
+                dp[0] = { cost: 0, plans: [] };
+
+                if (clinic.singleUsePlans) {
+                    // 0/1 Knapsack: iterate plans outer, capacities inner (backwards)
+                    for (let plan of plans) {
+                        const planUnits = Math.round(plan.months * 2);
+                        for (let i = maxUnits; i >= planUnits; i--) {
+                            const remainder = i - planUnits;
+                            if (dp[remainder]) {
+                                const newCost = dp[remainder].cost + plan.price;
+                                if (!dp[i] || newCost < dp[i].cost) {
+                                    dp[i] = {
+                                        cost: newCost,
+                                        plans: [...dp[remainder].plans, plan]
+                                    };
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Unbounded Knapsack: iterate capacities outer, plans inner
+                    for (let i = 1; i <= maxUnits; i++) {
+                        for (let plan of plans) {
+                            const planUnits = Math.round(plan.months * 2);
+                            if (planUnits <= i) {
+                                const remainder = i - planUnits;
+                                if (dp[remainder]) {
+                                    const newCost = dp[remainder].cost + plan.price;
+                                    if (!dp[i] || newCost < dp[i].cost) {
+                                        dp[i] = {
+                                            cost: newCost,
+                                            plans: [...dp[remainder].plans, plan]
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return dp[maxUnits];
             };
 
             // Logic Helpers
@@ -1236,19 +1296,38 @@
                 let calculatedDrugPrice = null;
                 let calcNoteKey = '';
 
-                if (targetDuration === 6) {
-                    const price3mo = prices.find(p => p.months === 3);
-                    const price2mo = prices.find(p => p.months === 2);
-                    const price1mo = prices.find(p => p.months === 1);
-                    if (price3mo) { calculatedDrugPrice = price3mo.price * 2; calcNoteKey = 'base3x2'; }
-                    else if (price2mo) { calculatedDrugPrice = price2mo.price * 3; calcNoteKey = 'base2x3'; }
-                    else if (price1mo) { calculatedDrugPrice = price1mo.price * 6; calcNoteKey = 'base1x6'; }
-                } else if (targetDuration === 3) {
-                    const price1mo = prices.find(p => p.months === 1);
-                    if (price1mo) { calculatedDrugPrice = price1mo.price * 3; calcNoteKey = 'base1x3'; }
-                } else if (targetDuration === 2) {
-                    const price1mo = prices.find(p => p.months === 1);
-                    if (price1mo) { calculatedDrugPrice = price1mo.price * 2; calcNoteKey = 'base1x2'; }
+                if (clinic.singleUsePlans) {
+                    // Just use DP to find if there's a valid combination!
+                    const optimal = calculateOptimalCombination(clinic, dosage, targetDuration);
+                    if (optimal && optimal.plans.length > 0 && optimal.cost > 0) {
+                        calculatedDrugPrice = optimal.cost;
+                        return [{
+                            label: `${targetDuration} ${t.months} (${t.est})`,
+                            price: calculatedDrugPrice,
+                            totalPrice: calculateTotal(calculatedDrugPrice, targetDuration),
+                            drugPriceOnly: calculatedDrugPrice,
+                            months: targetDuration,
+                            isCalculated: true,
+                            calculationNote: t.calcNotes['mixed']
+                        }];
+                    } else {
+                        return [];
+                    }
+                } else {
+                    if (targetDuration === 6) {
+                        const price3mo = prices.find(p => p.months === 3);
+                        const price2mo = prices.find(p => p.months === 2);
+                        const price1mo = prices.find(p => p.months === 1);
+                        if (price3mo) { calculatedDrugPrice = price3mo.price * 2; calcNoteKey = 'base3x2'; }
+                        else if (price2mo) { calculatedDrugPrice = price2mo.price * 3; calcNoteKey = 'base2x3'; }
+                        else if (price1mo) { calculatedDrugPrice = price1mo.price * 6; calcNoteKey = 'base1x6'; }
+                    } else if (targetDuration === 3) {
+                        const price1mo = prices.find(p => p.months === 1);
+                        if (price1mo) { calculatedDrugPrice = price1mo.price * 3; calcNoteKey = 'base1x3'; }
+                    } else if (targetDuration === 2) {
+                        const price1mo = prices.find(p => p.months === 1);
+                        if (price1mo) { calculatedDrugPrice = price1mo.price * 2; calcNoteKey = 'base1x2'; }
+                    }
                 }
 
                 if (calculatedDrugPrice !== null) {
@@ -1322,44 +1401,6 @@
                 .sort((a, b) => getClinicSortValue(a) - getClinicSortValue(b));
 
             const totalSelectedMonths = Object.values(cart).reduce((sum, val) => sum + val, 0);
-
-            // New Helper: Calculate cheapest combination for target months using DP
-            const calculateOptimalCombination = (clinic, dosage, targetMonths) => {
-                let plans = clinic.prices[dosage];
-                if (!plans) return null;
-                
-                // IMPORTANT: Filter plans by user type for the calculator too!
-                plans = filterPricesByUserType(plans);
-                if (plans.length === 0) return null;
-
-                // Max months is 6. Working in 0.5 steps to support trial plans.
-                // targetMonths is integer from input, but let's be safe.
-                const maxUnits = Math.round(targetMonths * 2);
-                const dp = new Array(maxUnits + 1).fill(null);
-                
-                // Base case: 0 cost for 0 months
-                dp[0] = { cost: 0, plans: [] };
-
-                for (let i = 1; i <= maxUnits; i++) {
-                    for (let plan of plans) {
-                        const planUnits = Math.round(plan.months * 2);
-                        if (planUnits <= i) {
-                            const remainder = i - planUnits;
-                            if (dp[remainder]) {
-                                const newCost = dp[remainder].cost + plan.price;
-                                if (!dp[i] || newCost < dp[i].cost) {
-                                    dp[i] = {
-                                        cost: newCost,
-                                        plans: [...dp[remainder].plans, plan]
-                                    };
-                                }
-                            }
-                        }
-                    }
-                }
-
-                return dp[maxUnits];
-            };
 
             const getCalculatorResults = () => {
                 const results = [];
@@ -2072,4 +2113,3 @@
     </script>
 </body>
 </html>
-
