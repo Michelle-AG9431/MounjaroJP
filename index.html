@@ -543,6 +543,24 @@
                         ]
                     }
                 },
+                  {
+                    id: 'Angel',
+                    name: { zh: '東京大森天使診所', en: 'Tokyo Omori Angel Clinic' },
+                    tags: [
+                        { zh: '線下診療', en: 'Offline Clinic' },
+                        { zh: '需通日文', en: 'Japanese Speakers only' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                    ],
+                    locations: ['kanto'], 
+                    offlineOnly: true, // Mark as offline only
+                    link: 'https://omori-angel.com/menu/selfpay-medical/medical-diet.html',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 9900, months: 1 }],
+                        '5mg': [{ price: 17600, months: 1 }],
+                    }
+                },
                  {
                     id: 'UB',
                     name: { zh: 'UB美容皮膚科診所', en: 'UB Beauty Clinic' },
@@ -2108,4 +2126,5 @@
     </script>
 </body>
 </html>
+
 
