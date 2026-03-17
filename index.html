@@ -457,14 +457,15 @@
              const clinics = [
                 {
                     id: 'Lafee',
-                     name: { zh: 'La Fee/Wellness Plus醫美診所(e-life平台特惠)', en: 'La Fee/Wellness Plus Clinic (Special Deal on e-life shop)' },
-                      tags: [
-                          { zh: '線下診療', en: 'Offline Clinic' },
-                          { zh: '需通日文', en: 'Japanese Speakers only' },
-                          { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' },
-                          { zh: '只有購買證明', en: 'Purchase Invoice Only' },
-                          { zh: '同一張優惠券每月限購一次', en: 'limit one purchase per month per coupon' },
-                      ],
+                    name: { zh: 'La Fee/Wellness Plus醫美診所(e-life平台特惠)', en: 'La Fee/Wellness Plus Clinic (Special Deal on e-life shop)' },
+                    tags: [
+                        { zh: '線下診療', en: 'Offline Clinic' },
+                        { zh: '需通日文', en: 'Japanese Speakers only' },
+                        { zh: '每種月份優惠券限購1張', en: '1 coupon per plan/tx' }, // Coupon constraint tag
+                        { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' },
+                        { zh: '同一張優惠券每月限購一次', en: 'limit one purchase per month per coupon' },
+                    ],
                     locations: ['kanto'], 
                     offlineOnly: true, // Mark as offline only
                     singleUsePlans: true, // DP logic constraint: each plan can only be picked once
@@ -499,16 +500,17 @@
                         ]
                     }
                 },
-                 {
+                {
                     id: 'Wellness',
-                     name: { zh: 'La Fee/Wellness Plus醫美診所(Luxora平台特惠)', en: 'La Fee/Wellness Plus Clinic (Special Deal on Luxora shop)' },
-                      tags: [
-                          { zh: '線下診療', en: 'Offline Clinic' },
-                          { zh: '需通日文', en: 'Japanese Speakers only' },
-                          { zh: '加Luxora Line帳號再送2500折價券', en: '2500 Yen Coupon via Luxora Line account' },
-                          { zh: '只有購買證明', en: 'Purchase Invoice Only' },
-                          { zh: '同一張優惠券每月限購一次', en: 'limit one purchase per month per coupon' },
-                      ],
+                    name: { zh: 'La Fee/Wellness Plus醫美診所(Luxora平台特惠)', en: 'La Fee/Wellness Plus Clinic (Special Deal on Luxora shop)' },
+                    tags: [
+                        { zh: '線下診療', en: 'Offline Clinic' },
+                        { zh: '需通日文', en: 'Japanese Speakers only' },
+                        { zh: '每種月份優惠券限購1張', en: '1 coupon per plan/tx' }, // Coupon constraint tag
+                        { zh: '加Luxora Line帳號再送2500折價券', en: '2500 Yen Coupon via Luxora Line account' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' },
+                        { zh: '同一張優惠券每月限購一次', en: 'limit one purchase per month per coupon' },
+                    ],
                     locations: ['kanto'], 
                     offlineOnly: true, // Mark as offline only
                     singleUsePlans: true, // DP logic constraint: each plan can only be picked once
@@ -543,7 +545,29 @@
                         ]
                     }
                 },
-                  {
+                {
+                    id: 'cocomil',
+                    name: { zh: 'CocoMil醫美診所', en: 'CocoMil Clinic' },
+                    tags: [
+                        { zh: '中文服務', en: 'Chinese Support'},
+                        { zh: '線上線下', en: 'Online/Offline'},
+                        { zh: '線上免掛號費', en: 'Online: Free Reg' },
+                        { zh: '高劑量需詢問', en: 'Higher Dose subject to inquiry' },
+                        { zh: '診斷書+3300', en: '+3300 for prescription' },
+                    ],
+                    locations: ['kansai'],
+                    link: 'http://lin.ee/CtzTDojh', 
+                    fees: { initialNum: 1500, shippingNum: 2200, offlineRegFee: 1500, onlineRegFee: 0, note: { zh: '線下掛號費¥1500/線上免掛號', en: 'Offline Reg ¥1500 / Online Free Reg' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 12000, months: 1 }],
+                        '5mg':   [{ price: 20500, months: 1 }],
+                        '7.5mg': [{ price: 29500, months: 1 }],
+                        '10mg':  [{ price: 44200, months: 1 }],
+                        '2.5mg+5mg': [{ price: 16500, months: 1 }], 
+                    }
+                },
+                {
                     id: 'Angel',
                     name: { zh: '東京大森天使診所', en: 'Tokyo Omori Angel Clinic' },
                     tags: [
@@ -561,7 +585,7 @@
                         '5mg': [{ price: 17600, months: 1 }],
                     }
                 },
-                 {
+                {
                     id: 'UB',
                     name: { zh: 'UB美容皮膚科診所', en: 'UB Beauty Clinic' },
                     tags: [
@@ -599,6 +623,32 @@
                         '2.5mg': [{ price: 12000, months: 1 }],
                         '5mg': [{ price: 21500, months: 1 }],
                         '7.5mg': [{ price: 31500, months: 1 }]
+                    }
+                },
+                {
+                    id: 'ikegawa',
+                    name: { zh: '池川内科', en: 'Ikegawa Internal Medicine' },
+                    tags: [
+                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' }
+                    ],
+                    link: 'https://lin.ee/AX891RZ',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } }, // Shipping calculated dynamically
+                    locations: ['kansai'], // Assumed offline location based on cheapest shipping
+                    freeShipping: false,
+                    shipping_rules: {
+                        'hokkaido': 2500,
+                        'tohoku': 1500, 'kanto': 1500, 'shinetsu': 1500,
+                        'kansai': 1000, 'chubu': 1000, 'hokuriku': 1000, 'shikoku': 1000, 'chugoku': 1000, 'kyushu': 1000,
+                        'okinawa': 2000,
+                        'default': 1500 // Fallback
+                    },
+                    prices: {
+                        '2.5mg': [{ price: 12500, months: 1 }, { price: 6250, months: 0.5 }], // 0.5 month = 2 pens (minimum)
+                        '5mg': [{ price: 24500, months: 1 }, { price: 12250, months: 0.5 }],
+                        '7.5mg': [{ price: 37500, months: 1 }, { price: 18750, months: 0.5 }],
+                        '10mg': [{ price: 42000, months: 1 }, { price: 21000, months: 0.5 }],
+                        '12.5mg': [{ price: 55000, months: 1 }, { price: 27500, months: 0.5 }],
+                        '15mg': [{ price: 80000, months: 1 }, { price: 40000, months: 0.5 }]
                     }
                 },
                 {
@@ -656,53 +706,6 @@
                         '10mg':  [{ price: 52700, months: 1 }],
                     }
                 },
-                 {
-                    id: 'cocomil',
-                    name: { zh: 'CocoMil醫美診所', en: 'CocoMil Clinic' },
-                    tags: [
-                        { zh: '中文服務', en: 'Chinese Support'},
-                        { zh: '線上診療', en: 'Online Clinic'},
-                        { zh: '現在免掛號費', en: 'No Reg Fee Now' },
-                        { zh: '高劑量需詢問', en: 'Higher Dose subject to inquiry' },
-                    ],
-                    locations: [''],
-                    link: 'http://lin.ee/CtzTDojh', 
-                    fees: { initialNum: 0, shippingNum: 2000, note: { zh: '自付運費', en: 'Shipping fee extra' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [{ price: 12000, months: 1 }],
-                        '5mg':   [{ price: 20500, months: 1 }],
-                        '7.5mg': [{ price: 29500, months: 1 }],
-                        '10mg':  [{ price: 44200, months: 1 }],
-                       '2.5mg+5mg': [{ price: 16500, months: 1 }], 
-                    }
-                },
-                {
-                    id: 'pococlinic',
-                    name: { zh: '狸貓診所 (Poco)', en: 'Poco Clinic' },
-                    tags: [
-                        { zh: '用Zoom線上診療', en: 'Online Clinic Via Zoom' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    link: 'https://x.com/poco_clinic?t=J1lyy3oqNA6Ozcv3lpg18A&s=09',
-                    locations: [], // Online focused
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費/含運', en: 'Free Reg/Ship' } },
-                    freeShipping: true,
-                    prices: {
-                        '2.5mg': [{ price: 13500, months: 1 }, { price: 26000, months: 2 }, { price: 36000, months: 3 }],
-                        '5mg': [{ price: 23500, months: 1 }, { price: 45500, months: 2 }, { price: 64000, months: 3 }],
-                        '7.5mg': [{ price: 36000, months: 1 }, { price: 66000, months: 2 }, { price: 88000, months: 3 }],
-                        '10mg': [{ price: 42000, months: 1 }, { price: 81500, months: 2 }, { price: 116000, months: 3 }],
-                        '12.5mg': [{ price: 51000, months: 1 }, { price: 100000, months: 2 }, { price: 144000, months: 3 }],
-                        '15mg': [{ price: 58000, months: 1 }, { price: 114500, months: 2 }, { price: 165000, months: 3 }],
-                        '2.5mg+5mg': [{ price: 18500, months: 1 }, { price: 35750, months: 2 }],
-                        '5mg+7.5mg': [{ price: 29750, months: 1 }, { price: 55750, months: 2 }],
-                        '7.5mg+10mg': [{ price: 39000, months: 1 }, { price: 73750, months: 2 }],
-                        '10mg+12.5mg': [{ price: 46500, months: 1 }, { price: 90750, months: 2 }],
-                        '12.5mg+15mg': [{ price: 54500, months: 1 }, { price: 107250, months: 2 }]
-                    }
-                },
                 {
                     id: 'osaka-light',
                     name: { zh: 'Light Clinic', en: 'Light Clinic' },
@@ -724,7 +727,7 @@
                         '15mg':  [{ price: 52000, months: 1 }]
                     }
                 },
-                  {
+                {
                     id: 'phd',
                     name: { zh: 'Phd線上診所', en: 'PHD Online Clinic' },
                     tags: [
@@ -742,7 +745,7 @@
                         '10mg':  [{ price: 43000, months: 1 }],
                     }
                 },
-                    {
+                {
                     id: 'up',
                     name: { zh: 'Up 診所', en: 'Clinic Up' },
                     tags: [
@@ -797,7 +800,7 @@
                         '15mg':  [{ price: 62000, months: 1 }]
                     }
                 },
-    {
+                {
                     id: 'babafukuoka',
                     name: { zh: '馬場全方位照護診所', en: 'Baba Total Care Clinic' },
                     tags: [
@@ -819,7 +822,7 @@
                         '15mg':  [{ price: 26500, months: 0.5 },{ price: 53000, months: 1 }]
                     }
                 },
-                 {
+                {
                     id: 'theclinic',
                     name: { zh: 'The Clinic(大阪/福岡）', en: 'The Clinic（Osaka/Fukuoka)' },
                     tags: [
@@ -839,6 +842,28 @@
                     }
                 },
                 {
+                    id: 'Central',
+                    name: { zh: '新宿Central外來診所', en: 'Shinjuku Central Clinic' },
+                    tags: [
+                        { zh: '中文服務', en: 'Chinese Support' },
+                        { zh: '線下看診', en: 'Offline Clinic' },
+                        { zh: '此為現金價', en: 'Cash Only' }
+                    ],
+                    locations: ['kanto'],
+                    offlineOnly: true,
+                    link: 'https://www.threads.com/@centralhikashi',
+                    fees: { initialNum: 0, returningNum: 0, shippingNum: 0, note: { zh: '現金價', en: 'Cash Only' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 13000, months: 1 }],
+                        '5mg':   [{ price: 26000, months: 1 }],
+                        '7.5mg': [{ price: 39100, months: 1 }],
+                        '10mg':  [{ price: 50000, months: 1 }],
+                        '12.5mg':  [{ price: 63000, months: 1 }],
+                        '15mg':  [{ price: 86000, months: 1 }]
+                    }
+                },
+                {
                     id: 'Yoroshii',
                     name: { zh: '悠樂喜醫', en: 'E-health Clinic', jp: 'yoroshii_medical' },
                     tags: [
@@ -854,6 +879,25 @@
                         '5mg':   [{ price: 21000, months: 1 },{ price: 81000, months: 3 },{ price: 162000, months: 6 }],
                         '7.5mg':   [{ price: 40000, months: 1 }],
                         '2.5mg+5mg':   [{ price: 22000, months: 1 }],
+                    }
+                },
+                {
+                    id: 'kirei',
+                    name: { zh: 'Kirei Repo 線上診所', en: 'Kirei Repo Online Clinic' },
+                    tags: [
+                        { zh: '線上診療', en: 'Online Only'},
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                    ],
+                    locations: [], // Online only
+                    link: 'https://t.co/hB691i5o7C',
+                    fees: { initialNum: 2000, shippingNum: 0, note: { zh: '含掛號+運費¥2,000', en: 'Incl Reg + Ship' } },
+                    freeShipping: false,
+                    prices: {
+                        '2.5mg': [{ price: 12000, months: 1, type: 'regular' },{ price: 33900, months: 3, type: 'initial' },{ price: 34920, months: 3, type: 'regular' },{ price: 66000, months: 6, type: 'initial' }, { price: 67680, months: 6, type: 'regular' }],
+                        '5mg':   [{ price: 25000, months: 1, type: 'initial' },{ price: 27000, months: 1, type: 'regular' },{ price: 74000, months: 3, type: 'initial' },{ price: 78570, months: 3, type: 'regular' },{ price: 135000, months: 6, type: 'initial' }, { price: 152280, months: 6, type: 'regular' }],
+                        '7.5mg':   [{ price: 36000, months: 1, type: 'initial' },{ price: 38000, months: 1, type: 'regular' },{ price: 107000, months: 3, type: 'initial' },{ price: 110500, months: 3, type: 'regular' },{ price: 198000, months: 6, type: 'initial' }, { price: 214320, months: 6, type: 'regular' }],
+                        '10mg':   [{ price: 45000, months: 1, type: 'initial' },{ price: 47000, months: 1, type: 'regular' },{ price: 131000, months: 3, type: 'initial' },{ price: 136700, months: 3, type: 'regular' }]
                     }
                 },
                 {
@@ -906,28 +950,6 @@
                     }
                 },
                 {
-                    id: 'Central',
-                    name: { zh: '新宿Central外來診所', en: 'Shinjuku Central Clinic' },
-                    tags: [
-                        { zh: '中文服務', en: 'Chinese Support' },
-                        { zh: '線下看診', en: 'Offline Clinic' },
-                        { zh: '此為現金價', en: 'Cash Only' }
-                    ],
-                    locations: ['kanto'],
-                    offlineOnly: true,
-                    link: 'https://www.threads.com/@centralhikashi',
-                    fees: { initialNum: 0, returningNum: 0, shippingNum: 0, note: { zh: '現金價', en: 'Cash Only' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [{ price: 13000, months: 1 }],
-                        '5mg':   [{ price: 26000, months: 1 }],
-                        '7.5mg': [{ price: 39100, months: 1 }],
-                        '10mg':  [{ price: 50000, months: 1 }],
-                        '12.5mg':  [{ price: 63000, months: 1 }],
-                        '15mg':  [{ price: 86000, months: 1 }]
-                    }
-                },
-                 {
                     id: 'shibuya',
                     name: { zh: '澀谷 Kimura 診所', en: 'Shibuya Kimura Clinic' },
                     tags: [
@@ -1008,12 +1030,41 @@
                         '15mg': [{ price: 57000, months: 1 }, { price: 168000, months: 3 }]
                     }
                 },
+                {
+                    id: 'pokekuri',
+                    name: { zh: 'Pokekuri', en: 'Pokekuri' },
+                    tags: [
+                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' }
+                    ],
+                    locations: [],
+                    link: 'https://x.com/pokekuri?t=v44jYexZkPzy-bYR1k8chA&s=09',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    freeShipping: true,
+                    prices: {
+                        '2.5mg': [{ price: 15800, months: 1 }, { price: 29600, months: 2 }, { price: 40500, months: 3 }],
+                        '5mg': [{ price: 27700, months: 1 }, { price: 52000, months: 2 }, { price: 73200, months: 3 }],
+                        '7.5mg': [{ price: 38900, months: 1 }, { price: 72000, months: 2 }, { price: 98700, months: 3 }],
+                        '2.5mg+5mg': [{ price: 22200, months: 1 }, { price: 41500, months: 2 }]
+                    }
+                }
             ];
 
             const getRegFee = (clinic) => {
-                if (userType === 'new') return clinic.fees.initialNum;
+                let baseFee = 0;
+                if (userType === 'new') baseFee = clinic.fees.initialNum;
                 // If returning fee is not defined, default to initial fee (assuming same price)
-                return clinic.fees.returningNum !== undefined ? clinic.fees.returningNum : clinic.fees.initialNum;
+                else baseFee = clinic.fees.returningNum !== undefined ? clinic.fees.returningNum : clinic.fees.initialNum;
+
+                const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
+                
+                if (isOffline && clinic.fees.offlineRegFee !== undefined) {
+                    return clinic.fees.offlineRegFee;
+                } else if (!isOffline && clinic.fees.onlineRegFee !== undefined) {
+                    return clinic.fees.onlineRegFee;
+                }
+
+                return baseFee;
             };
 
             const getShippingFee = (clinic, userRegion, months) => {
@@ -1937,7 +1988,7 @@
                                                     <p className="text-sm text-stone-500 font-sans mb-3 flex items-start gap-2 min-w-0"><span className="bg-stone-100 px-2 py-1 rounded text-xs break-words whitespace-normal inline-block">{res.breakdown}</span></p>
                                                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-400 font-sans min-w-0">
                                                         <span>{t.meds}: {formatCurrency(res.meds)}</span>
-                                                        {getRegFee(res.clinic) > 0 && <span>+ {t.regFee}: {formatCurrency(getRegFee(res.clinic))}</span>}
+                                                        {getRegFee(res.clinic, region) > 0 && <span>+ {t.regFee}: {formatCurrency(getRegFee(res.clinic, region))}</span>}
                                                         {shippingCost > 0 ? (
                                                             <span>+ {t.shipFee}: {formatCurrency(shippingCost)}</span>
                                                         ) : (
@@ -2029,7 +2080,7 @@
                                                                     return <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 flex items-center gap-1 font-sans shrink-0"><Icons.Truck size={10}/> {t.shippingExtra}</span>;
                                                                 }
                                                             })()}
-                                                            <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 font-sans shrink-0">{t.regFeeLabel}: {formatCurrency(getRegFee(clinic))}</span>
+                                                            <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 font-sans shrink-0">{t.regFeeLabel}: {formatCurrency(getRegFee(clinic, region))}</span>
                                                             {clinic.tags.map((tagObj, idx) => <span key={idx} className="text-[10px] uppercase tracking-widest bg-stone-50 text-stone-400 px-2 py-1 font-sans shrink-0">{tagObj[lang]}</span>)}
                                                         </div>
                                                     </div>
@@ -2077,7 +2128,7 @@
                                                                 </div>
                                                                 <div className="mt-2 pt-2 border-t border-stone-100 text-[10px] text-stone-400 flex flex-col gap-0.5 font-sans min-w-0">
                                                                     <div className="flex justify-between gap-2"><span>{t.meds}</span><span className="text-right whitespace-nowrap">{formatCurrency(item.drugPriceOnly)}</span></div>
-                                                                    {getRegFee(clinic) > 0 && <div className="flex justify-between gap-2"><span>{t.regFee}</span><span className="text-right whitespace-nowrap">+ {formatCurrency(getRegFee(clinic))}</span></div>}
+                                                                    {getRegFee(clinic, region) > 0 && <div className="flex justify-between gap-2"><span>{t.regFee}</span><span className="text-right whitespace-nowrap">+ {formatCurrency(getRegFee(clinic, region))}</span></div>}
                                                                     {shippingCost > 0 ? (
                                                                         <div className="flex justify-between gap-2"><span>{t.shipFee}</span><span className="text-right whitespace-nowrap">+ {formatCurrency(shippingCost)}</span></div>
                                                                     ) : (
@@ -2126,5 +2177,3 @@
     </script>
 </body>
 </html>
-
-
