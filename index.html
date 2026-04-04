@@ -994,14 +994,12 @@
                     tags: [
                          { zh: '線上/線下診療', en: 'Online/Offline Clinic' },
                          { zh: '電話看診', en: 'Telemedic Clinic' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-                        { zh: '線下再折2000円', en: '2000Yen Off for Offline' }
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' }
                     ],
                     locations: ['kansai'], // Shiga
                     link: 'https://jrsandaaga.com/',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
-                    freeShipping: true,
-                    offlineDiscount: 2000, // Added discount property
+                    fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    freeShipping: false,
                     prices: {
                          '2.5mg': [{ price: 9950, months: 1 }, { price: 19300, months: 2 }, { price: 28650, months: 3 }],
                         '5mg': [{ price: 19980, months: 1 }, { price: 39300, months: 2 }, { price: 58300, months: 3 }],
