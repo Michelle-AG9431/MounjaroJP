@@ -576,6 +576,7 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kanto'], 
+                    maxTotalMonths: 3, // Added restriction for The Clinic
                     offlineOnly: true, // Mark as offline only
                     link: 'https://omori-angel.com/menu/selfpay-medical/medical-diet.html',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
@@ -846,21 +847,21 @@
                     name: { zh: '新宿Central外來診所', en: 'Shinjuku Central Clinic' },
                     tags: [
                         { zh: '中文服務', en: 'Chinese Support' },
-                        { zh: '線下看診', en: 'Offline Clinic' },
-                        { zh: '此為現金價', en: 'Cash Only' }
+                        { zh: '線上/線下', en: 'Online Clinic' },
+                        { zh: '診斷書+3300', en: '+3300 for prescription' },
                     ],
                     locations: ['kanto'],
-                    offlineOnly: true,
+                    offlineOnly: false,
                     link: 'https://www.threads.com/@centralhikashi',
-                    fees: { initialNum: 0, returningNum: 0, shippingNum: 0, note: { zh: '現金價', en: 'Cash Only' } },
+                    fees: { initialNum: 0, returningNum: 0, shippingNum: 0.  note: { zh: '運費另計', en: 'Shipping Extra'  },
                     freeShipping: false,
                     prices: {
-                        '2.5mg': [{ price: 13000, months: 1 }],
-                        '5mg':   [{ price: 26000, months: 1 }],
-                        '7.5mg': [{ price: 39100, months: 1 }],
-                        '10mg':  [{ price: 50000, months: 1 }],
+                        '2.5mg': [{ price: 12000, months: 1 }],
+                        '5mg':   [{ price: 20500, months: 1 }],
+                        '7.5mg': [{ price: 29500, months: 1 }],
+                        '10mg':  [{ price: 43500, months: 1 }],
                         '12.5mg':  [{ price: 63000, months: 1 }],
-                        '15mg':  [{ price: 86000, months: 1 }]
+                        '15mg':  [{ price: 76800, months: 1 }]
                     }
                 },
                 {
@@ -999,7 +1000,8 @@
                     locations: ['kansai'], // Shiga
                     link: 'https://jrsandaaga.com/',
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
-                    freeShipping: false,
+                    freeShipping: false,
+
                     prices: {
                          '2.5mg': [{ price: 9950, months: 1 }, { price: 19300, months: 2 }, { price: 28650, months: 3 }],
                         '5mg': [{ price: 19980, months: 1 }, { price: 39300, months: 2 }, { price: 58300, months: 3 }],
