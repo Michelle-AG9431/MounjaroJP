@@ -455,51 +455,15 @@
 
             // --- Data ---
              const clinics = [
-                {
-                    id: 'Lafee',
-                    name: { zh: 'La Fee/Wellness Plus醫美診所(e-life平台特惠)', en: 'La Fee/Wellness Plus Clinic (Special Deal on e-life shop)' },
-                    tags: [
-                        { zh: '線下診療', en: 'Offline Clinic' },
-                        { zh: '需通日文', en: 'Japanese Speakers only' },
-                        { zh: '每種月份優惠券限購1張', en: '1 coupon per plan/tx' }, // Coupon constraint tag
-                        { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' },
-                        { zh: '同一張優惠券每月限購一次', en: 'limit one purchase per month per coupon' },
-                    ],
-                    locations: ['kanto'], 
-                    offlineOnly: true, // Mark as offline only
-                    singleUsePlans: true, // DP logic constraint: each plan can only be picked once
-                    link: 'https://shop.elife.clinic/search?q=%E3%83%9E%E3%83%B3%E3%82%B8%E3%83%A3%E3%83%AD&options%5Bprefix%5D=last',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [
-                            { price: 9980, months: 1 },
-                            { price: 29940, months: 3 },
-                            { price: 59880, months: 6 }
-                        ],
-                        '5mg': [
-                            { price: 17980, months: 1 },
-                            { price: 53940, months: 3 },
-                            { price: 107880, months: 6 }
-                        ],
-                        '7.5mg': [
-                            { price: 26980, months: 1 },
-                            { price: 80940, months: 3 },
-                            { price: 161880, months: 6 }
-                        ],
-                        '10mg': [
-                            { price: 35980, months: 1 },
-                            { price: 107940, months: 3 },
-                            { price: 215880, months: 6 }
-                        ],
-                        '12.5mg': [
-                            { price: 51980, months: 1 },
-                            { price: 155940, months: 3 },
-                            { price: 311880, months: 6 }
-                        ]
-                    }
-                },
+                // { id: 'Lafee', name: { zh: 'La Fee/Wellness Plus醫美診所(e-life平台特惠)', en: 'La Fee/Wellness Plus Clinic (Special Deal on e-life shop)' },tags: [ { zh: '線下診療', en: 'Offline Clinic' },      { zh: '需通日文', en: 'Japanese Speakers only' },    { zh: '每種月份優惠券限購1張', en: '1 coupon per plan/tx' }, // Coupon constraint ta       { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' }, { zh: '只有購買證明', en: 'Purchase Invoice Only' },   { zh: '同一張優惠券每月限購一次', en: 'limit one purchase per month per coupon' }, ],
+                  //  locations: ['kanto'], offlineOnly: true, // Mark as offline only singleUsePlans: true, // DP logic constraint: each plan can only be picked oncelink: 'https://shop.elife.clinic/search?q=%E3%83%9E%E3%83%B3%E3%82%B8%E3%83%A3%E3%83%AD&options%5Bprefix%5D=last',  fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },  freeShipping: false,
+            //  prices: { '2.5mg': [ { price: 9980, months: 1 }, { price: 29940, months: 3 },{ price: 59880, months: 6 }],
+                     //   '5mg': [ { price: 17980, months: 1 },{ price: 53940, months: 3 },{ price: 107880, months: 6 }],
+                     //   '7.5mg': [{ price: 26980, months: 1 }, { price: 80940, months: 3 },{ price: 161880, months: 6 } ],
+                    //    '10mg': [  { price: 35980, months: 1 }, { price: 107940, months: 3 },{ price: 215880, months: 6 }],
+                        // '12.5mg': [{ price: 51980, months: 1 }, { price: 155940, months: 3 }, { price: 311880, months: 6 } ]
+//  }
+         //       },
                 {
                     id: 'Wellness',
                     name: { zh: 'La Fee/Wellness Plus醫美診所(Luxora平台特惠)', en: 'La Fee/Wellness Plus Clinic (Special Deal on Luxora shop)' },
