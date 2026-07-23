@@ -618,18 +618,37 @@
                     tags: [
                         { zh: '線上診療', en: 'Online Clinic' },
                         { zh: '全國配送', en: 'Nationwide Delivery' },
-                        { zh: '總量需買滿2個月', en: 'Min Purchase: 2 Months' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [], // Online
                     link: 'https://x.com/tokyosilkclinic',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: true,
-                    minTotalMonths: 2,
                     prices: {
-                        '2.5mg': [{ price: 12000, months: 1 }],
-                        '5mg': [{ price: 21500, months: 1 }],
-                        '7.5mg': [{ price: 31500, months: 1 }]
+                        '2.5mg': [
+            { price: 12000, months: 1 },
+            { price: 20000, months: 2 }, // 10000 * 2
+            { price: 30000, months: 3 }, // 10000 * 3
+            { price: 40000, months: 4 }, // 10000 * 4
+            { price: 50000, months: 5 }, // 10000 * 5
+            { price: 48000, months: 6 }  // 8000 * 6
+        ],
+        '5mg': [
+            { price: 18000, months: 1 },
+            { price: 32000, months: 2 }, // 16000 * 2
+            { price: 48000, months: 3 }, // 16000 * 3
+            { price: 64000, months: 4 }, // 16000 * 4
+            { price: 80000, months: 5 }, // 16000 * 5
+            { price: 84000, months: 6 }  // 14000 * 6
+        ],
+        '7.5mg': [
+            { price: 26000, months: 1 },
+            { price: 48000, months: 2 }, // 24000 * 2
+            { price: 72000, months: 3 }, // 24000 * 3
+            { price: 96000, months: 4 }, // 24000 * 4
+            { price: 120000, months: 5 },// 24000 * 5
+            { price: 132000, months: 6 } // 22000 * 6
+        ]
                     }
                 },
                 {
