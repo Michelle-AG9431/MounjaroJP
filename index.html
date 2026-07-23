@@ -58,7 +58,7 @@
             background-color: #FAFAF9;
             color: #1C1917;
             -webkit-font-smoothing: antialiased;
-            overflow-x: hidden; /* 強制防止橫向捲軸 */
+            overflow-x: hidden;
             max-width: 100vw;
         }
         .animate-fade-up {
@@ -75,7 +75,6 @@
             transform: scale(1.1);
         }
         
-        /* Language Button Styles */
         .lang-btn {
             position: relative;
             padding-bottom: 4px;
@@ -83,11 +82,11 @@
             font-weight: 500;
             letter-spacing: 0.05em;
             font-size: 0.9rem;
-            color: #A8A29E; /* stone-400 */
+            color: #A8A29E;
             transition: all 0.3s ease;
         }
         .lang-btn:hover, .lang-btn.active {
-            color: #1C1917; /* stone-900 */
+            color: #1C1917;
         }
         .lang-btn.active::after {
             content: '';
@@ -96,13 +95,12 @@
             height: 1px;
             bottom: 0;
             left: 0;
-            background-color: #D4AF37; /* gold */
+            background-color: #D4AF37;
         }
 
-        /* Custom Select Styles */
         .custom-select-wrapper {
             position: relative;
-            min-width: 0; /* 防止下拉選單撐開外框 */
+            min-width: 0;
         }
         .custom-select-wrapper::after {
             content: "↓";
@@ -191,7 +189,7 @@
             { id: 'kansai', zh: '關西 (京阪神)', en: 'Kansai' },
             { id: 'chugoku', zh: '中國 (廣島/鳥取)', en: 'Chugoku' },
             { id: 'shikoku', zh: '四國 (松山/德島)', en: 'Shikoku' },
-            { id: 'kyushu', zh: '九州 (福岡/長崎)', n: 'Kyushu' },
+            { id: 'kyushu', zh: '九州 (福岡/長崎)', en: 'Kyushu' },
             { id: 'okinawa', zh: '沖繩', en: 'Okinawa' },
         ];
 
@@ -357,7 +355,7 @@
             const [activeDuration, setActiveDuration] = React.useState('all');
             const [userType, setUserType] = React.useState('new'); 
             const [chineseFilter, setChineseFilter] = React.useState(false); 
-            const [region, setRegion] = React.useState('all'); // Region filter state
+            const [region, setRegion] = React.useState('all');
             const [cart, setCart] = React.useState({
                 '2.5mg': 0, '5mg': 0, '7.5mg': 0, '10mg': 0, '12.5mg': 0, '15mg': 0
             });
@@ -366,7 +364,6 @@
             const [showMobileFilters, setShowMobileFilters] = React.useState(false);
             const [expandedItems, setExpandedItems] = React.useState({});
             
-            // Initialize disclaimer modal state based on localStorage
             const [showDisclaimerModal, setShowDisclaimerModal] = React.useState(() => {
                 try {
                     const savedDate = localStorage.getItem('mounjaro_disclaimer_date');
@@ -380,7 +377,6 @@
 
             const t = TEXTS[lang];
 
-            // Fetch Exchange Rates
             React.useEffect(() => {
                 const fetchRates = async () => {
                     try {
@@ -393,20 +389,17 @@
                                 TWD: data.rates.TWD,
                                 USD: data.rates.USD
                             });
-                            // Convert epoch to date string or use data.date
                             const dateStr = data.date || new Date().toLocaleDateString();
                             setRateDate(dateStr);
                         }
                     } catch (error) {
                         console.warn("Using fallback rates due to API error:", error);
-                        // Fallback is already initial state
                         setRateDate('2025/12/05 (Est.)');
                     }
                 };
                 fetchRates();
             }, []);
 
-            // Handle Modal Close
             const handleCloseModal = () => {
                 if (dontShowToday) {
                     try {
@@ -419,7 +412,6 @@
                 setShowDisclaimerModal(false);
             };
 
-            // Currency Helper
             const formatCurrency = (price) => {
                 if (lang === 'zh') {
                     const twd = Math.round(price * exchangeRates.TWD).toLocaleString();
@@ -454,59 +446,30 @@
             };
 
             // --- Data ---
-             const clinics = [
-                // { id: 'Lafee', name: { zh: 'La Fee/Wellness Plus醫美診所(e-life平台特惠)', en: 'La Fee/Wellness Plus Clinic (Special Deal on e-life shop)' },tags: [ { zh: '線下診療', en: 'Offline Clinic' },      { zh: '需通日文', en: 'Japanese Speakers only' },    { zh: '每種月份優惠券限購1張', en: '1 coupon per plan/tx' }, // Coupon constraint ta       { zh: '加elifeshop Line帳號再送2500折價券', en: '2500 Yen Coupon via elife-shop Line account' }, { zh: '只有購買證明', en: 'Purchase Invoice Only' },   { zh: '同一張優惠券每月限購一次', en: 'limit one purchase per month per coupon' }, ],
-                  //  locations: ['kanto'], offlineOnly: true, // Mark as offline only singleUsePlans: true, // DP logic constraint: each plan can only be picked oncelink: 'https://shop.elife.clinic/search?q=%E3%83%9E%E3%83%B3%E3%82%B8%E3%83%A3%E3%83%AD&options%5Bprefix%5D=last',  fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },  freeShipping: false,
-            //  prices: { '2.5mg': [ { price: 9980, months: 1 }, { price: 29940, months: 3 },{ price: 59880, months: 6 }],
-                     //   '5mg': [ { price: 17980, months: 1 },{ price: 53940, months: 3 },{ price: 107880, months: 6 }],
-                     //   '7.5mg': [{ price: 26980, months: 1 }, { price: 80940, months: 3 },{ price: 161880, months: 6 } ],
-                    //    '10mg': [  { price: 35980, months: 1 }, { price: 107940, months: 3 },{ price: 215880, months: 6 }],
-                        // '12.5mg': [{ price: 51980, months: 1 }, { price: 155940, months: 3 }, { price: 311880, months: 6 } ]
-//  }
-         //       },
+            const clinics = [
                 {
                     id: 'Wellness',
                     name: { zh: 'La Fee/Wellness Plus醫美診所(Luxora平台特惠)', en: 'La Fee/Wellness Plus Clinic (Special Deal on Luxora shop)' },
                     tags: [
                         { zh: '線下診療', en: 'Offline Clinic' },
                         { zh: '需通日文', en: 'Japanese Speakers only' },
-                        { zh: '每種月份優惠券限購1張', en: '1 coupon per plan/tx' }, // Coupon constraint tag
+                        { zh: '每種月份優惠券限購1張', en: '1 coupon per plan/tx' },
                         { zh: '加Luxora Line帳號再送2500折價券', en: '2500 Yen Coupon via Luxora Line account' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' },
                         { zh: '同一張優惠券每月限購一次', en: 'limit one purchase per month per coupon' },
                     ],
                     locations: ['kanto'], 
-                    offlineOnly: true, // Mark as offline only
-                    singleUsePlans: true, // DP logic constraint: each plan can only be picked once
+                    offlineOnly: true,
+                    singleUsePlans: true,
                     link: 'https://www.luxora.shop/collections/%E6%9D%A5%E9%99%A2%E8%80%85%E9%99%90%E5%AE%9A-e%E3%82%AF%E3%83%BC%E3%83%9D%E3%83%B3',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: false,
                     prices: {
-                        '2.5mg': [
-                            { price: 9980, months: 1 },
-                            { price: 29940, months: 3 },
-                            { price: 59880, months: 6 }
-                        ],
-                        '5mg': [
-                            { price: 17980, months: 1 },
-                            { price: 53940, months: 3 },
-                            { price: 107880, months: 6 }
-                        ],
-                        '7.5mg': [
-                            { price: 26980, months: 1 },
-                            { price: 80940, months: 3 },
-                            { price: 161880, months: 6 }
-                        ],
-                        '10mg': [
-                            { price: 35980, months: 1 },
-                            { price: 107940, months: 3 },
-                            { price: 215880, months: 6 }
-                        ],
-                        '12.5mg': [
-                            { price: 51980, months: 1 },
-                            { price: 155940, months: 3 },
-                            { price: 311880, months: 6 }
-                        ]
+                        '2.5mg': [{ price: 9980, months: 1 }, { price: 29940, months: 3 }, { price: 59880, months: 6 }],
+                        '5mg': [{ price: 17980, months: 1 }, { price: 53940, months: 3 }, { price: 107880, months: 6 }],
+                        '7.5mg': [{ price: 26980, months: 1 }, { price: 80940, months: 3 }, { price: 161880, months: 6 }],
+                        '10mg': [{ price: 35980, months: 1 }, { price: 107940, months: 3 }, { price: 215880, months: 6 }],
+                        '12.5mg': [{ price: 51980, months: 1 }, { price: 155940, months: 3 }, { price: 311880, months: 6 }]
                     }
                 },
                 {
@@ -540,7 +503,7 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kanto'], 
-                    offlineOnly: true, // Mark as offline only
+                    offlineOnly: true,
                     maxTotalMonths: 3,
                     link: 'https://omori-angel.com/menu/selfpay-medical/medical-diet.html',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
@@ -550,7 +513,7 @@
                         '5mg': [{ price: 18700, months: 1 }],
                     }
                 },
-                 {
+                {
                     id: 'yasashii',
                     name: { zh: '溫柔內科線上診所', en: 'Gentle Medical Onlince Clinic' },
                     tags: [
@@ -571,7 +534,7 @@
                         '15mg':  [{ price: 52000, months: 1 }, { price: 102000, months: 2 }, { price: 149700, months: 3 }, { price: 286800, months: 6 }],
                     }
                 },
-                 {
+                {
                     id: 'goto',
                     name: { zh: '後藤醫院', en: 'Gotou Clinic' },
                     tags: [
@@ -581,7 +544,7 @@
                         { zh: '限現金付款', en: 'Cash Only' },
                     ],
                     locations: ['kansai'], 
-                    offlineOnly: true, // Mark as offline only
+                    offlineOnly: true,
                     link: 'https://gotou-iin.com/',
                     fees: { initialNum: 1100, returningNum: 550, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: false,
@@ -601,7 +564,7 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kanto'], 
-                    offlineOnly: true, // Mark as offline only
+                    offlineOnly: true,
                     link: 'https://ubshinjuku.b4a.clinic/clinics/301/bookings/new/select/menu/',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: false,
@@ -609,35 +572,32 @@
                         '2.5mg': [{ price: 12000, months: 1 }],
                         '5mg': [{ price: 22000, months: 1 }],
                         '7.5mg': [{ price: 32000, months: 1 }],
-
                     }
                 },
-              {
-            id: 'tokyosilk',
-            name: { zh: '東京Silk診所', en: 'Tokyo Silk Clinic' },
-            tags: [
-        { zh: '線上診療', en: 'Online Clinic' },
-        { zh: '全國配送', en: 'Nationwide Delivery' },
-        { zh: '自由混搭計價', en: 'Mix & Match Tier Pricing' },
-        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-    ],
-    locations: [], // Online
-    link: 'https://x.com/tokyosilkclinic',
-    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
-    freeShipping: true,
-    // 專用 Tier 單價表（1個月單價）
-    tieredPrices: {
-        '2.5mg': { 1: 12000, tier2_5: 10000, tier6: 8000 },
-        '5mg':   { 1: 18000, tier2_5: 16000, tier6: 14000 },
-        '7.5mg': { 1: 26000, tier2_5: 24000, tier6: 22000 }
-    },
-    // 預設價格表（供標準比價模式預設參考）
-    prices: {
-        '2.5mg': [{ price: 12000, months: 1 }],
-        '5mg':   [{ price: 18000, months: 1 }],
-        '7.5mg': [{ price: 26000, months: 1 }]
-    }
-},
+                {
+                    id: 'tokyosilk',
+                    name: { zh: '東京Silk診所', en: 'Tokyo Silk Clinic' },
+                    tags: [
+                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '全國配送', en: 'Nationwide Delivery' },
+                        { zh: '自由混搭計價', en: 'Mix & Match Tier Pricing' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                    ],
+                    locations: [], 
+                    link: 'https://x.com/tokyosilkclinic',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
+                    freeShipping: true,
+                    tieredPrices: {
+                        '2.5mg': { 1: 12000, tier2_5: 10000, tier6: 8000 },
+                        '5mg':   { 1: 18000, tier2_5: 16000, tier6: 14000 },
+                        '7.5mg': { 1: 26000, tier2_5: 24000, tier6: 22000 }
+                    },
+                    prices: {
+                        '2.5mg': [{ price: 12000, months: 1 }],
+                        '5mg':   [{ price: 18000, months: 1 }],
+                        '7.5mg': [{ price: 26000, months: 1 }]
+                    }
+                },
                 {
                     id: 'ikegawa',
                     name: { zh: '池川内科', en: 'Ikegawa Internal Medicine' },
@@ -645,18 +605,18 @@
                         { zh: 'Google Meet看診', en: 'Google Meet Clinic' }
                     ],
                     link: 'https://lin.ee/AX891RZ',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } }, // Shipping calculated dynamically
-                    locations: ['kansai'], // Assumed offline location based on cheapest shipping
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } },
+                    locations: ['kansai'],
                     freeShipping: false,
                     shipping_rules: {
                         'hokkaido': 2500,
                         'tohoku': 1500, 'kanto': 1500, 'shinetsu': 1500,
                         'kansai': 1000, 'chubu': 1000, 'hokuriku': 1000, 'shikoku': 1000, 'chugoku': 1000, 'kyushu': 1000,
                         'okinawa': 2000,
-                        'default': 1500 // Fallback
+                        'default': 1500
                     },
                     prices: {
-                        '2.5mg': [{ price: 12500, months: 1 }, { price: 6250, months: 0.5 }], // 0.5 month = 2 pens (minimum)
+                        '2.5mg': [{ price: 12500, months: 1 }, { price: 6250, months: 0.5 }],
                         '5mg': [{ price: 24500, months: 1 }, { price: 12250, months: 0.5 }],
                         '7.5mg': [{ price: 37500, months: 1 }, { price: 18750, months: 0.5 }],
                         '10mg': [{ price: 42000, months: 1 }, { price: 21000, months: 0.5 }],
@@ -711,7 +671,7 @@
                     link: 'https://threads.com/@tk.every', 
                     fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需另加1100使用費+自付運費', en: 'Shipping fee/Online fee extra' } },
                     freeShipping: false,
-                    onlineFee: 1100, // Additional fee if not offline (not in Kanto)
+                    onlineFee: 1100,
                     prices: {
                         '2.5mg': [{ price: 13100, months: 1 }],
                         '5mg':   [{ price: 26300, months: 1 }],
@@ -727,7 +687,7 @@
                         { zh: '需冷藏配送須事先告知', en: 'Chilled Delivery: Need to Notify Clinic' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
-                    locations: [], // Online only now
+                    locations: [], 
                     link: 'https://x.com/OsakaLight?t=AMGZj7ZfXqaGQ4T9Fz7-Kg&s=09',
                     fees: { initialNum: 0, shippingNum: 2200, note: { zh: '免掛號費+運費¥2,200', en: 'Free Reg + Ship ¥2,200' } },
                     freeShipping: false,
@@ -747,7 +707,7 @@
                         { zh: '線上診療', en: 'Online Clinic' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
-                    locations: [], // Online only now
+                    locations: [], 
                     link: 'https://x.com/phd_tokyo/status/2027941899538206923',
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費+運費¥2,000', en: 'Free Reg + Ship ¥2,000' } },
                     freeShipping: false,
@@ -849,7 +809,7 @@
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'Free Reg' } },
                     freeShipping: false,
                     offlineOnly: true,
-                    maxTotalMonths: 1, // Added restriction for The Clinic
+                    maxTotalMonths: 1,
                     prices: {
                         '2.5mg': [{ price: 10000, months: 1 }],
                         '5mg':   [{ price: 20000, months: 1 }]
@@ -904,7 +864,7 @@
                         { zh: '預約須日本門號', en: 'Need JP Phone#' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
-                    locations: [], // Online only
+                    locations: [], 
                     link: 'https://light-clinic.com/',
                     fees: { initialNum: 1100, shippingNum: 1100, note: { zh: '含掛號¥1,100+運費(離島¥2,200)', en: 'Reg 1100 + Ship (Islands 2200)' } },
                     freeShipping: false, 
@@ -971,7 +931,7 @@
                         { zh: '免預約', en: 'No Appt Needed' }
                     ],
                     locations: ['kanto'],
-                    offlineOnly: true, // Mark as offline only
+                    offlineOnly: true,
                     link: 'https://x.com/ShinjukuCIinic?t=IK7B4EISNXdiBcoE81lpLQ&s=09',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: false, 
@@ -1010,11 +970,10 @@
                          { zh: '電話看診', en: 'Telemedic Clinic' },
                         { zh: '預約須日本門號', en: 'Need JP Phone#' }
                     ],
-                    locations: ['kansai'], // Shiga
+                    locations: ['kansai'],
                     link: 'https://jrsandaaga.com/',
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: false,
-
                     prices: {
                          '2.5mg': [{ price: 9950, months: 1 }, { price: 19300, months: 2 }, { price: 28650, months: 3 }],
                         '5mg': [{ price: 19980, months: 1 }, { price: 39300, months: 2 }, { price: 58300, months: 3 }],
@@ -1047,7 +1006,6 @@
             const getRegFee = (clinic) => {
                 let baseFee = 0;
                 if (userType === 'new') baseFee = clinic.fees.initialNum;
-                // If returning fee is not defined, default to initial fee (assuming same price)
                 else baseFee = clinic.fees.returningNum !== undefined ? clinic.fees.returningNum : clinic.fees.initialNum;
 
                 const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
@@ -1064,7 +1022,6 @@
             const getShippingFee = (clinic, userRegion, months) => {
                 let shippingCost = 0;
 
-                // 1. Determine Base Shipping
                 if (userRegion === 'all') {
                     if (clinic.shipping_rules && clinic.shipping_rules.default) {
                         shippingCost = clinic.shipping_rules.default;
@@ -1072,13 +1029,9 @@
                         shippingCost = clinic.fees.shippingNum;
                     }
                 } else {
-                    // Specific Region Logic
-                    // Check for Offline availability (Free Shipping)
                     if (clinic.locations && clinic.locations.includes(userRegion)) {
-                        return 0; // User goes to clinic, so 0 immediately.
+                        return 0;
                     }
-
-                    // Calculate shipping based on region
                     if (clinic.shipping_rules) {
                         shippingCost = clinic.shipping_rules[userRegion] || clinic.shipping_rules.default || clinic.fees.shippingNum;
                     } else {
@@ -1086,7 +1039,6 @@
                     }
                 }
 
-                // 2. Apply Surcharges (Ikegawa Special Rule)
                 if (clinic.id === 'ikegawa' && months >= 3) {
                     shippingCost += 500;
                 }
@@ -1097,10 +1049,8 @@
             const filterPricesByUserType = (prices) => {
                 if (!prices) return [];
                 if (userType === 'returning') {
-                    // Returning users cannot see initial prices
                     return prices.filter(p => p.type !== 'initial');
                 } else {
-                    // New users logic...
                     const initialMonths = prices.filter(p => p.type === 'initial').map(p => p.months);
                     return prices.filter(p => {
                         if (p.type === 'initial') return true;
@@ -1110,25 +1060,19 @@
                 }
             };
             
-            // New Helper: Calculate cheapest combination for target months using DP
             const calculateOptimalCombination = (clinic, dosage, targetMonths) => {
                 let plans = clinic.prices[dosage];
                 if (!plans) return null;
                 
-                // IMPORTANT: Filter plans by user type for the calculator too!
                 plans = filterPricesByUserType(plans);
                 if (plans.length === 0) return null;
 
-                // Max months is 6. Working in 0.5 steps to support trial plans.
-                // targetMonths is integer from input, but let's be safe.
                 const maxUnits = Math.round(targetMonths * 2);
                 const dp = new Array(maxUnits + 1).fill(null);
                 
-                // Base case: 0 cost for 0 months
                 dp[0] = { cost: 0, plans: [] };
 
                 if (clinic.singleUsePlans) {
-                    // 0/1 Knapsack: iterate plans outer, capacities inner (backwards)
                     for (let plan of plans) {
                         const planUnits = Math.round(plan.months * 2);
                         for (let i = maxUnits; i >= planUnits; i--) {
@@ -1145,7 +1089,6 @@
                         }
                     }
                 } else {
-                    // Unbounded Knapsack: iterate capacities outer, plans inner
                     for (let i = 1; i <= maxUnits; i++) {
                         for (let plan of plans) {
                             const planUnits = Math.round(plan.months * 2);
@@ -1168,66 +1111,50 @@
                 return dp[maxUnits];
             };
 
-            // Logic Helpers
-            const getPriceForDosageMonths = (clinic, dosage, targetMonths) => {
-                let prices = clinic.prices[dosage];
-                if (!prices) return null;
-                
-                prices = filterPricesByUserType(prices);
-                if (prices.length === 0) return null;
-
-                const exactMatch = prices.find(p => p.months === targetMonths);
-                if (exactMatch) return exactMatch.price;
-                
-                // Fallbacks...
-                if (targetMonths === 2) {
-                    const p2 = prices.find(p => p.months === 2);
-                    if (p2) return p2.price;
-                    const p1 = prices.find(p => p.months === 1);
-                    if (p1) return p1.price * 2;
-                }
-                
-                if (targetMonths === 1) {
-                    const p1 = prices.find(p => p.months === 1);
-                    if (p1) return p1.price;
-                }
-
-                const p1 = prices.find(p => p.months === 1);
-                if (p1) return p1.price * targetMonths;
-
-                return null;
-            };
-
             const getSmartPrices = (clinic, dosage, targetDuration) => {
+                const calculateTotal = (drugPrice, duration) => {
+                    const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
+                    let total = drugPrice + getRegFee(clinic) + getShippingFee(clinic, region, duration);
+                    if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
+                    if ((region === 'all' || !isOffline) && clinic.onlineFee) total += clinic.onlineFee;
+                    return total;
+                };
+
+                // 特殊診所 Tokyo Silk 在標準比價模式下的價格對應
+                if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
+                    const tiers = clinic.tieredPrices[dosage];
+                    if (!tiers) return [];
+
+                    const formatSilk = (m, unitPrice) => ({
+                        months: m,
+                        price: unitPrice * m,
+                        label: getLabel(m),
+                        totalPrice: calculateTotal(unitPrice * m, m),
+                        drugPriceOnly: unitPrice * m,
+                        isCalculated: false
+                    });
+
+                    if (targetDuration === 'all') {
+                        return [
+                            formatSilk(1, tiers['1']),
+                            formatSilk(2, tiers['tier2_5']),
+                            formatSilk(3, tiers['tier2_5']),
+                            formatSilk(6, tiers['tier6'])
+                        ];
+                    } else {
+                        let unitPrice = tiers['1'];
+                        if (targetDuration >= 6) unitPrice = tiers['tier6'];
+                        else if (targetDuration >= 2) unitPrice = tiers['tier2_5'];
+                        return [formatSilk(targetDuration, unitPrice)];
+                    }
+                }
+
                 let prices = clinic.prices[dosage];
                 if (!prices) return [];
                 
                 prices = filterPricesByUserType(prices);
                 if (prices.length === 0) return [];
 
-                // Function to calc total with dynamic shipping and discounts
-                const calculateTotal = (drugPrice, duration) => {
-                    // Calculate basic offline status
-                    const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
-                    
-                    let total = drugPrice + getRegFee(clinic) + getShippingFee(clinic, region, duration);
-                    
-                    // Apply offline discount if applicable
-                    if (isOffline && clinic.offlineDiscount) {
-                        total -= clinic.offlineDiscount;
-                    }
-                    
-                    // Apply online fee if applicable (e.g. TK Every)
-                    // If region is 'all', treat as online (add fee)
-                    // If region is specific and NOT offline, treat as online (add fee)
-                    if ((region === 'all' || !isOffline) && clinic.onlineFee) {
-                        total += clinic.onlineFee;
-                    }
-                    
-                    return total;
-                };
-
-                // Check if it's ANY combo dosage (contains '+')
                 if (dosage.includes('+')) {
                     const formatData = (p) => ({
                         ...p,
@@ -1239,14 +1166,11 @@
                     });
 
                     if (targetDuration === 'all') {
-                        // Apply Min Month Constraint Logic for All
                         if (clinic.minTotalMonths) {
                              const minMonths = clinic.minTotalMonths;
-                             
                              const oneMonthCombo = prices.find(p => p.months === 1);
                              if (oneMonthCombo) {
                                  const items = [];
-                                 // Min Package
                                  items.push({
                                      ...oneMonthCombo,
                                      months: minMonths,
@@ -1257,7 +1181,6 @@
                                      isCalculated: true,
                                      calculationNote: `Minimum ${minMonths} months required`
                                  });
-                                 // 6 Months
                                  items.push({
                                      ...oneMonthCombo,
                                      months: 6,
@@ -1273,7 +1196,6 @@
                              return [];
                         }
                         
-                        // Check Max Month Constraint Logic for All
                         if (clinic.maxTotalMonths) {
                              return prices.filter(p => p.months <= clinic.maxTotalMonths).map(formatData);
                         }
@@ -1300,14 +1222,11 @@
                 });
 
                 if (targetDuration === 'all') {
-                    // Logic to handle Min Total Months for 'All' view
                     if (clinic.minTotalMonths) {
                         const oneMonth = prices.find(p => p.months === 1);
                         if (oneMonth) {
                              const minMonths = clinic.minTotalMonths;
                              const items = [];
-                             
-                             // Synthesize Min Month Entry
                              items.push({
                                  ...oneMonth,
                                  months: minMonths,
@@ -1318,8 +1237,6 @@
                                  isCalculated: true,
                                  calculationNote: `Minimum ${minMonths} months required`
                              });
-
-                             // Synthesize 6 Month Entry (Standard comparison point)
                              items.push({
                                  ...oneMonth,
                                  months: 6,
@@ -1332,10 +1249,8 @@
                              });
                              return items;
                         }
-                        // If no 1 month price found, falls through (unlikely for this clinic)
                     }
                     
-                    // Logic to handle Max Total Months for 'All' view
                     if (clinic.maxTotalMonths) {
                         return prices.filter(p => p.months <= clinic.maxTotalMonths).map(formatData);
                     }
@@ -1350,12 +1265,10 @@
                     return [formatData(exactMatch)];
                 }
 
-                // Calculation logic for estimated months
                 let calculatedDrugPrice = null;
                 let calcNoteKey = '';
 
                 if (clinic.singleUsePlans) {
-                    // Just use DP to find if there's a valid combination!
                     const optimal = calculateOptimalCombination(clinic, dosage, targetDuration);
                     if (optimal && optimal.plans.length > 0 && optimal.cost > 0) {
                         calculatedDrugPrice = optimal.cost;
@@ -1389,10 +1302,7 @@
                 }
 
                 if (calculatedDrugPrice !== null) {
-                    // Check Min Month Constraint for calculated prices
                     if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
-                    
-                    // Check Max Month Constraint for calculated prices
                     if (clinic.maxTotalMonths && targetDuration > clinic.maxTotalMonths) return [];
 
                     return [{
@@ -1437,20 +1347,15 @@
                 return bestMetricForClinic;
             };
 
-            // Chinese Filter Logic
             const filteredClinics = clinics.filter(c => {
-                // Chinese Filter
                 if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) {
                     return false;
                 }
-
-                // Region Filter for Offline-Only Clinics
                 if (c.offlineOnly && region !== 'all') {
                     if (!c.locations || !c.locations.includes(region)) {
                         return false;
                     }
                 }
-
                 return true;
             });
 
@@ -1465,157 +1370,139 @@
                 const hasItems = totalSelectedMonths > 0;
                 if (!hasItems) return [];
 
-                // Filter clinics first
                 const targetClinics = clinics.filter(c => {
-                    // Chinese Filter
                     if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) {
                         return false;
                     }
-
-                    // Region Filter for Offline-Only Clinics
                     if (c.offlineOnly && region !== 'all') {
                         if (!c.locations || !c.locations.includes(region)) {
                             return false;
                         }
                     }
-                    
                     return true;
                 });
 
                 targetClinics.forEach(clinic => {
-                    // Min Total Months Check for Calculator
-                    if (clinic.minTotalMonths && totalSelectedMonths < clinic.minTotalMonths) {
-                        return; // Skip this clinic
-                    }
-                    
-                    // Max Total Months Check for Calculator (Added for The Clinic)
-                    if (clinic.maxTotalMonths && totalSelectedMonths > clinic.maxTotalMonths) {
-                        return; // Skip this clinic if selected months exceed max allowed
-                    }
+                    if (clinic.minTotalMonths && totalSelectedMonths < clinic.minTotalMonths) return;
+                    if (clinic.maxTotalMonths && totalSelectedMonths > clinic.maxTotalMonths) return;
 
                     let totalMeds = 0;
                     let possible = true;
-                    let breakdown = [];
+                    let breakdownStr = "";
                     let bundleApplied = false;
 
-if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
-        let tierKey = '1';
-        if (totalSelectedMonths >= 6) {
-            tierKey = 'tier6';
-        } else if (totalSelectedMonths >= 2) {
-            tierKey = 'tier2_5';
-        } else {
-            tierKey = '1';
-        }
+                    // Tokyo Silk 專用 Tier 混搭算術分支
+                    if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
+                        let tierKey = '1';
+                        if (totalSelectedMonths >= 6) {
+                            tierKey = 'tier6';
+                        } else if (totalSelectedMonths >= 2) {
+                            tierKey = 'tier2_5';
+                        } else {
+                            tierKey = '1';
+                        }
 
-        let breakdownParts = [];
+                        let breakdownParts = [];
 
-        Object.entries(cart).forEach(([dosage, months]) => {
-            if (months > 0) {
-                const dosageTiers = clinic.tieredPrices[dosage];
-                if (dosageTiers && dosageTiers[tierKey] !== undefined) {
-                    const unitPrice = dosageTiers[tierKey];
-                    totalMeds += unitPrice * months;
-                    breakdownParts.push(`${dosage} (${months}個月 @ ¥${unitPrice.toLocaleString()}/月)`);
-                } else {
-                    // 若選擇了 Silk 沒提供的劑量（例如 10mg 以上）
-                    possible = false;
-                }
-            }
-        });
+                        Object.entries(cart).forEach(([dosage, months]) => {
+                            if (months > 0) {
+                                const dosageTiers = clinic.tieredPrices[dosage];
+                                if (dosageTiers && dosageTiers[tierKey] !== undefined) {
+                                    const unitPrice = dosageTiers[tierKey];
+                                    totalMeds += unitPrice * months;
+                                    breakdownParts.push(`${dosage} (${months}個月 @ ¥${unitPrice.toLocaleString()}/月)`);
+                                } else {
+                                    possible = false;
+                                }
+                            }
+                        });
 
-        breakdown = breakdownParts.join(' + ');
-        if (totalSelectedMonths >= 2) bundleApplied = true;
+                        breakdownStr = breakdownParts.join(' + ');
+                        if (totalSelectedMonths >= 2) bundleApplied = true;
 
-    // -------------------------------------------------------------
-    // 【保留】：其他一般診所，繼續走原本的計算方式
-    // -------------------------------------------------------------
-    } else {
-                    
-                    let tempCart = {...cart};
-                    
-                    const COMBO_KEYS = [
-                        ['2.5mg', '5mg', '2.5mg+5mg', t.combo2550],
-                        ['5mg', '7.5mg', '5mg+7.5mg', t.combo5075],
-                        ['7.5mg', '10mg', '7.5mg+10mg', t.combo75100],
-                        ['10mg', '12.5mg', '10mg+12.5mg', t.combo100125],
-                        ['12.5mg', '15mg', '12.5mg+15mg', t.combo125150]
-                    ];
+                    } else {
+                        // 一般診所邏輯
+                        let breakdownArr = [];
+                        let tempCart = {...cart};
+                        
+                        const COMBO_KEYS = [
+                            ['2.5mg', '5mg', '2.5mg+5mg', t.combo2550],
+                            ['5mg', '7.5mg', '5mg+7.5mg', t.combo5075],
+                            ['7.5mg', '10mg', '7.5mg+10mg', t.combo75100],
+                            ['10mg', '12.5mg', '10mg+12.5mg', t.combo100125],
+                            ['12.5mg', '15mg', '12.5mg+15mg', t.combo125150]
+                        ];
 
-                    COMBO_KEYS.forEach(([doseA, doseB, comboKey, label]) => {
-                        if (tempCart[doseA] >= 1 && tempCart[doseB] >= 1) {
-                            let comboData = clinic.prices[comboKey];
-                            if (comboData) {
-                                comboData = filterPricesByUserType(comboData); 
-                                const twoMonthCombo = comboData.find(p => p.months === 2);
-                                
-                                if (twoMonthCombo) {
-                                    const pairs = Math.min(tempCart[doseA], tempCart[doseB]);
+                        COMBO_KEYS.forEach(([doseA, doseB, comboKey, label]) => {
+                            if (tempCart[doseA] >= 1 && tempCart[doseB] >= 1) {
+                                let comboData = clinic.prices[comboKey];
+                                if (comboData) {
+                                    comboData = filterPricesByUserType(comboData); 
+                                    const twoMonthCombo = comboData.find(p => p.months === 2);
                                     
-                                    const optA = calculateOptimalCombination(clinic, doseA, 1);
-                                    const optB = calculateOptimalCombination(clinic, doseB, 1);
-                                    
-                                    if (optA && optB) {
-                                        const indivTotal = (optA.cost + optB.cost) * pairs;
-                                        const bundleTotal = twoMonthCombo.price * pairs;
+                                    if (twoMonthCombo) {
+                                        const pairs = Math.min(tempCart[doseA], tempCart[doseB]);
                                         
-                                        if (bundleTotal < indivTotal) {
-                                            totalMeds += bundleTotal;
-                                            breakdown.push(`${label} x ${pairs}`);
-                                            bundleApplied = true;
-                                            tempCart[doseA] -= pairs;
-                                            tempCart[doseB] -= pairs;
+                                        const optA = calculateOptimalCombination(clinic, doseA, 1);
+                                        const optB = calculateOptimalCombination(clinic, doseB, 1);
+                                        
+                                        if (optA && optB) {
+                                            const indivTotal = (optA.cost + optB.cost) * pairs;
+                                            const bundleTotal = twoMonthCombo.price * pairs;
+                                            
+                                            if (bundleTotal < indivTotal) {
+                                                totalMeds += bundleTotal;
+                                                breakdownArr.push(`${label} x ${pairs}`);
+                                                bundleApplied = true;
+                                                tempCart[doseA] -= pairs;
+                                                tempCart[doseB] -= pairs;
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                    });
+                        });
 
-                    Object.entries(tempCart).forEach(([dosage, months]) => {
-                        if (months > 0) {
-                            const optimal = calculateOptimalCombination(clinic, dosage, months);
-                            if (optimal) {
-                                totalMeds += optimal.cost;
-                                
-                                const counts = {};
-                                optimal.plans.forEach(p => {
-                                    counts[p.months] = (counts[p.months] || 0) + 1;
-                                });
-                                const parts = Object.keys(counts).sort((a,b) => parseFloat(b) - parseFloat(a)).map(m => {
-                                    const c = counts[m];
-                                    let label = getLabel(parseFloat(m));
-                                    const plan = optimal.plans.find(p => p.months === parseFloat(m));
-                                    if (plan && plan.type === 'initial') label += ` (${t.firstTime})`;
-                                    return c > 1 ? `${label} x${c}` : label;
-                                });
-                                
-                                breakdown.push(`${dosage} [${parts.join(' + ')}]`);
-                            } else {
-                                possible = false;
+                        Object.entries(tempCart).forEach(([dosage, months]) => {
+                            if (months > 0) {
+                                const optimal = calculateOptimalCombination(clinic, dosage, months);
+                                if (optimal) {
+                                    totalMeds += optimal.cost;
+                                    
+                                    const counts = {};
+                                    optimal.plans.forEach(p => {
+                                        counts[p.months] = (counts[p.months] || 0) + 1;
+                                    });
+                                    const parts = Object.keys(counts).sort((a,b) => parseFloat(b) - parseFloat(a)).map(m => {
+                                        const c = counts[m];
+                                        let label = getLabel(parseFloat(m));
+                                        const plan = optimal.plans.find(p => p.months === parseFloat(m));
+                                        if (plan && plan.type === 'initial') label += ` (${t.firstTime})`;
+                                        return c > 1 ? `${label} x${c}` : label;
+                                    });
+                                    
+                                    breakdownArr.push(`${dosage} [${parts.join(' + ')}]`);
+                                } else {
+                                    possible = false;
+                                }
                             }
-                        }
-                    });
+                        });
+
+                        breakdownStr = breakdownArr.join(', ');
+                    }
 
                     if (possible) {
-                        // Calculate total with offline discount logic AND online fee logic
                         const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
-                        
                         let total = totalMeds + getRegFee(clinic) + getShippingFee(clinic, region, totalSelectedMonths);
                         
-                        if (isOffline && clinic.offlineDiscount) {
-                            total -= clinic.offlineDiscount;
-                        }
-                        
-                        if ((region === 'all' || !isOffline) && clinic.onlineFee) {
-                            total += clinic.onlineFee;
-                        }
+                        if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
+                        if ((region === 'all' || !isOffline) && clinic.onlineFee) total += clinic.onlineFee;
 
                         results.push({
                             clinic: clinic,
                             meds: totalMeds,
                             total: total,
-                            breakdown: breakdown.join(', '),
+                            breakdown: breakdownStr,
                             isBundle: bundleApplied
                         });
                     }
@@ -1759,7 +1646,7 @@ if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
 
                     {/* Header & Main Controls */}
                     <div className="flex flex-col-reverse md:flex-row justify-between items-center mb-8 gap-6 relative z-40">
-                        {/* Mode Switcher (Left) */}
+                        {/* Mode Switcher */}
                         <div className="flex gap-2">
                             <button onClick={() => setMode('standard')} className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full text-sm font-sans transition-all shadow-sm ${mode === 'standard' ? 'bg-stone-900 text-white' : 'bg-white border border-stone-200 text-stone-500 hover:bg-stone-50'}`}>
                                 <Icons.Grid /> {t.modeStandard}
@@ -1769,7 +1656,7 @@ if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
                             </button>
                         </div>
 
-                        {/* Language Switcher (Right) */}
+                        {/* Language Switcher */}
                         <div className="flex gap-4 items-center">
                             <button onClick={() => setLang('zh')} className={`lang-btn ${lang === 'zh' ? 'active' : ''}`}>中文</button>
                             <button onClick={() => setLang('en')} className={`lang-btn ${lang === 'en' ? 'active' : ''}`}>EN</button>
@@ -1787,7 +1674,6 @@ if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
                     {/* Standard Mode - Sticky Bar */}
                     {mode === 'standard' && (
                         <div className="mb-10 sticky top-0 z-30 bg-[#FAFAF9]/95 backdrop-blur-sm py-4 border-b border-stone-200 transition-all shadow-sm max-w-[800px] mx-auto min-w-0">
-                            {/* Desktop Filter View */}
                             <div className="hidden md:grid grid-cols-5 gap-4 px-1">
                                 <div className="custom-select-wrapper">
                                     <select 
@@ -1856,7 +1742,6 @@ if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
                                 </div>
                             </div>
 
-                            {/* Mobile Filter Trigger View */}
                             <div className="flex md:hidden items-center justify-between gap-3 px-1 w-full min-w-0">
                                 <div className="flex-1 flex flex-col justify-center min-w-0 pr-2">
                                      <span className="text-[10px] uppercase text-stone-400 tracking-wider font-bold truncate block w-full">{t.dosage} / {t.durationLabel}</span>
@@ -1874,10 +1759,9 @@ if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
                         </div>
                     )}
 
-                    {/* Calculator Mode - Controls */}
+                    {/* Calculator Mode Controls */}
                     {mode === 'calculator' && (
                         <div className="mb-8 max-w-[800px] mx-auto min-w-0">
-                            {/* Desktop Calc Controls */}
                             <div className="hidden md:grid grid-cols-3 gap-4 px-1 mb-8">
                                 <div className="custom-select-wrapper">
                                     <select className="custom-select" value={userType} onChange={(e) => setUserType(e.target.value)}>
@@ -1897,7 +1781,6 @@ if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
                                     </select>
                                 </div>
                             </div>
-                             {/* Mobile Calc Controls Trigger */}
                              <div className="md:hidden flex justify-end mb-4 w-full min-w-0">
                                 <button 
                                     onClick={() => setShowMobileFilters(true)} 
@@ -1976,12 +1859,10 @@ if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
                                     return (
                                         <div key={res.clinic.id} className="bg-white border border-stone-100 rounded-lg p-4 md:p-6 shadow-sm flex flex-col relative group hover:shadow-md transition-all min-w-0">
                                             {idx === 0 && <div className="absolute top-0 left-0 w-1 h-full bg-gold-400 z-10 rounded-l-lg"></div>}
-                                            {/* Location Badge for Calc Mode */}
                                             <div className="absolute top-0 right-0 bg-stone-100 text-stone-500 text-[10px] font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg z-10 border-b border-l border-stone-200 max-w-full truncate">
                                                 {getLocationName(res.clinic)}
                                             </div>
 
-                                            {/* Clickable Mobile Header */}
                                             <div 
                                                 className="flex justify-between items-center w-full cursor-pointer md:cursor-default min-w-0 gap-2"
                                                 onClick={() => {
@@ -2006,7 +1887,6 @@ if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
                                                 </div>
                                             </div>
 
-                                            {/* Content Area (Hidden on mobile when collapsed) */}
                                             <div className={`mt-3 md:mt-4 flex-col md:flex-row justify-between items-start md:items-center gap-4 ${expandedItems[cardId] ? 'flex' : 'hidden'} md:flex pt-2 md:pt-0 border-t md:border-t-0 border-stone-100 min-w-0`}>
                                                 <div className="flex-1 w-full min-w-0">
                                                     <div className="md:hidden flex flex-wrap gap-2 mb-3">
@@ -2072,10 +1952,8 @@ if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
                                     
                                     return (
                                         <div key={clinic.id} className="group animate-fade-up bg-white shadow-sm border border-stone-100 hover:shadow-md transition-all duration-500 relative rounded-lg min-w-0">
-                                            {/* Rank Badge */}
                                             {rankColor && <div className={`absolute -top-3 -left-3 ${rankColor} w-8 h-8 flex items-center justify-center font-display font-bold shadow-md z-10 rank-badge rounded-sm`}>{clinicIndex + 1}</div>}
                                             
-                                            {/* Location Badge (Top Right) */}
                                             <div className="absolute top-0 right-0 bg-stone-100 text-stone-500 text-[10px] font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg z-10 border-b border-l border-stone-200 max-w-full truncate">
                                                 {getLocationName(clinic)}
                                             </div>
@@ -2112,7 +1990,6 @@ if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
                                                             {clinic.tags.map((tagObj, idx) => <span key={idx} className="text-[10px] uppercase tracking-widest bg-stone-50 text-stone-400 px-2 py-1 font-sans shrink-0">{tagObj[lang]}</span>)}
                                                         </div>
                                                     </div>
-                                                    {/* Mobile Preview & Toggle Chevron */}
                                                     <div className="md:hidden flex items-center justify-end gap-1.5 shrink-0 pl-1">
                                                         {!expandedItems[clinic.id] && displayPrices.length > 0 && (
                                                             <div className="flex items-baseline gap-0.5 text-stone-900 whitespace-nowrap shrink-0">
@@ -2125,7 +2002,6 @@ if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
                                                 </div>
                                             </div>
                                             
-                                            {/* Details section visible when expanded on mobile, or always on desktop */}
                                             <div className={`p-4 md:p-6 grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 ${expandedItems[clinic.id] ? 'grid' : 'hidden'} md:grid bg-stone-50/30 rounded-b-lg min-w-0`}>
                                                 {displayPrices.map((item, idx) => {
                                                     let isBestPrice = false;
