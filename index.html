@@ -1122,32 +1122,32 @@
 
                 // 特殊診所 Tokyo Silk 在標準比價模式下的價格對應
                 if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
-                    const tiers = clinic.tieredPrices[dosage];
-                    if (!tiers) return [];
+        const tiers = clinic.tieredPrices[dosage];
+        if (!tiers) return [];
 
-                    const formatSilk = (m, unitPrice) => ({
-                        months: m,
-                        price: unitPrice * m,
-                        label: getLabel(m),
-                        totalPrice: calculateTotal(unitPrice * m, m),
-                        drugPriceOnly: unitPrice * m,
-                        isCalculated: false
-                    });
+        const formatSilk = (m, unitPrice) => ({
+            months: m,
+            price: unitPrice * m,
+            label: getLabel(m),
+            totalPrice: calculateTotal(unitPrice * m, m),
+            drugPriceOnly: unitPrice * m,
+            isCalculated: false
+        });
 
-                    if (targetDuration === 'all') {
-                        return [
-                            formatSilk(1, tiers['1']),
-                            formatSilk(2, tiers['tier2_5']),
-                            formatSilk(3, tiers['tier2_5']),
-                            formatSilk(6, tiers['tier6'])
-                        ];
-                    } else {
-                        let unitPrice = tiers['1'];
-                        if (targetDuration >= 6) unitPrice = tiers['tier6'];
-                        else if (targetDuration >= 2) unitPrice = tiers['tier2_5'];
-                        return [formatSilk(targetDuration, unitPrice)];
-                    }
-                }
+        if (targetDuration === 'all') {
+            return [
+                formatSilk(1, tiers['1']),
+                formatSilk(2, tiers['tier2_5']),
+                formatSilk(3, tiers['tier2_5']),
+                formatSilk(6, tiers['tier6'])
+            ];
+        } else {
+            let unitPrice = tiers['1'];
+            if (targetDuration >= 6) unitPrice = tiers['tier6'];
+            else if (targetDuration >= 2) unitPrice = tiers['tier2_5'];
+            return [formatSilk(targetDuration, unitPrice)];
+        }
+    }
 
                 let prices = clinic.prices[dosage];
                 if (!prices) return [];
