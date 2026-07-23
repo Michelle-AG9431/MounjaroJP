@@ -612,45 +612,32 @@
 
                     }
                 },
-                {
-                    id: 'tokyosilk',
-                    name: { zh: '東京Silk診所', en: 'Tokyo Silk Clinic' },
-                    tags: [
-                        { zh: '線上診療', en: 'Online Clinic' },
-                        { zh: '全國配送', en: 'Nationwide Delivery' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: [], // Online
-                    link: 'https://x.com/tokyosilkclinic',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
-                    freeShipping: true,
-                    prices: {
-                        '2.5mg': [
-            { price: 12000, months: 1 },
-            { price: 20000, months: 2 }, // 10000 * 2
-            { price: 30000, months: 3 }, // 10000 * 3
-            { price: 40000, months: 4 }, // 10000 * 4
-            { price: 50000, months: 5 }, // 10000 * 5
-            { price: 48000, months: 6 }  // 8000 * 6
-        ],
-        '5mg': [
-            { price: 18000, months: 1 },
-            { price: 32000, months: 2 }, // 16000 * 2
-            { price: 48000, months: 3 }, // 16000 * 3
-            { price: 64000, months: 4 }, // 16000 * 4
-            { price: 80000, months: 5 }, // 16000 * 5
-            { price: 84000, months: 6 }  // 14000 * 6
-        ],
-        '7.5mg': [
-            { price: 26000, months: 1 },
-            { price: 48000, months: 2 }, // 24000 * 2
-            { price: 72000, months: 3 }, // 24000 * 3
-            { price: 96000, months: 4 }, // 24000 * 4
-            { price: 120000, months: 5 },// 24000 * 5
-            { price: 132000, months: 6 } // 22000 * 6
-        ]
-                    }
-                },
+              {
+            id: 'tokyosilk',
+            name: { zh: '東京Silk診所', en: 'Tokyo Silk Clinic' },
+            tags: [
+        { zh: '線上診療', en: 'Online Clinic' },
+        { zh: '全國配送', en: 'Nationwide Delivery' },
+        { zh: '自由混搭計價', en: 'Mix & Match Tier Pricing' },
+        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+    ],
+    locations: [], // Online
+    link: 'https://x.com/tokyosilkclinic',
+    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
+    freeShipping: true,
+    // 專用 Tier 單價表（1個月單價）
+    tieredPrices: {
+        '2.5mg': { 1: 12000, tier2_5: 10000, tier6: 8000 },
+        '5mg':   { 1: 18000, tier2_5: 16000, tier6: 14000 },
+        '7.5mg': { 1: 26000, tier2_5: 24000, tier6: 22000 }
+    },
+    // 預設價格表（供標準比價模式預設參考）
+    prices: {
+        '2.5mg': [{ price: 12000, months: 1 }],
+        '5mg':   [{ price: 18000, months: 1 }],
+        '7.5mg': [{ price: 26000, months: 1 }]
+    }
+},
                 {
                     id: 'ikegawa',
                     name: { zh: '池川内科', en: 'Ikegawa Internal Medicine' },
@@ -1511,6 +1498,40 @@
                     let breakdown = [];
                     let bundleApplied = false;
 
+if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
+        let tierKey = '1';
+        if (totalSelectedMonths >= 6) {
+            tierKey = 'tier6';
+        } else if (totalSelectedMonths >= 2) {
+            tierKey = 'tier2_5';
+        } else {
+            tierKey = '1';
+        }
+
+        let breakdownParts = [];
+
+        Object.entries(cart).forEach(([dosage, months]) => {
+            if (months > 0) {
+                const dosageTiers = clinic.tieredPrices[dosage];
+                if (dosageTiers && dosageTiers[tierKey] !== undefined) {
+                    const unitPrice = dosageTiers[tierKey];
+                    totalMeds += unitPrice * months;
+                    breakdownParts.push(`${dosage} (${months}個月 @ ¥${unitPrice.toLocaleString()}/月)`);
+                } else {
+                    // 若選擇了 Silk 沒提供的劑量（例如 10mg 以上）
+                    possible = false;
+                }
+            }
+        });
+
+        breakdown = breakdownParts.join(' + ');
+        if (totalSelectedMonths >= 2) bundleApplied = true;
+
+    // -------------------------------------------------------------
+    // 【保留】：其他一般診所，繼續走原本的計算方式
+    // -------------------------------------------------------------
+    } else {
+                    
                     let tempCart = {...cart};
                     
                     const COMBO_KEYS = [
