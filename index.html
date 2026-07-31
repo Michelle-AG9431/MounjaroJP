@@ -487,11 +487,12 @@
                     fees: { initialNum: 1500, shippingNum: 2200, offlineRegFee: 1500, onlineRegFee: 0, note: { zh: '線下掛號費¥1500/線上免掛號', en: 'Offline Reg ¥1500 / Online Free Reg' } },
                     freeShipping: false,
                     prices: {
-                        '2.5mg': [{ price: 12000, months: 1 }],
-                        '5mg':   [{ price: 20500, months: 1 }],
-                        '7.5mg': [{ price: 31000, months: 1 }],
-                        '10mg':  [{ price: 40000, months: 1 }],
-                        '12.5mg': [{ price: 60000, months: 1 }], 
+                        '2.5mg': [{ price: 10800, months: 1 }],
+                        '5mg':   [{ price: 18000, months: 1 }],
+                        '7.5mg': [{ price: 25000, months: 1 }],
+                        '10mg':  [{ price: 36000, months: 1 }],
+                        '12.5mg': [{ price: 50000, months: 1 }], 
+                        '15mg': [{ price: 60000, months: 1 }], 
                     }
                 },
                 {
@@ -553,25 +554,6 @@
                         '5mg': [{ price: 18000, months: 1 }],
                         '7.5mg': [{ price: 27000, months: 1 }],
                         '10mg': [{ price: 37000, months: 1 }],
-                    }
-                },
-                {
-                    id: 'UB',
-                    name: { zh: 'UB美容皮膚科診所', en: 'UB Beauty Clinic' },
-                    tags: [
-                        { zh: '線下診療', en: 'Offline Clinic' },
-                        { zh: '需通日文', en: 'Japanese Speakers only' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: ['kanto'], 
-                    offlineOnly: true,
-                    link: 'https://ubshinjuku.b4a.clinic/clinics/301/bookings/new/select/menu/',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
-                    freeShipping: false,
-                    prices: {
-                        '2.5mg': [{ price: 12000, months: 1 }],
-                        '5mg': [{ price: 22000, months: 1 }],
-                        '7.5mg': [{ price: 32000, months: 1 }],
                     }
                 },
                 {
@@ -673,10 +655,12 @@
                     freeShipping: false,
                     onlineFee: 1100,
                     prices: {
-                        '2.5mg': [{ price: 13100, months: 1 }],
-                        '5mg':   [{ price: 26300, months: 1 }],
-                        '7.5mg': [{ price: 39500, months: 1 }],
-                        '10mg':  [{ price: 52700, months: 1 }],
+                        '2.5mg': [{ price: 12100, months: 1 }],
+                        '5mg':   [{ price: 24300, months: 1 }],
+                        '7.5mg': [{ price: 36500, months: 1 }],
+                        '10mg':  [{ price: 48700, months: 1 }],
+                        '12.5mg':  [{ price: 60900, months: 1 }],
+                        '15mg':  [{ price: 73100, months: 1 }],
                     }
                 },
                 {
@@ -729,9 +713,10 @@
                     link: 'lin.ee/XTur7WX',
                     fees: { initialNum: 0, shippingNum: 2200, note: { zh: '免掛號費+運費', en: 'Free Reg + Ship' } },
                     freeShipping: false,
+                    maxTotalMonths: 2,
                     prices: {
-                         '2.5mg': [{ price: 9980, months: 1 }],
-                        '5mg': [{ price: 17980, months: 1 }],
+                         '2.5mg': [{ price: 8500, months: 1 }],
+                        '5mg': [{ price: 14500, months: 1 }],
                     }
                 },
                 {
@@ -747,9 +732,9 @@
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true,
                     prices: {
-                         '2.5mg': [{ price: 13000, months: 1 }, { price: 25500, months: 2 }, { price: 35000, months: 3 }],
-                        '5mg': [{ price: 22850, months: 1 }, { price: 45500, months: 2 }, { price: 63000, months: 3 }],
-                        '7.5mg': [{ price: 34000, months: 1 }, { price: 65000, months: 2 }, { price: 96000, months: 3 }]
+                         '2.5mg': [{ price: 10200, months: 1 }, { price: 19400, months: 2 }, { price: 27600, months: 3 }],
+                        '5mg': [{ price: 17850, months: 1 }, { price: 34600, months: 2 }, { price: 51400, months: 3 }],
+                        '7.5mg': [{ price: 27000, months: 1 }, { price: 52500, months: 2 }, { price: 78500, months: 3 }]
                     }
                 },
                 {
@@ -991,14 +976,29 @@
                         { zh: '預約須日本門號', en: 'Need JP Phone#' }
                     ],
                     locations: [],
-                    link: 'https://x.com/pokekuri?t=v44jYexZkPzy-bYR1k8chA&s=09',
+                    link: 'https://t.co/LGnaFQT9gk',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true,
+                    tieredPrices: {
+                        '2.5mg': { 1: 12900, tier2: 12500, tier3_6: 12000 },
+                        '5mg':   { 1: 22900, tier2: 22700, tier3_6: 21200 },
+                        '7.5mg': { 1: 35900, tier2: 32900, tier3_6: 29200 },
+                        '10mg': { 1: 41900, tier2: 40600, tier3_6: 38500 },
+                        '12.5mg': { 1: 50900, tier2: 49900, tier3_6: 47900 },
+                        '15mg': { 1: 57900, tier2: 57100, tier3_6: 54900 }
+                    },
                     prices: {
-                        '2.5mg': [{ price: 15800, months: 1 }, { price: 29600, months: 2 }, { price: 40500, months: 3 }],
-                        '5mg': [{ price: 27700, months: 1 }, { price: 52000, months: 2 }, { price: 73200, months: 3 }],
-                        '7.5mg': [{ price: 38900, months: 1 }, { price: 72000, months: 2 }, { price: 98700, months: 3 }],
-                        '2.5mg+5mg': [{ price: 22200, months: 1 }, { price: 41500, months: 2 }]
+                        '2.5mg': [{ price: 12900, months: 1 }],
+                        '5mg':   [{ price: 22900, months: 1 }],
+                        '7.5mg': [{ price: 35900, months: 1 }],
+                        '10mg': [{ price: 41900, months: 1 }],
+                        '12.5mg': [{ price: 50900, months: 1 }],
+                        '15mg': [{ price: 57900, months: 1 }],
+                        '2.5mg+5mg': [{ price: 22200, months: 1 }, { price: 37900, months: 2 }],
+                        '5mg+7.5mg': [{ price: 34400, months: 1 }, { price: 60900, months: 2 }],
+                        '7.5mg+10mg': [{ price: 41400, months: 1 }, { price: 75400, months: 2 }],
+                        '10mg+12.5mg': [{ price: 50400, months: 1 }, { price: 91400, months: 2 }],
+                        '12.5mg+15mg': [{ price: 56900, months: 1 }, { price: 108400, months: 2 }]
                     }
                 }
             ];
@@ -1120,34 +1120,37 @@
                     return total;
                 };
 
-                // 特殊診所 Tokyo Silk 在標準比價模式下的價格對應
-                if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
-        const tiers = clinic.tieredPrices[dosage];
-        if (!tiers) return [];
+                // 特殊 Tier 診所（Tokyo Silk & Pokekuri 等）在標準比價模式下的動態價格對應
+                if (clinic.tieredPrices) {
+                    const tiers = clinic.tieredPrices[dosage];
+                    if (!tiers) return [];
 
-        const formatSilk = (m, unitPrice) => ({
-            months: m,
-            price: unitPrice * m,
-            label: getLabel(m),
-            totalPrice: calculateTotal(unitPrice * m, m),
-            drugPriceOnly: unitPrice * m,
-            isCalculated: false
-        });
+                    const formatTier = (m, unitPrice) => ({
+                        months: m,
+                        price: unitPrice * m,
+                        label: getLabel(m),
+                        totalPrice: calculateTotal(unitPrice * m, m),
+                        drugPriceOnly: unitPrice * m,
+                        isCalculated: false
+                    });
 
-        if (targetDuration === 'all') {
-            return [
-                formatSilk(1, tiers['1']),
-                formatSilk(2, tiers['tier2_5']),
-                formatSilk(3, tiers['tier2_5']),
-                formatSilk(6, tiers['tier6'])
-            ];
-        } else {
-            let unitPrice = tiers['1'];
-            if (targetDuration >= 6) unitPrice = tiers['tier6'];
-            else if (targetDuration >= 2) unitPrice = tiers['tier2_5'];
-            return [formatSilk(targetDuration, unitPrice)];
-        }
-    }
+                    // 取得指定月份對應的 Tier 單價
+                    const getUnitPriceForMonth = (m) => {
+                        if (tiers[m] !== undefined) return tiers[m];
+                        if (m >= 3 && tiers.tier3_6 !== undefined) return tiers.tier3_6;
+                        if (m >= 6 && tiers.tier6 !== undefined) return tiers.tier6;
+                        if (m >= 2 && tiers.tier2_5 !== undefined) return tiers.tier2_5;
+                        if (m === 2 && tiers.tier2 !== undefined) return tiers.tier2;
+                        return tiers[1] || Object.values(tiers)[0];
+                    };
+
+                    if (targetDuration === 'all') {
+                        const targetMonthsList = [1, 2, 3, 6];
+                        return targetMonthsList.map(m => formatTier(m, getUnitPriceForMonth(m)));
+                    } else {
+                        return [formatTier(targetDuration, getUnitPriceForMonth(targetDuration))];
+                    }
+                }
 
                 let prices = clinic.prices[dosage];
                 if (!prices) return [];
@@ -1391,26 +1394,27 @@
                     let breakdownStr = "";
                     let bundleApplied = false;
 
-                    // Tokyo Silk 專用 Tier 混搭算術分支
-                    if (clinic.id === 'tokyosilk' && clinic.tieredPrices) {
-                        let tierKey = '1';
-                        if (totalSelectedMonths >= 6) {
-                            tierKey = 'tier6';
-                        } else if (totalSelectedMonths >= 2) {
-                            tierKey = 'tier2_5';
-                        } else {
-                            tierKey = '1';
-                        }
-
+                    // 通用 Tier 診所算術分支（支援 Pokekuri、Tokyo Silk 等不同級距）
+                    if (clinic.tieredPrices) {
                         let breakdownParts = [];
 
                         Object.entries(cart).forEach(([dosage, months]) => {
                             if (months > 0) {
                                 const dosageTiers = clinic.tieredPrices[dosage];
-                                if (dosageTiers && dosageTiers[tierKey] !== undefined) {
-                                    const unitPrice = dosageTiers[tierKey];
-                                    totalMeds += unitPrice * months;
-                                    breakdownParts.push(`${dosage} (${months}個月 @ ¥${unitPrice.toLocaleString()}/月)`);
+                                if (dosageTiers) {
+                                    // 依據 totalSelectedMonths 找出該診所定義的最合適 tierKey
+                                    let unitPrice = dosageTiers[1];
+                                    if (totalSelectedMonths >= 6 && dosageTiers.tier6 !== undefined) unitPrice = dosageTiers.tier6;
+                                    else if (totalSelectedMonths >= 3 && dosageTiers.tier3_6 !== undefined) unitPrice = dosageTiers.tier3_6;
+                                    else if (totalSelectedMonths >= 2 && dosageTiers.tier2_5 !== undefined) unitPrice = dosageTiers.tier2_5;
+                                    else if (totalSelectedMonths === 2 && dosageTiers.tier2 !== undefined) unitPrice = dosageTiers.tier2;
+
+                                    if (unitPrice !== undefined) {
+                                        totalMeds += unitPrice * months;
+                                        breakdownParts.push(`${dosage} (${months}個月 @ ¥${unitPrice.toLocaleString()}/月)`);
+                                    } else {
+                                        possible = false;
+                                    }
                                 } else {
                                     possible = false;
                                 }
