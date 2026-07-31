@@ -1146,18 +1146,23 @@
         }
 
         // 取得指定月份對應的 Tier 單價
+        // 修正後的單價比對邏輯：優先比對最高階梯
         const getUnitPriceForMonth = (m) => {
             const tiers = clinic.tieredPrices[dosage];
             if (!tiers) return null;
-            if (tiers[m] !== undefined) return tiers[m];
-            if (m >= 3 && tiers.tier3_6 !== undefined) return tiers.tier3_6;
+            
             if (m >= 6 && tiers.tier6 !== undefined) return tiers.tier6;
+            if (m >= 3 && tiers.tier3_6 !== undefined) return tiers.tier3_6;
             if (m >= 2 && tiers.tier2_5 !== undefined) return tiers.tier2_5;
             if (m === 2 && tiers.tier2 !== undefined) return tiers.tier2;
-            return tiers[1] || Object.values(tiers)[0];
+            if (tiers[m] !== undefined) return tiers[m];
+            if (tiers['1'] !== undefined) return tiers['1'];
+            
+            return Object.values(tiers)[0];
         };
 
-        if (getUnitPriceForMonth(1) === null) return [];
+        const basePrice = getUnitPriceForMonth(1);
+        if (basePrice === null) return [];
 
         const formatTier = (m) => {
             const uPrice = getUnitPriceForMonth(m);
