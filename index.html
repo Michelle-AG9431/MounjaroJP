@@ -1111,215 +1111,235 @@
                 return dp[maxUnits];
             };
 
-            const getSmartPrices = (clinic, dosage, targetDuration) => {
-                const calculateTotal = (drugPrice, duration) => {
-                    const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
-                    let total = drugPrice + getRegFee(clinic) + getShippingFee(clinic, region, duration);
-                    if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
-                    if ((region === 'all' || !isOffline) && clinic.onlineFee) total += clinic.onlineFee;
-                    return total;
-                };
+           const getSmartPrices = (clinic, dosage, targetDuration) => {
+    const calculateTotal = (drugPrice, duration) => {
+        const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
+        let total = drugPrice + getRegFee(clinic) + getShippingFee(clinic, region, duration);
+        if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
+        if ((region === 'all' || !isOffline) && clinic.onlineFee) total += clinic.onlineFee;
+        return total;
+    };
 
-                // 特殊 Tier 診所（Tokyo Silk & Pokekuri 等）在標準比價模式下的動態價格對應
-                if (clinic.tieredPrices) {
-                    const tiers = clinic.tieredPrices[dosage];
-                    if (!tiers) return [];
+    // 判斷是否為轉換方案 (含 '+')，且該診所在 prices 裡面「已經有寫死」這個轉換方案
+    const hasExplicitPrices = clinic.prices && clinic.prices[dosage] && clinic.prices[dosage].length > 0;
 
-                    const formatTier = (m, unitPrice) => ({
-                        months: m,
-                        price: unitPrice * m,
-                        label: getLabel(m),
-                        totalPrice: calculateTotal(unitPrice * m, m),
-                        drugPriceOnly: unitPrice * m,
-                        isCalculated: false
-                    });
+    // 特殊 Tier 診所（Tokyo Silk 等）或 Pokekuri 的單一劑量，走 tieredPrices 動態算術
+    if (clinic.tieredPrices && !hasExplicitPrices) {
+        const getUnitPriceForMonth = (dose, m) => {
+            const tiers = clinic.tieredPrices[dose];
+            if (!tiers) return null;
+            if (tiers[m] !== undefined) return tiers[m];
+            if (m >= 3 && tiers.tier3_6 !== undefined) return tiers.tier3_6;
+            if (m >= 6 && tiers.tier6 !== undefined) return tiers.tier6;
+            if (m >= 2 && tiers.tier2_5 !== undefined) return tiers.tier2_5;
+            if (m === 2 && tiers.tier2 !== undefined) return tiers.tier2;
+            return tiers[1] || Object.values(tiers)[0];
+        };
 
-                    // 取得指定月份對應的 Tier 單價
-                    const getUnitPriceForMonth = (m) => {
-                        if (tiers[m] !== undefined) return tiers[m];
-                        if (m >= 3 && tiers.tier3_6 !== undefined) return tiers.tier3_6;
-                        if (m >= 6 && tiers.tier6 !== undefined) return tiers.tier6;
-                        if (m >= 2 && tiers.tier2_5 !== undefined) return tiers.tier2_5;
-                        if (m === 2 && tiers.tier2 !== undefined) return tiers.tier2;
-                        return tiers[1] || Object.values(tiers)[0];
-                    };
+        const getComboUnitPrice = (doseStr, m) => {
+            const parts = doseStr.split('+');
+            let sum = 0;
+            for (let p of parts) {
+                const uPrice = getUnitPriceForMonth(p.trim(), m);
+                if (uPrice === null) return null;
+                sum += uPrice;
+            }
+            return sum;
+        };
 
-                    if (targetDuration === 'all') {
-                        const targetMonthsList = [1, 2, 3, 6];
-                        return targetMonthsList.map(m => formatTier(m, getUnitPriceForMonth(m)));
-                    } else {
-                        return [formatTier(targetDuration, getUnitPriceForMonth(targetDuration))];
-                    }
-                }
+        const formatTier = (m, unitPrice) => ({
+            months: m,
+            price: unitPrice * m,
+            label: getLabel(m),
+            totalPrice: calculateTotal(unitPrice * m, m),
+            drugPriceOnly: unitPrice * m,
+            isCalculated: false
+        });
 
-                let prices = clinic.prices[dosage];
-                if (!prices) return [];
-                
-                prices = filterPricesByUserType(prices);
-                if (prices.length === 0) return [];
+        if (targetDuration === 'all') {
+            const targetMonthsList = [1, 2, 3, 6];
+            const res = [];
+            for (let m of targetMonthsList) {
+                const uPrice = getComboUnitPrice(dosage, m);
+                if (uPrice !== null) res.push(formatTier(m, uPrice));
+            }
+            return res;
+        } else {
+            const uPrice = getComboUnitPrice(dosage, targetDuration);
+            if (uPrice === null) return [];
+            return [formatTier(targetDuration, uPrice)];
+        }
+    }
 
-                if (dosage.includes('+')) {
-                    const formatData = (p) => ({
-                        ...p,
-                        label: getLabel(p.months),
-                        totalPrice: calculateTotal(p.price, p.months),
-                        drugPriceOnly: p.price,
-                        isCalculated: false,
-                        calculationNote: t.calcNotes.mixed
-                    });
+    // 標準比價模式：使用 clinic.prices 裡定義的方案（ Pokekuri 截圖紅框的轉換方案會走這裡 ）
+    let prices = clinic.prices[dosage];
+    if (!prices) return [];
+    
+    prices = filterPricesByUserType(prices);
+    if (prices.length === 0) return [];
 
-                    if (targetDuration === 'all') {
-                        if (clinic.minTotalMonths) {
-                             const minMonths = clinic.minTotalMonths;
-                             const oneMonthCombo = prices.find(p => p.months === 1);
-                             if (oneMonthCombo) {
-                                 const items = [];
-                                 items.push({
-                                     ...oneMonthCombo,
-                                     months: minMonths,
-                                     price: oneMonthCombo.price * minMonths,
-                                     label: `${minMonths} ${t.months} (Min)`,
-                                     totalPrice: calculateTotal(oneMonthCombo.price * minMonths, minMonths),
-                                     drugPriceOnly: oneMonthCombo.price * minMonths,
-                                     isCalculated: true,
-                                     calculationNote: `Minimum ${minMonths} months required`
-                                 });
-                                 items.push({
-                                     ...oneMonthCombo,
-                                     months: 6,
-                                     price: oneMonthCombo.price * 6,
-                                     label: `6 ${t.months}`,
-                                     totalPrice: calculateTotal(oneMonthCombo.price * 6, 6),
-                                     drugPriceOnly: oneMonthCombo.price * 6,
-                                     isCalculated: true,
-                                     calculationNote: t.calcNotes.base1x6
-                                 });
-                                 return items;
-                             }
-                             return [];
-                        }
-                        
-                        if (clinic.maxTotalMonths) {
-                             return prices.filter(p => p.months <= clinic.maxTotalMonths).map(formatData);
-                        }
-                        
-                        return prices.map(formatData);
-                    }
-                    
-                    const exactMatch = prices.find(p => p.months === targetDuration);
-                    if (exactMatch) {
-                         if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
-                         if (clinic.maxTotalMonths && targetDuration > clinic.maxTotalMonths) return [];
-                         return [formatData(exactMatch)];
-                    }
-                    
-                    return []; 
-                }
+    if (dosage.includes('+')) {
+        const formatData = (p) => ({
+            ...p,
+            label: getLabel(p.months),
+            totalPrice: calculateTotal(p.price, p.months),
+            drugPriceOnly: p.price,
+            isCalculated: false,
+            calculationNote: t.calcNotes.mixed
+        });
 
-                const formatData = (p) => ({
-                    ...p,
-                    label: getLabel(p.months),
-                    totalPrice: calculateTotal(p.price, p.months),
-                    drugPriceOnly: p.price,
-                    isCalculated: false
-                });
-
-                if (targetDuration === 'all') {
-                    if (clinic.minTotalMonths) {
-                        const oneMonth = prices.find(p => p.months === 1);
-                        if (oneMonth) {
-                             const minMonths = clinic.minTotalMonths;
-                             const items = [];
-                             items.push({
-                                 ...oneMonth,
-                                 months: minMonths,
-                                 price: oneMonth.price * minMonths,
-                                 label: `${minMonths} ${t.months} (Min Order)`,
-                                 totalPrice: calculateTotal(oneMonth.price * minMonths, minMonths),
-                                 drugPriceOnly: oneMonth.price * minMonths,
-                                 isCalculated: true,
-                                 calculationNote: `Minimum ${minMonths} months required`
-                             });
-                             items.push({
-                                 ...oneMonth,
-                                 months: 6,
-                                 price: oneMonth.price * 6,
-                                 label: `6 ${t.months}`,
-                                 totalPrice: calculateTotal(oneMonth.price * 6, 6),
-                                 drugPriceOnly: oneMonth.price * 6,
-                                 isCalculated: true,
-                                 calculationNote: t.calcNotes.base1x6
-                             });
-                             return items;
-                        }
-                    }
-                    
-                    if (clinic.maxTotalMonths) {
-                        return prices.filter(p => p.months <= clinic.maxTotalMonths).map(formatData);
-                    }
-                    
-                    return prices.map(formatData);
-                }
-
-                const exactMatch = prices.find(p => p.months === targetDuration);
-                if (exactMatch) {
-                    if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
-                    if (clinic.maxTotalMonths && targetDuration > clinic.maxTotalMonths) return [];
-                    return [formatData(exactMatch)];
-                }
-
-                let calculatedDrugPrice = null;
-                let calcNoteKey = '';
-
-                if (clinic.singleUsePlans) {
-                    const optimal = calculateOptimalCombination(clinic, dosage, targetDuration);
-                    if (optimal && optimal.plans.length > 0 && optimal.cost > 0) {
-                        calculatedDrugPrice = optimal.cost;
-                        return [{
-                            label: `${targetDuration} ${t.months} (${t.est})`,
-                            price: calculatedDrugPrice,
-                            totalPrice: calculateTotal(calculatedDrugPrice, targetDuration),
-                            drugPriceOnly: calculatedDrugPrice,
-                            months: targetDuration,
-                            isCalculated: true,
-                            calculationNote: t.calcNotes['mixed']
-                        }];
-                    } else {
-                        return [];
-                    }
-                } else {
-                    if (targetDuration === 6) {
-                        const price3mo = prices.find(p => p.months === 3);
-                        const price2mo = prices.find(p => p.months === 2);
-                        const price1mo = prices.find(p => p.months === 1);
-                        if (price3mo) { calculatedDrugPrice = price3mo.price * 2; calcNoteKey = 'base3x2'; }
-                        else if (price2mo) { calculatedDrugPrice = price2mo.price * 3; calcNoteKey = 'base2x3'; }
-                        else if (price1mo) { calculatedDrugPrice = price1mo.price * 6; calcNoteKey = 'base1x6'; }
-                    } else if (targetDuration === 3) {
-                        const price1mo = prices.find(p => p.months === 1);
-                        if (price1mo) { calculatedDrugPrice = price1mo.price * 3; calcNoteKey = 'base1x3'; }
-                    } else if (targetDuration === 2) {
-                        const price1mo = prices.find(p => p.months === 1);
-                        if (price1mo) { calculatedDrugPrice = price1mo.price * 2; calcNoteKey = 'base1x2'; }
-                    }
-                }
-
-                if (calculatedDrugPrice !== null) {
-                    if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
-                    if (clinic.maxTotalMonths && targetDuration > clinic.maxTotalMonths) return [];
-
-                    return [{
-                        label: `${targetDuration} ${t.months} (${t.est})`,
-                        price: calculatedDrugPrice,
-                        totalPrice: calculateTotal(calculatedDrugPrice, targetDuration),
-                        drugPriceOnly: calculatedDrugPrice,
-                        months: targetDuration,
+        if (targetDuration === 'all') {
+            if (clinic.minTotalMonths) {
+                const minMonths = clinic.minTotalMonths;
+                const oneMonthCombo = prices.find(p => p.months === 1);
+                if (oneMonthCombo) {
+                    const items = [];
+                    items.push({
+                        ...oneMonthCombo,
+                        months: minMonths,
+                        price: oneMonthCombo.price * minMonths,
+                        label: `${minMonths} ${t.months} (Min)`,
+                        totalPrice: calculateTotal(oneMonthCombo.price * minMonths, minMonths),
+                        drugPriceOnly: oneMonthCombo.price * minMonths,
                         isCalculated: true,
-                        calculationNote: t.calcNotes[calcNoteKey]
-                    }];
+                        calculationNote: `Minimum ${minMonths} months required`
+                    });
+                    items.push({
+                        ...oneMonthCombo,
+                        months: 6,
+                        price: oneMonthCombo.price * 6,
+                        label: `6 ${t.months}`,
+                        totalPrice: calculateTotal(oneMonthCombo.price * 6, 6),
+                        drugPriceOnly: oneMonthCombo.price * 6,
+                        isCalculated: true,
+                        calculationNote: t.calcNotes.base1x6
+                    });
+                    return items;
                 }
                 return [];
-            };
+            }
+            
+            if (clinic.maxTotalMonths) {
+                return prices.filter(p => p.months <= clinic.maxTotalMonths).map(formatData);
+            }
+            
+            return prices.map(formatData);
+        }
+        
+        const exactMatch = prices.find(p => p.months === targetDuration);
+        if (exactMatch) {
+            if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
+            if (clinic.maxTotalMonths && targetDuration > clinic.maxTotalMonths) return [];
+            return [formatData(exactMatch)];
+        }
+        
+        return []; 
+    }
+
+    const formatData = (p) => ({
+        ...p,
+        label: getLabel(p.months),
+        totalPrice: calculateTotal(p.price, p.months),
+        drugPriceOnly: p.price,
+        isCalculated: false
+    });
+
+    if (targetDuration === 'all') {
+        if (clinic.minTotalMonths) {
+            const oneMonth = prices.find(p => p.months === 1);
+            if (oneMonth) {
+                const minMonths = clinic.minTotalMonths;
+                const items = [];
+                items.push({
+                    ...oneMonth,
+                    months: minMonths,
+                    price: oneMonth.price * minMonths,
+                    label: `${minMonths} ${t.months} (Min Order)`,
+                    totalPrice: calculateTotal(oneMonth.price * minMonths, minMonths),
+                    drugPriceOnly: oneMonth.price * minMonths,
+                    isCalculated: true,
+                    calculationNote: `Minimum ${minMonths} months required`
+                });
+                items.push({
+                    ...oneMonth,
+                    months: 6,
+                    price: oneMonth.price * 6,
+                    label: `6 ${t.months}`,
+                    totalPrice: calculateTotal(oneMonth.price * 6, 6),
+                    drugPriceOnly: oneMonth.price * 6,
+                    isCalculated: true,
+                    calculationNote: t.calcNotes.base1x6
+                });
+                return items;
+            }
+        }
+        
+        if (clinic.maxTotalMonths) {
+            return prices.filter(p => p.months <= clinic.maxTotalMonths).map(formatData);
+        }
+        
+        return prices.map(formatData);
+    }
+
+    const exactMatch = prices.find(p => p.months === targetDuration);
+    if (exactMatch) {
+        if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
+        if (clinic.maxTotalMonths && targetDuration > clinic.maxTotalMonths) return [];
+        return [formatData(exactMatch)];
+    }
+
+    let calculatedDrugPrice = null;
+    let calcNoteKey = '';
+
+    if (clinic.singleUsePlans) {
+        const optimal = calculateOptimalCombination(clinic, dosage, targetDuration);
+        if (optimal && optimal.plans.length > 0 && optimal.cost > 0) {
+            calculatedDrugPrice = optimal.cost;
+            return [{
+                label: `${targetDuration} ${t.months} (${t.est})`,
+                price: calculatedDrugPrice,
+                totalPrice: calculateTotal(calculatedDrugPrice, targetDuration),
+                drugPriceOnly: calculatedDrugPrice,
+                months: targetDuration,
+                isCalculated: true,
+                calculationNote: t.calcNotes['mixed']
+            }];
+        } else {
+            return [];
+        }
+    } else {
+        if (targetDuration === 6) {
+            const price3mo = prices.find(p => p.months === 3);
+            const price2mo = prices.find(p => p.months === 2);
+            const price1mo = prices.find(p => p.months === 1);
+            if (price3mo) { calculatedDrugPrice = price3mo.price * 2; calcNoteKey = 'base3x2'; }
+            else if (price2mo) { calculatedDrugPrice = price2mo.price * 3; calcNoteKey = 'base2x3'; }
+            else if (price1mo) { calculatedDrugPrice = price1mo.price * 6; calcNoteKey = 'base1x6'; }
+        } else if (targetDuration === 3) {
+            const price1mo = prices.find(p => p.months === 1);
+            if (price1mo) { calculatedDrugPrice = price1mo.price * 3; calcNoteKey = 'base1x3'; }
+        } else if (targetDuration === 2) {
+            const price1mo = prices.find(p => p.months === 1);
+            if (price1mo) { calculatedDrugPrice = price1mo.price * 2; calcNoteKey = 'base1x2'; }
+        }
+    }
+
+    if (calculatedDrugPrice !== null) {
+        if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
+        if (clinic.maxTotalMonths && targetDuration > clinic.maxTotalMonths) return [];
+
+        return [{
+            label: `${targetDuration} ${t.months} (${t.est})`,
+            price: calculatedDrugPrice,
+            totalPrice: calculateTotal(calculatedDrugPrice, targetDuration),
+            drugPriceOnly: calculatedDrugPrice,
+            months: targetDuration,
+            isCalculated: true,
+            calculationNote: t.calcNotes[calcNoteKey]
+        }];
+    }
+    return [];
+};
 
             const getBestPrice = (dosage, duration) => {
                 let best = Infinity;
