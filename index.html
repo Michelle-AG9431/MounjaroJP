@@ -1123,10 +1123,16 @@
     // 判斷是否為轉換方案 (含 '+')，且該診所在 prices 裡面「已經有寫死」這個轉換方案
     const hasExplicitPrices = clinic.prices && clinic.prices[dosage] && clinic.prices[dosage].length > 0;
 
-    // 特殊 Tier 診所（Tokyo Silk 等）或 Pokekuri 的單一劑量，走 tieredPrices 動態算術
+   // 特殊 Tier 診所（Tokyo Silk 等）或 Pokekuri 的單一劑量，走 tieredPrices 動態算術
     if (clinic.tieredPrices && !hasExplicitPrices) {
-        const getUnitPriceForMonth = (dose, m) => {
-            const tiers = clinic.tieredPrices[dose];
+        // 【修正】：如果是轉換方案（含有 '+'），但該診所沒有明列此組合包，就不在標準模式顯示
+        if (dosage.includes('+')) {
+            return [];
+        }
+
+        // 取得指定月份對應的 Tier 單價
+        const getUnitPriceForMonth = (m) => {
+            const tiers = clinic.tieredPrices[dosage];
             if (!tiers) return null;
             if (tiers[m] !== undefined) return tiers[m];
             if (m >= 3 && tiers.tier3_6 !== undefined) return tiers.tier3_6;
@@ -1136,38 +1142,24 @@
             return tiers[1] || Object.values(tiers)[0];
         };
 
-        const getComboUnitPrice = (doseStr, m) => {
-            const parts = doseStr.split('+');
-            let sum = 0;
-            for (let p of parts) {
-                const uPrice = getUnitPriceForMonth(p.trim(), m);
-                if (uPrice === null) return null;
-                sum += uPrice;
-            }
-            return sum;
+        if (getUnitPriceForMonth(1) === null) return [];
+
+        const formatTier = (m) => {
+            const uPrice = getUnitPriceForMonth(m);
+            return {
+                months: m,
+                price: uPrice * m,
+                label: getLabel(m),
+                totalPrice: calculateTotal(uPrice * m, m),
+                drugPriceOnly: uPrice * m,
+                isCalculated: false
+            };
         };
 
-        const formatTier = (m, unitPrice) => ({
-            months: m,
-            price: unitPrice * m,
-            label: getLabel(m),
-            totalPrice: calculateTotal(unitPrice * m, m),
-            drugPriceOnly: unitPrice * m,
-            isCalculated: false
-        });
-
         if (targetDuration === 'all') {
-            const targetMonthsList = [1, 2, 3, 6];
-            const res = [];
-            for (let m of targetMonthsList) {
-                const uPrice = getComboUnitPrice(dosage, m);
-                if (uPrice !== null) res.push(formatTier(m, uPrice));
-            }
-            return res;
+            return [1, 2, 3, 6].map(m => formatTier(m));
         } else {
-            const uPrice = getComboUnitPrice(dosage, targetDuration);
-            if (uPrice === null) return [];
-            return [formatTier(targetDuration, uPrice)];
+            return [formatTier(targetDuration)];
         }
     }
 
