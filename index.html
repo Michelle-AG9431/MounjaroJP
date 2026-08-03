@@ -179,7 +179,8 @@
         };
 
         const REGIONS = [
-            { id: 'all', zh: '全部地區 (All)', en: 'All Regions' },
+            { id: 'all', zh: '所有診所', en: 'All Regions' },
+            { id: 'online', zh: '線上門診', en: 'Online Clinic' },
             { id: 'hokkaido', zh: '北海道', en: 'Hokkaido' },
             { id: 'tohoku', zh: '東北 (秋田/青森/福島)', en: 'Tohoku' },
             { id: 'kanto', zh: '關東 (東京/橫濱)', en: 'Kanto' },
@@ -437,6 +438,9 @@
                 if (!clinic.locations || clinic.locations.length === 0) {
                     return lang === 'zh' ? '線上' : 'Online';
                 }
+                if (region === 'online') {
+                    return lang === 'zh' ? '線上' : 'Online';
+                }
                 return clinic.locations.map(locId => {
                     const regionData = REGIONS.find(r => r.id === locId);
                     if (!regionData) return locId;
@@ -501,7 +505,7 @@
                     tags: [
                         { zh: '中文服務', en: 'Chinese Support'},
                         { zh: '線上診所', en: 'Online/Offline'},
-                        { zh: '高劑量需詢問', en: 'Higher Dose subject to inquiry' },
+                        { zh: '免費提供處方籤', en: 'No Prescription certificate fee' }
                     ],
                     locations: [],
                     link: 'https://origami-clinic.com/', 
@@ -581,15 +585,17 @@
                     id: 'tokyosilk',
                     name: { zh: '東京Silk診所', en: 'Tokyo Silk Clinic' },
                     tags: [
-                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '線上/線下診療', en: 'Online/Offline Clinic' },
                         { zh: '全國配送', en: 'Nationwide Delivery' },
                         { zh: '自由混搭計價', en: 'Mix & Match Tier Pricing' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kanto'], 
+                    offlineOnly: false,
                     link: 'https://x.com/tokyosilkclinic',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: true,
+                    // 線上 Tier 價格表
                     tieredPrices: {
                         '2.5mg': { 1: 12000, tier2_5: 10000, tier6: 8000 },
                         '5mg':   { 1: 18000, tier2_5: 16000, tier6: 14000 },
@@ -599,6 +605,17 @@
                         '2.5mg': [{ price: 12000, months: 1 }],
                         '5mg':   [{ price: 18000, months: 1 }],
                         '7.5mg': [{ price: 26000, months: 1 }]
+                    },
+                    // 線下 Tier 價格表 (若線下與線上同價，可修改此處金額)
+                    offlineTieredPrices: {
+                        '2.5mg': { 1: 8000, tier2_5: 7500, tier6: 7000 },
+                        '5mg':   { 1: 14000, tier2_5: 14500, tier6: 13000 },
+                        '7.5mg': { 1: 22000, tier2_5: 21500, tier6: 21000 }
+                    },
+                    offlinePrices: {
+                        '2.5mg': [{ price: 8000, months: 1 }],
+                        '5mg':   [{ price: 14000, months: 1 }],
+                        '7.5mg': [{ price: 22000, months: 1 }]
                     }
                 },
                 {
@@ -743,7 +760,7 @@
                     ],
                     locations: ['kanto'],
                     link: 'lin.ee/XTur7WX',
-                    fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費+運費', en: 'Free Reg + Ship' } },
+                    fees: { initialNum: 0, shippingNum: 2200, note: { zh: '免掛號費+運費', en: 'Free Reg + Ship' } },
                     freeShipping: false,
                     maxTotalMonths: 2,
                     prices: {
@@ -1045,7 +1062,7 @@
                 if (userType === 'new') baseFee = clinic.fees.initialNum;
                 else baseFee = clinic.fees.returningNum !== undefined ? clinic.fees.returningNum : clinic.fees.initialNum;
 
-                const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
+                const isOffline = region !== 'all' && region !== 'online' && clinic.locations && clinic.locations.includes(region);
                 
                 if (isOffline && clinic.fees.offlineRegFee !== undefined) {
                     return clinic.fees.offlineRegFee;
@@ -1059,7 +1076,7 @@
             const getShippingFee = (clinic, userRegion, months) => {
                 let shippingCost = 0;
 
-                if (userRegion === 'all') {
+                if (userRegion === 'all' || userRegion === 'online') {
                     if (clinic.shipping_rules && clinic.shipping_rules.default) {
                         shippingCost = clinic.shipping_rules.default;
                     } else {
@@ -1097,8 +1114,8 @@
                 }
             };
             
-            const calculateOptimalCombination = (clinic, dosage, targetMonths) => {
-                let plans = clinic.prices[dosage];
+            const calculateOptimalCombination = (clinic, dosage, targetMonths, activePrices) => {
+                let plans = activePrices[dosage];
                 if (!plans) return null;
                 
                 plans = filterPricesByUserType(plans);
@@ -1149,20 +1166,23 @@
             };
 
             const getSmartPrices = (clinic, dosage, targetDuration) => {
+                const isOfflineRegion = region !== 'all' && region !== 'online' && clinic.locations && clinic.locations.includes(region);
+                const activeTieredPrices = (isOfflineRegion && clinic.offlineTieredPrices) ? clinic.offlineTieredPrices : clinic.tieredPrices;
+                const activePrices = (isOfflineRegion && clinic.offlinePrices) ? clinic.offlinePrices : clinic.prices;
+
                 const calculateTotal = (drugPrice, duration) => {
-                    const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
+                    const isOffline = isOfflineRegion;
                     let total = drugPrice + getRegFee(clinic) + getShippingFee(clinic, region, duration);
                     if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
-                    if ((region === 'all' || !isOffline) && clinic.onlineFee) total += clinic.onlineFee;
+                    if (!isOffline && clinic.onlineFee) total += clinic.onlineFee;
                     return total;
                 };
 
-                // 判斷該劑量是否定義在 tieredPrices 內 (如 2.5mg, 5mg)
-                const isTieredDosage = clinic.tieredPrices && clinic.tieredPrices[dosage];
+                const isTieredDosage = activeTieredPrices && activeTieredPrices[dosage];
 
                 if (isTieredDosage) {
                     const getUnitPriceForMonth = (m) => {
-                        const tiers = clinic.tieredPrices[dosage];
+                        const tiers = activeTieredPrices[dosage];
                         if (!tiers) return null;
                         
                         if (m >= 6 && tiers.tier6 !== undefined) return tiers.tier6;
@@ -1197,8 +1217,7 @@
                     }
                 }
 
-                // 標準比價模式：使用 clinic.prices 裡定義的方案 (如非 Tier 診所或套裝轉換方案)
-                let prices = clinic.prices ? clinic.prices[dosage] : null;
+                let prices = activePrices ? activePrices[dosage] : null;
                 if (!prices) return [];
                 
                 prices = filterPricesByUserType(prices);
@@ -1216,37 +1235,37 @@
 
                     if (targetDuration === 'all') {
                         if (clinic.minTotalMonths) {
-                            const minMonths = clinic.minTotalMonths;
-                            const oneMonthCombo = prices.find(p => p.months === 1);
-                            if (oneMonthCombo) {
-                                const items = [];
-                                items.push({
-                                    ...oneMonthCombo,
-                                    months: minMonths,
-                                    price: oneMonthCombo.price * minMonths,
-                                    label: `${minMonths} ${t.months} (Min)`,
-                                    totalPrice: calculateTotal(oneMonthCombo.price * minMonths, minMonths),
-                                    drugPriceOnly: oneMonthCombo.price * minMonths,
-                                    isCalculated: true,
-                                    calculationNote: `Minimum ${minMonths} months required`
-                                });
-                                items.push({
-                                    ...oneMonthCombo,
-                                    months: 6,
-                                    price: oneMonthCombo.price * 6,
-                                    label: `6 ${t.months}`,
-                                    totalPrice: calculateTotal(oneMonthCombo.price * 6, 6),
-                                    drugPriceOnly: oneMonthCombo.price * 6,
-                                    isCalculated: true,
-                                    calculationNote: t.calcNotes.base1x6
-                                });
-                                return items;
-                            }
-                            return [];
+                             const minMonths = clinic.minTotalMonths;
+                             const oneMonthCombo = prices.find(p => p.months === 1);
+                             if (oneMonthCombo) {
+                                 const items = [];
+                                 items.push({
+                                     ...oneMonthCombo,
+                                     months: minMonths,
+                                     price: oneMonthCombo.price * minMonths,
+                                     label: `${minMonths} ${t.months} (Min)`,
+                                     totalPrice: calculateTotal(oneMonthCombo.price * minMonths, minMonths),
+                                     drugPriceOnly: oneMonthCombo.price * minMonths,
+                                     isCalculated: true,
+                                     calculationNote: `Minimum ${minMonths} months required`
+                                 });
+                                 items.push({
+                                     ...oneMonthCombo,
+                                     months: 6,
+                                     price: oneMonthCombo.price * 6,
+                                     label: `6 ${t.months}`,
+                                     totalPrice: calculateTotal(oneMonthCombo.price * 6, 6),
+                                     drugPriceOnly: oneMonthCombo.price * 6,
+                                     isCalculated: true,
+                                     calculationNote: t.calcNotes.base1x6
+                                 });
+                                 return items;
+                             }
+                             return [];
                         }
                         
                         if (clinic.maxTotalMonths) {
-                            return prices.filter(p => p.months <= clinic.maxTotalMonths).map(formatData);
+                             return prices.filter(p => p.months <= clinic.maxTotalMonths).map(formatData);
                         }
                         
                         return prices.map(formatData);
@@ -1254,9 +1273,9 @@
                     
                     const exactMatch = prices.find(p => p.months === targetDuration);
                     if (exactMatch) {
-                        if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
-                        if (clinic.maxTotalMonths && targetDuration > clinic.maxTotalMonths) return [];
-                        return [formatData(exactMatch)];
+                         if (clinic.minTotalMonths && targetDuration < clinic.minTotalMonths) return [];
+                         if (clinic.maxTotalMonths && targetDuration > clinic.maxTotalMonths) return [];
+                         return [formatData(exactMatch)];
                     }
                     
                     return []; 
@@ -1274,29 +1293,29 @@
                     if (clinic.minTotalMonths) {
                         const oneMonth = prices.find(p => p.months === 1);
                         if (oneMonth) {
-                            const minMonths = clinic.minTotalMonths;
-                            const items = [];
-                            items.push({
-                                ...oneMonth,
-                                months: minMonths,
-                                price: oneMonth.price * minMonths,
-                                label: `${minMonths} ${t.months} (Min Order)`,
-                                totalPrice: calculateTotal(oneMonth.price * minMonths, minMonths),
-                                drugPriceOnly: oneMonth.price * minMonths,
-                                isCalculated: true,
-                                calculationNote: `Minimum ${minMonths} months required`
-                            });
-                            items.push({
-                                ...oneMonth,
-                                months: 6,
-                                price: oneMonth.price * 6,
-                                label: `6 ${t.months}`,
-                                totalPrice: calculateTotal(oneMonth.price * 6, 6),
-                                drugPriceOnly: oneMonth.price * 6,
-                                isCalculated: true,
-                                calculationNote: t.calcNotes.base1x6
-                            });
-                            return items;
+                             const minMonths = clinic.minTotalMonths;
+                             const items = [];
+                             items.push({
+                                 ...oneMonth,
+                                 months: minMonths,
+                                 price: oneMonth.price * minMonths,
+                                 label: `${minMonths} ${t.months} (Min Order)`,
+                                 totalPrice: calculateTotal(oneMonth.price * minMonths, minMonths),
+                                 drugPriceOnly: oneMonth.price * minMonths,
+                                 isCalculated: true,
+                                 calculationNote: `Minimum ${minMonths} months required`
+                             });
+                             items.push({
+                                 ...oneMonth,
+                                 months: 6,
+                                 price: oneMonth.price * 6,
+                                 label: `6 ${t.months}`,
+                                 totalPrice: calculateTotal(oneMonth.price * 6, 6),
+                                 drugPriceOnly: oneMonth.price * 6,
+                                 isCalculated: true,
+                                 calculationNote: t.calcNotes.base1x6
+                             });
+                             return items;
                         }
                     }
                     
@@ -1318,7 +1337,7 @@
                 let calcNoteKey = '';
 
                 if (clinic.singleUsePlans) {
-                    const optimal = calculateOptimalCombination(clinic, dosage, targetDuration);
+                    const optimal = calculateOptimalCombination(clinic, dosage, targetDuration, activePrices);
                     if (optimal && optimal.plans.length > 0 && optimal.cost > 0) {
                         calculatedDrugPrice = optimal.cost;
                         return [{
@@ -1400,7 +1419,10 @@
                 if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) {
                     return false;
                 }
-                if (c.offlineOnly && region !== 'all') {
+                if (region === 'online' && c.offlineOnly) {
+                    return false;
+                }
+                if (region !== 'all' && region !== 'online' && c.offlineOnly) {
                     if (!c.locations || !c.locations.includes(region)) {
                         return false;
                     }
@@ -1420,13 +1442,10 @@
                 if (!hasItems) return [];
 
                 const targetClinics = clinics.filter(c => {
-                    if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) {
-                        return false;
-                    }
-                    if (c.offlineOnly && region !== 'all') {
-                        if (!c.locations || !c.locations.includes(region)) {
-                            return false;
-                        }
+                    if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) return false;
+                    if (region === 'online' && c.offlineOnly) return false;
+                    if (region !== 'all' && region !== 'online' && c.offlineOnly) {
+                        if (!c.locations || !c.locations.includes(region)) return false;
                     }
                     return true;
                 });
@@ -1435,17 +1454,21 @@
                     if (clinic.minTotalMonths && totalSelectedMonths < clinic.minTotalMonths) return;
                     if (clinic.maxTotalMonths && totalSelectedMonths > clinic.maxTotalMonths) return;
 
+                    const isOfflineRegion = region !== 'all' && region !== 'online' && clinic.locations && clinic.locations.includes(region);
+                    const activeTieredPrices = (isOfflineRegion && clinic.offlineTieredPrices) ? clinic.offlineTieredPrices : clinic.tieredPrices;
+                    const activePrices = (isOfflineRegion && clinic.offlinePrices) ? clinic.offlinePrices : clinic.prices;
+
                     let totalMeds = 0;
                     let possible = true;
                     let breakdownStr = "";
                     let bundleApplied = false;
 
-                    if (clinic.tieredPrices) {
+                    if (activeTieredPrices) {
                         let breakdownParts = [];
 
                         Object.entries(cart).forEach(([dosage, months]) => {
                             if (months > 0) {
-                                const dosageTiers = clinic.tieredPrices[dosage];
+                                const dosageTiers = activeTieredPrices[dosage];
                                 if (dosageTiers) {
                                     let unitPrice = dosageTiers[1] || Object.values(dosageTiers)[0];
                                     if (totalSelectedMonths >= 6 && dosageTiers.tier6 !== undefined) unitPrice = dosageTiers.tier6;
@@ -1483,7 +1506,7 @@
 
                         COMBO_KEYS.forEach(([doseA, doseB, comboKey, label]) => {
                             if (tempCart[doseA] >= 1 && tempCart[doseB] >= 1) {
-                                let comboData = clinic.prices[comboKey];
+                                let comboData = activePrices[comboKey];
                                 if (comboData) {
                                     comboData = filterPricesByUserType(comboData); 
                                     const twoMonthCombo = comboData.find(p => p.months === 2);
@@ -1491,8 +1514,8 @@
                                     if (twoMonthCombo) {
                                         const pairs = Math.min(tempCart[doseA], tempCart[doseB]);
                                         
-                                        const optA = calculateOptimalCombination(clinic, doseA, 1);
-                                        const optB = calculateOptimalCombination(clinic, doseB, 1);
+                                        const optA = calculateOptimalCombination(clinic, doseA, 1, activePrices);
+                                        const optB = calculateOptimalCombination(clinic, doseB, 1, activePrices);
                                         
                                         if (optA && optB) {
                                             const indivTotal = (optA.cost + optB.cost) * pairs;
@@ -1513,7 +1536,7 @@
 
                         Object.entries(tempCart).forEach(([dosage, months]) => {
                             if (months > 0) {
-                                const optimal = calculateOptimalCombination(clinic, dosage, months);
+                                const optimal = calculateOptimalCombination(clinic, dosage, months, activePrices);
                                 if (optimal) {
                                     totalMeds += optimal.cost;
                                     
@@ -1540,11 +1563,11 @@
                     }
 
                     if (possible) {
-                        const isOffline = region !== 'all' && clinic.locations && clinic.locations.includes(region);
+                        const isOffline = isOfflineRegion;
                         let total = totalMeds + getRegFee(clinic) + getShippingFee(clinic, region, totalSelectedMonths);
                         
                         if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
-                        if ((region === 'all' || !isOffline) && clinic.onlineFee) total += clinic.onlineFee;
+                        if (!isOffline && clinic.onlineFee) total += clinic.onlineFee;
 
                         results.push({
                             clinic: clinic,
@@ -2028,7 +2051,7 @@
                                                                     return <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-600 px-2 py-1 flex items-center gap-1 font-sans bg-stone-50/50 shrink-0"><Icons.Truck size={10}/> {t.shippingIncluded}</span>;
                                                                 } else if (clinic.offlineOnly) {
                                                                      return <span className="text-[10px] uppercase tracking-widest border border-gold-200 text-gold-600 bg-gold-50 px-2 py-1 flex items-center gap-1 font-sans font-bold shrink-0"><Icons.MapPin size={10}/> {t.visitOnly}</span>;
-                                                                } else if (region !== 'all' && clinic.locations && clinic.locations.includes(region)) {
+                                                                } else if (region !== 'all' && region !== 'online' && clinic.locations && clinic.locations.includes(region)) {
                                                                      return <span className="text-[10px] uppercase tracking-widest border border-gold-200 text-gold-600 bg-gold-50 px-2 py-1 flex items-center gap-1 font-sans font-bold shrink-0"><Icons.MapPin size={10}/> {t.shippingOffline}</span>;
                                                                 } else {
                                                                     return <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 flex items-center gap-1 font-sans shrink-0"><Icons.Truck size={10}/> {t.shippingExtra}</span>;
