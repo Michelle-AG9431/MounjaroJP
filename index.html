@@ -560,6 +560,27 @@
                         '15mg':  [{ price: 52000, months: 1 }, { price: 102000, months: 2 }, { price: 149700, months: 3 }, { price: 286800, months: 6 }],
                     }
                 },
+                 {
+                    id: 'Ooshima',
+                    name: { zh: '澀谷大島皮膚科', en: 'Shibuya Ooshima Derma Clinic' },
+                    tags: [
+                        { zh: '線上/線下', en: 'Online/Offline'},
+                        { zh: '線下門診不須預約, en: 'Offline no need reservation' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                    ],
+                    locations: ['kanto'], 
+                    link: 'https://shibuya-hifuka.jp/yoyaku.html',
+                    fees: { initialNum: 1000, shippingNum: 2200, note: { zh: '掛號費¥1000+運費¥2200', en: 'Reg¥1000+Ship¥2200' } },
+                    freeShipping: false,
+                    prices: {
+                         '2.5mg': [{ price: 9460, months: 1 }, { price: 18920, months: 2 }, { price: 25850, months: 3 }, { price: 32780, months: 4 }, { price: 39710, months: 5 }, { price: 46640, months: 6 }],
+                        '5mg':   [{ price: 24420, months: 1 }, { price: 48840, months: 2 }, { price: 66990, months: 3 }, { price: 85140, months: 4 }, { price: 103290, months: 5 }, { price: 121440, months: 6 }],
+                        '7.5mg': [{ price: 27280, months: 1 }],
+                        '10mg':  [{ price: 34980, months: 1 }],
+                        '12.5mg':[{ price: 42680, months: 1 }],
+                        '15mg':  [{ price: 50380, months: 1 }],
+                    }
+                },
                 {
                     id: 'goto',
                     name: { zh: '後藤醫院', en: 'Gotou Clinic' },
@@ -622,7 +643,8 @@
                     id: 'ikegawa',
                     name: { zh: '池川内科', en: 'Ikegawa Internal Medicine' },
                     tags: [
-                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' }
+                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' },
+                        
                     ],
                     link: 'https://lin.ee/AX891RZ',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } },
@@ -862,13 +884,20 @@
                     link: 'https://www.threads.com/@yoki_chenchen',
                     fees: { initialNum: 0, returningNum: 0, shippingNum: 0,  note: { zh: '運費另計', en: 'Shipping Extra'  }  },
                     freeShipping: false,
+                    shipping_rules: {
+                        'hokkaido': 3500,
+                        'tohoku': 2500, 'kanto': 2000, 'shinetsu': 2500,
+                        'kansai': 2500, 'chubu': 2500, 'hokuriku': 2500, 'shikoku': 2500, 'chugoku': 2500, 'kyushu': 2500,
+                        'okinawa': 3500,
+                        'default': 2500
+                    },
                     prices: {
-                        '2.5mg': [{ price: 12000, months: 1 }],
-                        '5mg':   [{ price: 20500, months: 1 }],
-                        '7.5mg': [{ price: 29500, months: 1 }],
-                        '10mg':  [{ price: 40000, months: 1 }],
-                        '12.5mg':  [{ price: 60000, months: 1 }],
-                        '15mg':  [{ price: 70000, months: 1 }]
+                        '2.5mg': [{ price: 6500, months: 0.5 },{ price: 9800, months: 1 }],
+                        '5mg':   [{ price: 13000, months: 0.5 },{ price: 19600, months: 1 }],
+                        '7.5mg': [{ price: 19500, months: 0.5 },{ price: 29400, months: 1 }],
+                        '10mg':  [{ price: 26000, months: 0.5 },{ price: 39200, months: 1 }],
+                        '12.5mg':  [{ price: 32500, months: 0.5 },{ price: 49000, months: 1 }],
+                        '15mg':  [{ price: 39000, months: 0.5 },{ price: 58800, months: 1 }]
                     }
                 },
                 {
@@ -923,20 +952,20 @@
                     ],
                     locations: [],
                     link: 'https://wakeari-diet.com/',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true, 
                     prices: {
-                        '2.5mg': [{ price: 7700, months: 0.5, type: 'initial' }, { price: 13200, months: 1 }, { price: 25700, months: 2 }, { price: 35200, months: 3 }, { price: 67300, months: 6 }],
-                        '5mg':   [{ price: 13600, months: 0.5, type: 'initial' }, { price: 23050, months: 1 }, { price: 45700, months: 2 }, { price: 63200, months: 3 }, { price: 114550, months: 6 }],
-                        '7.5mg': [{ price: 34400, months: 1 }, { price: 65200, months: 2 }, { price: 88200, months: 3 }, { price: 161800, months: 6 }],
-                        '10mg':  [{ price: 42200, months: 1 }, { price: 81700, months: 2 }, { price: 116200, months: 3 }, { price: 202300, months: 6 }],
-                        '12.5mg':[{ price: 53800, months: 1 }, { price: 99160, months: 2 }, { price: 132640, months: 3 }, { price: 242800, months: 6 }],
-                        '15mg':  [{ price: 62800, months: 1 }, { price: 115720, months: 2 }, { price: 154780, months: 3 }, { price: 283300, months: 6 }],
-                         '2.5mg+5mg': [{ price: 10650, months: 0.5 }, { price: 18125, months: 1 }, { price: 35700, months: 2 }, { price: 49200, months: 3 }],
-                        '5mg+7.5mg': [{ price: 28725, months: 1 }, { price: 55450, months: 2 }],
-                        '7.5mg+10mg': [{ price: 38300, months: 1 }, { price: 73450, months: 2 }],
-                        '10mg+12.5mg': [{ price: 48000, months: 1 }, { price: 90430, months: 2 }],
-                        '12.5mg+15mg': [{ price: 58300, months: 1 }, { price: 107440, months: 2 }]
+                        '2.5mg': [{ price: 5748, months: 0.5, type: 'initial' }, { price: 8778, months: 1 }, { price: 18106, months: 2 }, { price: 27280, months: 3 }, { price: 51777, months: 6 }],
+                        '5mg':   [{ price: 10428, months: 0.5, type: 'initial' }, { price: 17578, months: 1 }, { price: 34386, months: 2 }, { price: 50908, months: 3 }, { price: 100265, months: 6 }],
+                        '7.5mg': [{ price: 25784, months: 1 }, { price: 49566, months: 2 }, { price: 72941, months: 3 }, { price: 139744, months: 6 }],
+                        '10mg':  [{ price: 32835, months: 1 }, { price: 62612, months: 2 }, { price: 91872, months: 3 }, { price: 175109, months: 6 }],
+                        '12.5mg':[{ price: 40711, months: 1 }, { price: 77187, months: 2 }, { price: 113014, months: 3 }, { price: 208538, months: 6 }],
+                        '15mg':  [{ price: 47817, months: 1 }, { price: 90332, months: 2 }, { price: 132099, months: 3 }, { price: 236566, months: 6 }],
+                        '2.5mg+5mg': [{ price: 7953, months: 0.5 }, { price: 13178, months: 1 }, { price: 26246, months: 2 }, { price: 39094, months: 3 }],
+                        '5mg+7.5mg': [{ price: 21681, months: 1 }, { price: 41976, months: 2 }],
+                        '7.5mg+10mg': [{ price: 29310, months: 1 }, { price: 56089, months: 2 }],
+                        '10mg+12.5mg': [{ price: 36773, months: 1 }, { price: 69900, months: 2 }],
+                        '12.5mg+15mg': [{ price: 44264, months: 1 }, { price: 83760, months: 2 }]
                     }
                 },
                 {
@@ -984,7 +1013,8 @@
                     name: { zh: '新宿站前診所', en: 'Shinjuku Station Clinic' },
                     tags: [
                         { zh: '到院門診限定', en: 'Visit Only' },
-                        { zh: '免預約', en: 'No Appt Needed' }
+                        { zh: '免預約', en: 'No Appt Needed' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kanto'],
                     offlineOnly: true,
@@ -1046,11 +1076,35 @@
                     }
                 },
                 {
+                    id: 'marugoto',
+                    name: { zh: 'Marugoto Beauty', en: 'Marugoto Beauty' },
+                    tags: [
+                         { zh: '線上診療', en: 'Online Clinic' },
+                         { zh: '預約須日本門號', en: 'Need JP Phone#' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                    ],
+                    link: 'https://x.com/marugotobeauty?t=4jUN_IPyV_luK3c4nkS4Ag&s=09',
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    freeShipping: true,
+                    prices: {
+                        '2.5mg': [{ price: 7500, months: 0.5 }, { price: 12000, months: 1 }, { price: 19200, months: 2 }, { price: 28000, months: 3 }, { price: 54000, months: 6 }],
+                        '5mg': [{ price: 10700, months: 0.5 }, { price: 18500, months: 1 }, { price: 32000, months: 2 }, { price: 51500, months: 3 }, { price: 100000, months: 6 }],
+                        '7.5mg': [{ price: 14500, months: 0.5 }, { price: 24900, months: 1 }, { price: 48000, months: 2 }, { price: 70500, months: 3 }],
+                        '10mg': [{ price: 19000, months: 0.5 }, { price: 36000, months: 1 }, { price: 65000, months: 2 }, { price: 92500, months: 3 }],
+                        '12.5mg': [{ price: 23000, months: 0.5 }, { price: 41500, months: 1 }, { price: 78500, months: 2 }],
+                         '2.5mg+5mg': [{ price: 15500, months: 1 }],
+                        '5mg+7.5mg': [{ price: 23000, months: 1 }],
+                        '7.5mg+10mg': [{ price: 32000, months: 1 }],
+                        '10mg+12.5mg': [{ price: 38500, months: 1 }],
+                    }
+                },
+                {
                     id: 'pokekuri',
                     name: { zh: 'Pokekuri', en: 'Pokekuri' },
                     tags: [
                         { zh: '線上診療', en: 'Online Clinic' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' }
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [],
                     link: 'https://t.co/LGnaFQT9gk',
