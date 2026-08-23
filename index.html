@@ -476,6 +476,32 @@
                         '12.5mg': [{ price: 51980, months: 1 }]
                     }
                 },
+                 {
+                    id: 'pococlinic',
+                    name: { zh: '狸貓診所 (Poco)', en: 'Poco Clinic' },
+                    tags: [
+                        { zh: '用Zoom線上診療', en: 'Online Clinic Via Zoom' },
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                    ],
+                    link: 'https://x.com/poco_chan33',
+                    locations: [], // Online focused
+                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費/含運', en: 'Free Reg/Ship' } },
+                    freeShipping: true,
+                    prices: {
+                        '2.5mg': [{ price: 10200, months: 1 }, { price: 19200, months: 2 }, { price: 26400, months: 3 }],
+                        '5mg': [{ price: 18200, months: 1 }, { price: 35400, months: 2 }, { price: 50400, months: 3 }],
+                        '7.5mg': [{ price: 29600, months: 1 }, { price: 53300, months: 2 }, { price: 76500, months: 3 }],
+                        '10mg': [{ price: 38300, months: 1 }, { price: 69100, months: 2 }, { price: 99000, months: 3 }],
+                        '12.5mg': [{ price: 46700, months: 1 }, { price: 842200, months: 2 }, { price: 120600, months: 3 }],
+                        '15mg': [{ price: 54700, months: 1 }, { price: 98600, months: 2 }, { price: 141300, months: 3 }],
+                        '2.5mg+5mg': [{ price: 15400, months: 1 }, { price: 28200, months: 2 }],
+                        '5mg+7.5mg': [{ price: 24700, months: 1 }, { price: 44900, months: 2 }],
+                        '7.5mg+10mg': [{ price: 34000, months: 1 }, { price: 61200, months: 2 }],
+                        '10mg+12.5mg': [{ price: 42500, months: 1 }, { price: 79800, months: 2 }],
+                        '12.5mg+15mg': [{ price: 52000, months: 1 }, { price: 98000, months: 2 }]
+                    }
+                },
                 {
                     id: 'cocomil',
                     name: { zh: 'CocoMil醫美診所', en: 'CocoMil Clinic' },
@@ -579,7 +605,7 @@
                         '15mg':  [{ price: 52000, months: 1 }, { price: 102000, months: 2 }, { price: 149700, months: 3 }, { price: 286800, months: 6 }],
                     }
                 },
-                 {
+                {
                     id: 'Ooshima',
                     name: { zh: '澀谷大島皮膚科', en: 'Shibuya Ooshima Derma Clinic' },
                     tags: [
@@ -637,16 +663,16 @@
                     freeShipping: true,
                     // 線上 Tier 價格表
                     tieredPrices: {
-                        '2.5mg': { 1: 12000, tier2_5: 10000, tier6: 8000 },
-                        '5mg':   { 1: 18000, tier2_5: 16000, tier6: 14000 },
-                        '7.5mg': { 1: 26000, tier2_5: 24000, tier6: 22000 }
+                        '2.5mg': { 1: 9980, tier2_5: 8980, tier6: 7980 },
+                        '5mg':   { 1: 15980, tier2_5: 14980, tier6: 13980 },
+                        '7.5mg': { 1: 23980, tier2_5: 22980, tier6: 21980 }
                     },
                     prices: {
-                        '2.5mg': [{ price: 12000, months: 1 }],
-                        '5mg':   [{ price: 18000, months: 1 }],
-                        '7.5mg': [{ price: 26000, months: 1 }]
+                        '2.5mg': [{ price: 9980, months: 1 }],
+                        '5mg':   [{ price: 15980, months: 1 }],
+                        '7.5mg': [{ price: 23980, months: 1 }]
                     },
-                    // 線下 Tier 價格表 (若線下與線上同價，可修改此處金額)
+                    // 線下 Tier 價格表
                     offlineTieredPrices: {
                         '2.5mg': { 1: 8000, tier2_5: 7500, tier6: 7000 },
                         '5mg':   { 1: 14000, tier2_5: 14500, tier6: 13000 },
@@ -662,8 +688,7 @@
                     id: 'ikegawa',
                     name: { zh: '池川内科', en: 'Ikegawa Internal Medicine' },
                     tags: [
-                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' },
-                        
+                        { zh: 'Google Meet看診', en: 'Google Meet Clinic' }
                     ],
                     link: 'https://lin.ee/AX891RZ',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } },
@@ -730,13 +755,14 @@
                     tags: [
                         { zh: '中文服務', en: 'Chinese Support'},
                         { zh: '線下/線上', en: 'Offline/Online'},
-                        { zh: '線上需另加1100使用費+自付運費', en: 'Shipping fee/Online fee extra' }
+                        { zh: '初診線上需加¥1100使用費/自付運費', en: 'New: ¥1100 Online fee / Ship extra' }
                     ],
                     locations: ['kanto'],
                     link: 'https://threads.com/@tk.every', 
-                    fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需另加1100使用費+自付運費', en: 'Shipping fee/Online fee extra' } },
+                    fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上自付運費', en: 'Shipping fee extra' } },
                     freeShipping: false,
-                    onlineFee: 1100,
+                    initialOnlineFee: 1100,
+                    returningOnlineFee: 0,
                     prices: {
                         '2.5mg': [{ price: 12100, months: 1 }],
                         '5mg':   [{ price: 24300, months: 1 }],
@@ -825,6 +851,27 @@
                          '2.5mg': [{ price: 10200, months: 1 }, { price: 19400, months: 2 }, { price: 27600, months: 3 }],
                         '5mg': [{ price: 17850, months: 1 }, { price: 34600, months: 2 }, { price: 51400, months: 3 }],
                         '7.5mg': [{ price: 27000, months: 1 }, { price: 52500, months: 2 }, { price: 78500, months: 3 }]
+                    }
+                },
+                {
+                    id: 'beautylab',
+                    name: { zh: 'Dr. Beauty Lab', en: 'Dr. Beauty Lab' },
+                    tags: [
+                        { zh: '線上診療', en: 'Online Clinic' },
+                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
+                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                    ],
+                    locations: [],
+                    link: 'https://x.com/dr_beau_lab',
+                    fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
+                    freeShipping: false,
+                    prices: {
+                         '2.5mg': [{ price: 8000, months: 1 }, { price: 22500, months: 3 }, { price: 42000, months: 6 }],
+                        '5mg': [{ price: 18000, months: 1 }, { price: 52500, months: 3 }, { price: 102000, months: 6 }],
+                        '7.5mg': [{ price: 31000, months: 1 }, { price: 91500, months: 3 }, { price: 180000, months: 6 }],
+                        '10mg': [{ price: 41000, months: 1 }, { price: 121500, months: 3 }, { price: 240000, months: 6 }],
+                        '12.5mg': [{ price: 51000, months: 1 }, { price: 151500, months: 3 }, { price: 300000, months: 6 }],
+                        '15mg': [{ price: 59000, months: 1 }, { price: 175500, months: 3 }, { price: 348000, months: 6 }]
                     }
                 },
                 {
@@ -993,7 +1040,7 @@
                     tags: [
                         { zh: '中文服務', en: 'Chinese Support' },
                         { zh: '線下/線上', en: 'Offline/Online' },
-                         { zh: '需血檢或提供血檢報告', en: 'Need Blood Test or Porvide Test Result' },
+                        { zh: '需血檢或提供血檢報告', en: 'Need Blood Test or Porvide Test Result' },
                         { zh: '免費提供處方籤', en: 'No Prescription certificate fee' }
                     ],
                     locations: ['kanto'],
@@ -1009,13 +1056,13 @@
                         '15mg':  [{ price: 59600, months: 1 }]
                     }
                 },
-                 {
+                {
                     id: 'mirai',
                     name: { zh: 'MIRAI STC Clinic', en: 'MIRAI STC Clinic' },
                     tags: [
                         { zh: '中文服務', en: 'Chinese Support' },
                         { zh: '線下/線上', en: 'Offline/Online' },
-                         ],
+                    ],
                     locations: ['kyushu'],
                     link: 'https://www.threads.com/@m.s.c_7717',
                     fees: { initialNum: 0, returningNum: 0, shippingNum: 0, note: { zh: '線上需自付運費', en: 'Shipping fee extra' } },
@@ -1104,6 +1151,7 @@
                          { zh: '預約須日本門號', en: 'Need JP Phone#' },
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
+                    locations: [],
                     link: 'https://x.com/marugotobeauty?t=4jUN_IPyV_luK3c4nkS4Ag&s=09',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true,
@@ -1113,7 +1161,7 @@
                         '7.5mg': [{ price: 14500, months: 0.5 }, { price: 24900, months: 1 }, { price: 48000, months: 2 }, { price: 70500, months: 3 }],
                         '10mg': [{ price: 19000, months: 0.5 }, { price: 36000, months: 1 }, { price: 65000, months: 2 }, { price: 92500, months: 3 }],
                         '12.5mg': [{ price: 23000, months: 0.5 }, { price: 41500, months: 1 }, { price: 78500, months: 2 }],
-                         '2.5mg+5mg': [{ price: 15500, months: 1 }],
+                        '2.5mg+5mg': [{ price: 15500, months: 1 }],
                         '5mg+7.5mg': [{ price: 23000, months: 1 }],
                         '7.5mg+10mg': [{ price: 32000, months: 1 }],
                         '10mg+12.5mg': [{ price: 38500, months: 1 }],
@@ -1169,6 +1217,14 @@
                 }
 
                 return baseFee;
+            };
+
+            const getOnlineFee = (clinic) => {
+                if (userType === 'returning') {
+                    return clinic.returningOnlineFee !== undefined ? clinic.returningOnlineFee : (clinic.onlineFee || 0);
+                } else {
+                    return clinic.initialOnlineFee !== undefined ? clinic.initialOnlineFee : (clinic.onlineFee || 0);
+                }
             };
 
             const getShippingFee = (clinic, userRegion, months) => {
@@ -1272,7 +1328,7 @@
                     const isOffline = isOfflineRegion;
                     let total = drugPrice + getRegFee(clinic) + getShippingFee(clinic, region, duration);
                     if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
-                    if (!isOffline && clinic.onlineFee) total += clinic.onlineFee;
+                    if (!isOffline) total += getOnlineFee(clinic);
                     return total;
                 };
 
@@ -1665,7 +1721,7 @@
                         let total = totalMeds + getRegFee(clinic) + getShippingFee(clinic, region, totalSelectedMonths);
                         
                         if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
-                        if (!isOffline && clinic.onlineFee) total += clinic.onlineFee;
+                        if (!isOffline) total += getOnlineFee(clinic);
 
                         results.push({
                             clinic: clinic,
@@ -2022,7 +2078,7 @@
                                     const shippingCost = getShippingFee(res.clinic, region, totalSelectedMonths);
                                     const isOffline = shippingCost === 0 && res.clinic.locations && res.clinic.locations.includes(region);
                                     const offlineDiscount = (isOffline && res.clinic.offlineDiscount) ? res.clinic.offlineDiscount : 0;
-                                    const onlineFee = ((region === 'all' || !isOffline) && res.clinic.onlineFee) ? res.clinic.onlineFee : 0;
+                                    const onlineFee = ((region === 'all' || !isOffline) && getOnlineFee(res.clinic) > 0) ? getOnlineFee(res.clinic) : 0;
                                     const cardId = `calc-${res.clinic.id}`;
 
                                     return (
@@ -2181,7 +2237,7 @@
                                                     const shippingCost = getShippingFee(clinic, region, item.months);
                                                     const isOffline = shippingCost === 0 && clinic.locations && clinic.locations.includes(region);
                                                     const offlineDiscount = (isOffline && clinic.offlineDiscount) ? clinic.offlineDiscount : 0;
-                                                    const onlineFee = ((region === 'all' || !isOffline) && clinic.onlineFee) ? clinic.onlineFee : 0;
+                                                    const onlineFee = (!isOffline && getOnlineFee(clinic) > 0) ? getOnlineFee(clinic) : 0;
 
                                                     return (
                                                         <div key={idx} className={`relative p-4 md:p-5 transition-all duration-300 flex flex-col justify-between rounded-sm bg-white min-w-0 ${isBestPrice ? 'border border-gold-200 shadow-sm' : 'border border-stone-100 opacity-90 hover:opacity-100 hover:border-stone-300'}`}>
