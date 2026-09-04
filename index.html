@@ -1368,14 +1368,16 @@
                 const isTieredDosage = activeTieredPrices && activeTieredPrices[dosage];
 
                 if (isTieredDosage) {
-                    const getUnitPriceForMonth = (m) => {
+                   const getUnitPriceForMonth = (m) => {
                         const tiers = activeTieredPrices[dosage];
                         if (!tiers) return null;
                         
                         if (m >= 6 && tiers.tier6 !== undefined) return tiers.tier6;
                         if (m >= 3 && tiers.tier3_6 !== undefined) return tiers.tier3_6;
+                        if (m >= 3 && m <= 5 && tiers.tier3_5 !== undefined) return tiers.tier3_5;
                         if (m >= 2 && tiers.tier2_5 !== undefined) return tiers.tier2_5;
                         if (m === 2 && tiers.tier2 !== undefined) return tiers.tier2;
+                        if (m <= 2 && tiers.tier1_2 !== undefined) return tiers.tier1_2;
                         if (tiers[m] !== undefined) return tiers[m];
                         if (tiers['1'] !== undefined) return tiers['1'];
                         
@@ -1658,10 +1660,12 @@
                                 const dosageTiers = activeTieredPrices[dosage];
                                 if (dosageTiers) {
                                     let unitPrice = dosageTiers[1] || Object.values(dosageTiers)[0];
-                                    if (totalSelectedMonths >= 6 && dosageTiers.tier6 !== undefined) unitPrice = dosageTiers.tier6;
-                                    else if (totalSelectedMonths >= 3 && dosageTiers.tier3_6 !== undefined) unitPrice = dosageTiers.tier3_6;
-                                    else if (totalSelectedMonths >= 2 && dosageTiers.tier2_5 !== undefined) unitPrice = dosageTiers.tier2_5;
-                                    else if (totalSelectedMonths === 2 && dosageTiers.tier2 !== undefined) unitPrice = dosageTiers.tier2;
+                                   if (totalSelectedMonths >= 6 && dosageTiers.tier6 !== undefined) unitPrice = dosageTiers.tier6;
+else if (totalSelectedMonths >= 3 && dosageTiers.tier3_6 !== undefined) unitPrice = dosageTiers.tier3_6;
+else if (totalSelectedMonths >= 3 && totalSelectedMonths <= 5 && dosageTiers.tier3_5 !== undefined) unitPrice = dosageTiers.tier3_5;
+else if (totalSelectedMonths >= 2 && dosageTiers.tier2_5 !== undefined) unitPrice = dosageTiers.tier2_5;
+else if (totalSelectedMonths === 2 && dosageTiers.tier2 !== undefined) unitPrice = dosageTiers.tier2;
+else if (totalSelectedMonths <= 2 && dosageTiers.tier1_2 !== undefined) unitPrice = dosageTiers.tier1_2;
 
                                     if (unitPrice !== undefined) {
                                         totalMeds += unitPrice * months;
