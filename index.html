@@ -658,6 +658,7 @@
                     ],
                     locations: ['kanto'], 
                     offlineOnly: false,
+                    allowCrossDoseTier: true,
                     link: 'https://x.com/tokyosilkclinic',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: true,
@@ -889,8 +890,9 @@
                     link: 'https://www.threads.com/@koyomi_online',
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: false,
+                    allowCrossDoseTier: false,
                    tieredPrices: {
-                        '2.5mg': { tier1_2: 7500, tier3_5: 7000, tier6: 7280 },
+                        '2.5mg': { tier1_2: 7500, tier3_5: 7000, tier6: 6500 },
                         '5mg':   { tier1_2: 18000, tier3_5: 17500, tier6: 17000 },
                         '7.5mg': { tier1_2: 31000, tier3_5: 30500, tier6: 30000 },
                         '10mg':  { tier1_2: 41000, tier3_5: 40500, tier6: 40000 },
@@ -1655,28 +1657,32 @@
                         let breakdownParts = [];
 
                         Object.entries(cart).forEach(([dosage, months]) => {
-                            if (months > 0) {
-                                const dosageTiers = activeTieredPrices[dosage];
-                                if (dosageTiers) {
-                                    let unitPrice = dosageTiers[1] || Object.values(dosageTiers)[0];
-                                   if (totalSelectedMonths >= 6 && dosageTiers.tier6 !== undefined) unitPrice = dosageTiers.tier6;
-else if (totalSelectedMonths >= 3 && dosageTiers.tier3_6 !== undefined) unitPrice = dosageTiers.tier3_6;
-else if (totalSelectedMonths >= 3 && totalSelectedMonths <= 5 && dosageTiers.tier3_5 !== undefined) unitPrice = dosageTiers.tier3_5;
-else if (totalSelectedMonths >= 2 && dosageTiers.tier2_5 !== undefined) unitPrice = dosageTiers.tier2_5;
-else if (totalSelectedMonths === 2 && dosageTiers.tier2 !== undefined) unitPrice = dosageTiers.tier2;
-else if (totalSelectedMonths <= 2 && dosageTiers.tier1_2 !== undefined) unitPrice = dosageTiers.tier1_2;
+    if (months > 0) {
+        const dosageTiers = activeTieredPrices[dosage];
+        if (dosageTiers) {
+            let unitPrice = dosageTiers[1] || Object.values(dosageTiers)[0];
+            
+            // 讀取診所設定：若設定 allowCrossDoseTier 則用總月數，否則用單品月數
+            const targetM = clinic.allowCrossDoseTier ? totalSelectedMonths : months;
 
-                                    if (unitPrice !== undefined) {
-                                        totalMeds += unitPrice * months;
-                                        breakdownParts.push(`${dosage} (${months}個月 @ ¥${unitPrice.toLocaleString()}/月)`);
-                                    } else {
-                                        possible = false;
-                                    }
-                                } else {
-                                    possible = false;
-                                }
-                            }
-                        });
+            if (targetM >= 6 && dosageTiers.tier6 !== undefined) unitPrice = dosageTiers.tier6;
+            else if (targetM >= 3 && dosageTiers.tier3_6 !== undefined) unitPrice = dosageTiers.tier3_6;
+            else if (targetM >= 3 && targetM <= 5 && dosageTiers.tier3_5 !== undefined) unitPrice = dosageTiers.tier3_5;
+            else if (targetM >= 2 && dosageTiers.tier2_5 !== undefined) unitPrice = dosageTiers.tier2_5;
+            else if (targetM === 2 && dosageTiers.tier2 !== undefined) unitPrice = dosageTiers.tier2;
+            else if (targetM <= 2 && dosageTiers.tier1_2 !== undefined) unitPrice = dosageTiers.tier1_2;
+
+            if (unitPrice !== undefined) {
+                totalMeds += unitPrice * months;
+                breakdownParts.push(`${dosage} (${months}個月 @ ¥${unitPrice.toLocaleString()}/月)`);
+            } else {
+                possible = false;
+            }
+        } else {
+            possible = false;
+        }
+    }
+});
 
                         breakdownStr = breakdownParts.join(' + ');
                         if (totalSelectedMonths >= 2) bundleApplied = true;
