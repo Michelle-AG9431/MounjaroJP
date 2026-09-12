@@ -169,7 +169,8 @@
             MapPin: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>,
             Filter: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>,
             X: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>,
-            ChevronDown: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="6 9 12 15 18 9"></polyline></svg>
+            ChevronDown: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="6 9 12 15 18 9"></polyline></svg>,
+            FileText: ({size=14, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
         };
 
         // Fallback Exchange Rates
@@ -201,11 +202,12 @@
                 month: '個月',
                 months: '個月',
                 disclaimer: '顯示價格包含',
-                disclaimerHighlight: '藥費 + 掛號費 + 運費',
+                disclaimerHighlight: '藥費 + 掛號費 + 運費 + 處方籤費(若選)',
                 meds: '藥費',
                 regFee: '掛號費',
                 shipFee: '運費',
                 onlineFee: '線上費',
+                rxFee: '處方籤費',
                 total: '總計',
                 monthlyAvg: '平均月費',
                 est: '推算',
@@ -246,6 +248,11 @@
                 filterLabel: '篩選',
                 filterAll: '全部診所',
                 filterChinese: '中文服務',
+                rxFilterLabel: '處方籤需求',
+                rxAll: '不需處方籤',
+                rxNeed: '需開立處方籤',
+                rxAvailable: '提供處方籤',
+                rxFree: '免費處方籤',
                 langLabel: '語言',
                 modeLabel: '模式',
                 dosageLabel: '劑量選擇',
@@ -277,11 +284,12 @@
                 month: 'Mo.',
                 months: 'Mos.',
                 disclaimer: 'Prices include',
-                disclaimerHighlight: 'Meds + Reg. Fee + Shipping',
+                disclaimerHighlight: 'Meds + Reg. Fee + Shipping + Rx Fee(if selected)',
                 meds: 'Meds',
                 regFee: 'Reg. Fee',
                 shipFee: 'Shipping',
                 onlineFee: 'Online Fee',
+                rxFee: 'Rx Fee',
                 total: 'Total',
                 monthlyAvg: 'Monthly Avg',
                 est: 'Est.',
@@ -322,6 +330,11 @@
                 filterLabel: 'Filter',
                 filterAll: 'All Clinics',
                 filterChinese: 'Chinese Support',
+                rxFilterLabel: 'Prescription',
+                rxAll: 'No Need Prescription',
+                rxNeed: 'Prescription Required',
+                rxAvailable: 'Rx Available',
+                rxFree: 'Free Rx',
                 langLabel: 'Lang',
                 modeLabel: 'Mode',
                 dosageLabel: 'Dosage',
@@ -356,6 +369,7 @@
             const [activeDuration, setActiveDuration] = React.useState('all');
             const [userType, setUserType] = React.useState('new'); 
             const [chineseFilter, setChineseFilter] = React.useState(false); 
+            const [needPrescription, setNeedPrescription] = React.useState(false); // 是否需要處方籤開立
             const [region, setRegion] = React.useState('all');
             const [cart, setCart] = React.useState({
                 '2.5mg': 0, '5mg': 0, '7.5mg': 0, '10mg': 0, '12.5mg': 0, '15mg': 0
@@ -449,7 +463,7 @@
                 }).join(' / ');
             };
 
-            // --- Data ---
+            // --- Data (新增 hasPrescription 與 prescriptionFee) ---
             const clinics = [
                 {
                     id: 'Wellness',
@@ -465,6 +479,8 @@
                     locations: ['kanto'], 
                     offlineOnly: true,
                     singleUsePlans: true,
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://www.luxora.shop/collections/all?filter.v.price.gte=&filter.v.price.lte=&filter.p.m.custom.consultation_type=%E6%9D%A5%E9%99%A2&filter.p.m.custom.concerns=%E8%82%A5%E6%BA%80&sort_by=title-ascending',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: false,
@@ -476,7 +492,7 @@
                         '12.5mg': [{ price: 51980, months: 1 }]
                     }
                 },
-                 {
+                {
                     id: 'pococlinic',
                     name: { zh: '狸貓診所 (Poco)', en: 'Poco Clinic' },
                     tags: [
@@ -485,7 +501,9 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     link: 'https://x.com/poco_chan33',
-                    locations: [], // Online focused
+                    locations: [],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費/含運', en: 'Free Reg/Ship' } },
                     freeShipping: true,
                     prices: {
@@ -514,6 +532,8 @@
                     ],
                     locations: ['kansai'],
                     link: 'http://lin.ee/CtzTDojh', 
+                    hasPrescription: true,
+                    prescriptionFee: 3300,
                     fees: { initialNum: 1500, shippingNum: 2200, offlineRegFee: 1500, onlineRegFee: 0, note: { zh: '線下掛號費¥1500/線上免掛號', en: 'Offline Reg ¥1500 / Online Free Reg' } },
                     freeShipping: false,
                     prices: {
@@ -531,10 +551,11 @@
                     tags: [
                         { zh: '中文服務', en: 'Chinese Support'},
                         { zh: '線上診所', en: 'Online/Offline'},
-                        { zh: '免費提供處方籤', en: 'No Prescription certificate fee' }
                     ],
                     locations: [],
                     link: 'https://origami-clinic.com/', 
+                    hasPrescription: true,
+                    prescriptionFee: 0,
                     fees: { initialNum: 0, shippingNum: 2500, offlineRegFee: 0, onlineRegFee: 0},
                     freeShipping: false,
                     prices: {
@@ -557,6 +578,8 @@
                     locations: ['kanto'], 
                     offlineOnly: true,
                     maxTotalMonths: 3,
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://omori-angel.com/menu/selfpay-medical/medical-diet.html',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: false,
@@ -575,6 +598,8 @@
                     ],
                     locations: ['kanto'], 
                     offlineOnly: false,
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://www.instagram.com/face_skin_shinjuku/',
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號/運費另計', en: 'Free Reg/Ship' } },
                     freeShipping: false,
@@ -593,6 +618,8 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [], 
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://line.me/R/ti/p/@575smrlq?ts=01281244&oat_content=url',
                     fees: { initialNum: 0, shippingNum: 1200, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: false,
@@ -614,6 +641,8 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kanto'], 
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://shibuya-hifuka.jp/yoyaku.html',
                     fees: { initialNum: 1000, shippingNum: 2200, note: { zh: '掛號費¥1000+運費¥2200', en: 'Reg¥1000+Ship¥2200' } },
                     freeShipping: false,
@@ -637,6 +666,8 @@
                     ],
                     locations: ['kansai'], 
                     offlineOnly: true,
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://goto-iin.com/',
                     fees: { initialNum: 1100, returningNum: 550, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: false,
@@ -654,15 +685,15 @@
                         { zh: '線上/線下診療', en: 'Online/Offline Clinic' },
                         { zh: '全國配送', en: 'Nationwide Delivery' },
                         { zh: '自由混搭計價', en: 'Mix & Match Tier Pricing' },
-                        { zh: '處方簽+¥5500', en: 'Prescription available at ¥5500' }
                     ],
                     locations: ['kanto'], 
                     offlineOnly: false,
                     allowCrossDoseTier: true,
+                    hasPrescription: true,
+                    prescriptionFee: 5500,
                     link: 'https://x.com/tokyosilkclinic',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號/含運', en: 'Free Reg/Ship' } },
                     freeShipping: true,
-                    // 線上 Tier 價格表
                     tieredPrices: {
                         '2.5mg': { 1: 9980, tier2_5: 8980, tier6: 7280 },
                         '5mg':   { 1: 15980, tier2_5: 14980, tier6: 13190 },
@@ -679,7 +710,6 @@
                         '12.5mg': [{ price: 35000, months: 1 }],
                         '15mg': [{ price: 44000, months: 1 }]
                     },
-                    // 線下 Tier 價格表
                     offlineTieredPrices: {
                         '2.5mg': { 1: 8000, tier2_5: 7500, tier6: 7000 },
                         '5mg':   { 1: 14000, tier2_5: 14500, tier6: 13000 },
@@ -706,6 +736,8 @@
                     link: 'https://lin.ee/AX891RZ',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '依地區計算運費', en: 'Shipping varies by region' } },
                     locations: ['kansai'],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     freeShipping: false,
                     shipping_rules: {
                         'hokkaido': 2500,
@@ -733,6 +765,8 @@
                     ],
                     link: 'https://ikegamiohisama-clinic.com/', 
                     locations: ['kanto'],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     fees: { initialNum: 0, shippingNum: 1500, note: { zh: '初診0元+運費1500', en: 'Reg 0 + Ship 1500' } },
                     freeShipping: false,
                     prices: {
@@ -772,6 +806,8 @@
                     ],
                     locations: ['kanto'],
                     link: 'https://threads.com/@tk.every', 
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上自付運費', en: 'Shipping fee extra' } },
                     freeShipping: false,
                     initialOnlineFee: 1100,
@@ -794,6 +830,8 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [], 
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://x.com/OsakaLight?t=AMGZj7ZfXqaGQ4T9Fz7-Kg&s=09',
                     fees: { initialNum: 0, shippingNum: 2200, note: { zh: '免掛號費+運費¥2,200', en: 'Free Reg + Ship ¥2,200' } },
                     freeShipping: false,
@@ -814,6 +852,8 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [], 
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://phdjapan.com/2536-2/',
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費+運費¥2,000', en: 'Free Reg + Ship ¥2,000' } },
                     freeShipping: false,
@@ -839,6 +879,8 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' },
                     ],
                     locations: ['kanto'],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'lin.ee/XTur7WX',
                     fees: { initialNum: 0, shippingNum: 2200, note: { zh: '免掛號費+運費', en: 'Free Reg + Ship' } },
                     freeShipping: false,
@@ -857,6 +899,8 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://t.co/wzT0jScIqw',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true,
@@ -877,6 +921,8 @@
                     ],
                     locations: [],
                     link: 'https://x.com/dr_beau_lab',
+                    hasPrescription: true,
+                    prescriptionFee: 0, // 包含於門診或免費開立
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: false,
                     prices: {
@@ -896,9 +942,10 @@
                         { zh: '可國際電話看診', en: 'Intl. Phone# OK' },
                         { zh: '中文服務', en: 'Chinese Support' },
                         { zh: '英文服務', en: 'English Support' },
-                        { zh: '免費開立處方簽', en: 'Free Prescription Available' }
                     ],
                     locations: [],
+                    hasPrescription: true,
+                    prescriptionFee: 0,
                     link: 'https://www.threads.com/@koyomi_online',
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: false,
@@ -920,17 +967,19 @@
                         { zh: '東京院需兩周前預約', en: 'Reserv 2 weeks in advance for TOKYO' }
                     ],
                     locations: ['chugoku','kanto'], 
+                    hasPrescription: true,
+                    prescriptionFee: 550,
                     link: 'https://page.line.me/kvi9221d',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'Free Reg' } },
                     freeShipping: false,
                     offlineOnly: true,
                     prices: {
-                        '2.5mg': [{ price: 9000, months: 1 }],
-                        '5mg':   [{ price: 17000, months: 1 }],
-                        '7.5mg': [{ price: 28000, months: 1 }],
-                        '10mg':  [{ price: 41000, months: 1 }],
-                        '12.5mg':[{ price: 52000, months: 1 }],
-                        '15mg':  [{ price: 62000, months: 1 }]
+                        '2.5mg': [{ price: 8000, months: 1 }],
+                        '5mg':   [{ price: 14000, months: 1 }],
+                        '7.5mg': [{ price: 24000, months: 1 }],
+                        '10mg':  [{ price: 32000, months: 1 }],
+                        '12.5mg':[{ price: 38000, months: 1 }],
+                        '15mg':  [{ price: 43000, months: 1 }]
                     }
                 },
                 {
@@ -943,6 +992,8 @@
                     ],
                     locations: ['kyushu'], 
                     link: 'https://baba-totalcareclinic.com/private-practice/',
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'Free Reg' } },
                     freeShipping: false,
                     offlineOnly: true,
@@ -956,34 +1007,16 @@
                     }
                 },
                 {
-                    id: 'theclinic',
-                    name: { zh: 'The Clinic(大阪/福岡）', en: 'The Clinic（Osaka/Fukuoka)' },
-                    tags: [
-                        { zh: '線下診療', en: 'Offline Clinic' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' },
-                        { zh: '大阪可處方日:每周一,二', en: 'Precription Days(Osaka): Monday, Tuesday' }
-                    ],
-                    locations: ['kansai', 'kyushu'], 
-                    link: 'https://page.line.me/kvi9221d',
-                    fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'Free Reg' } },
-                    freeShipping: false,
-                    offlineOnly: true,
-                    maxTotalMonths: 1,
-                    prices: {
-                        '2.5mg': [{ price: 10000, months: 1 }],
-                        '5mg':   [{ price: 20000, months: 1 }]
-                    }
-                },
-                {
                     id: 'Central',
                     name: { zh: '新宿Central外來診所', en: 'Shinjuku Central Clinic' },
                     tags: [
                         { zh: '中文服務', en: 'Chinese Support' },
                         { zh: '線上/線下', en: 'Online Clinic' },
-                        { zh: '診斷書+3300', en: '+3300 for prescription' },
                     ],
                     locations: ['kanto'],
                     offlineOnly: false,
+                    hasPrescription: true,
+                    prescriptionFee: 3300,
                     link: 'https://www.threads.com/@yoki_chenchen',
                     fees: { initialNum: 0, returningNum: 0, shippingNum: 0,  note: { zh: '運費另計', en: 'Shipping Extra'  }  },
                     freeShipping: false,
@@ -1008,9 +1041,12 @@
                     name: { zh: '悠樂喜醫', en: 'E-health Clinic', jp: 'yoroshii_medical' },
                     tags: [
                         { zh: '中文服務', en: 'Chinese Support'},
-                        { zh: '線下/線上', en: 'Offline/Online'}
+                        { zh: '線下/線上', en: 'Offline/Online'},
+                        { zh: '配合多間院所', en: 'Clinic Broker'}
                     ],
-                    locations: ['kanto'],
+                    locations: ['kanto', 'kansai', 'kyushu'],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://www.threads.net/@yoroshii_medical',
                     fees: { initialNum: 5500, shippingNum: 1800, note: { zh: '含掛號¥5,500+運費¥1,800', en: 'Incl Reg + Ship' } },
                     freeShipping: false,
@@ -1022,30 +1058,6 @@
                     }
                 },
                 {
-                    id: 'light',
-                    name: { zh: 'Light Mental Clinic', en: 'Light Mental Clinic' },
-                    tags: [
-                        { zh: '線上診療', en: 'Online Clinic' },
-                        { zh: '第17支後送一次CBT', en: 'Free CBT upon 17th pen' },
-                        { zh: '預約須日本門號', en: 'Need JP Phone#' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
-                    ],
-                    locations: [], 
-                    link: 'https://light-clinic.com/',
-                    fees: { initialNum: 1100, shippingNum: 1100, note: { zh: '含掛號¥1,100+運費(離島¥2,200)', en: 'Reg 1100 + Ship (Islands 2200)' } },
-                    freeShipping: false, 
-                    shipping_rules: {
-                        'okinawa': 2200,
-                        'hokkaido': 2200,
-                        'default': 1100
-                    },
-                    prices: {
-                        '2.5mg': [{ price: 12200, months: 1 }, { price: 33600, months: 3 }],
-                        '5mg':   [{ price: 22600, months: 1 }, { price: 63600, months: 3 }],
-                        '7.5mg':   [{ price: 31600, months: 1 }, { price: 90000, months: 3 }],
-                    }
-                },
-                {
                     id: 'Wakeari',
                     name: { zh: 'Wakeari減量堂', en: 'Wakeari Diet Clinic' },
                     tags: [
@@ -1054,6 +1066,8 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://wakeari-diet.com/',
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true, 
@@ -1078,9 +1092,10 @@
                         { zh: '中文服務', en: 'Chinese Support' },
                         { zh: '線下/線上', en: 'Offline/Online' },
                         { zh: '需血檢或提供血檢報告', en: 'Need Blood Test or Porvide Test Result' },
-                        { zh: '免費提供處方籤', en: 'No Prescription certificate fee' }
                     ],
                     locations: ['kanto'],
+                    hasPrescription: true,
+                    prescriptionFee: 0,
                     link: 'https://www.threads.net/@shibuyakimura_clinic',
                     fees: { initialNum: 3300, returningNum: 1100, shippingNum: 0, note: { zh: '線上需自付運費', en: 'Shipping fee extra' } },
                     freeShipping: false,
@@ -1101,6 +1116,8 @@
                         { zh: '線下/線上', en: 'Offline/Online' },
                     ],
                     locations: ['kyushu'],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://www.threads.com/@msc_7717',
                     fees: { initialNum: 0, returningNum: 0, shippingNum: 0, note: { zh: '線上需自付運費', en: 'Shipping fee extra' } },
                     freeShipping: false,
@@ -1120,6 +1137,8 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: ['kanto'],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     offlineOnly: true,
                     link: 'https://x.com/ShinjukuCIinic?t=IK7B4EISNXdiBcoE81lpLQ&s=09',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
@@ -1140,6 +1159,8 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://lin.ee/ujGjFmKU',
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費+運費2000', en: 'No Reg. Fee, Shipping 2000' } },
                     freeShipping: false,
@@ -1163,6 +1184,8 @@
                         { zh: '預約須日本門號', en: 'Need JP Phone#' }
                     ],
                     locations: ['kansai'],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://jrsandaaga.com/',
                     fees: { initialNum: 0, shippingNum: 2000, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: false,
@@ -1189,6 +1212,8 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://x.com/marugotobeauty?t=4jUN_IPyV_luK3c4nkS4Ag&s=09',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true,
@@ -1213,6 +1238,8 @@
                         { zh: '只有購買證明', en: 'Purchase Invoice Only' }
                     ],
                     locations: [],
+                    hasPrescription: false,
+                    prescriptionFee: 0,
                     link: 'https://t.co/LGnaFQT9gk',
                     fees: { initialNum: 0, shippingNum: 0, note: { zh: '免掛號費', en: 'No Reg. Fee' } },
                     freeShipping: true,
@@ -1262,6 +1289,15 @@
                 } else {
                     return clinic.initialOnlineFee !== undefined ? clinic.initialOnlineFee : (clinic.onlineFee || 0);
                 }
+            };
+
+            // 處方籤費用計算
+            const getPrescriptionFee = (clinic) => {
+                if (!needPrescription) return 0;
+                if (clinic.hasPrescription) {
+                    return clinic.prescriptionFee || 0;
+                }
+                return 0;
             };
 
             const getShippingFee = (clinic, userRegion, months) => {
@@ -1363,7 +1399,7 @@
 
                 const calculateTotal = (drugPrice, duration) => {
                     const isOffline = isOfflineRegion;
-                    let total = drugPrice + getRegFee(clinic) + getShippingFee(clinic, region, duration);
+                    let total = drugPrice + getRegFee(clinic) + getShippingFee(clinic, region, duration) + getPrescriptionFee(clinic);
                     if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
                     if (!isOffline) total += getOnlineFee(clinic);
                     return total;
@@ -1582,6 +1618,7 @@
             const getBestPrice = (dosage, duration) => {
                 let best = Infinity;
                 clinics.forEach(clinic => {
+                    if (needPrescription && !clinic.hasPrescription) return;
                     const displayPrices = getSmartPrices(clinic, dosage, duration);
                     displayPrices.forEach(item => {
                         if (duration === 'all') {
@@ -1612,6 +1649,10 @@
                 if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) {
                     return false;
                 }
+                // 處方籤篩選
+                if (needPrescription && !c.hasPrescription) {
+                    return false;
+                }
                 if (region === 'online' && c.offlineOnly) {
                     return false;
                 }
@@ -1636,6 +1677,7 @@
 
                 const targetClinics = clinics.filter(c => {
                     if (chineseFilter && !c.tags.some(tag => tag.en === 'Chinese Support')) return false;
+                    if (needPrescription && !c.hasPrescription) return false;
                     if (region === 'online' && c.offlineOnly) return false;
                     if (region !== 'all' && region !== 'online' && c.offlineOnly) {
                         if (!c.locations || !c.locations.includes(region)) return false;
@@ -1660,38 +1702,36 @@
                         let breakdownParts = [];
 
                         Object.entries(cart).forEach(([dosage, months]) => {
-    if (months > 0) {
-        const dosageTiers = activeTieredPrices[dosage];
-        if (dosageTiers) {
-            let unitPrice = dosageTiers[1] || Object.values(dosageTiers)[0];
-            
-            // 讀取診所設定：若設定 allowCrossDoseTier 則用總月數，否則用單品月數
-            const targetM = clinic.allowCrossDoseTier ? totalSelectedMonths : months;
+                            if (months > 0) {
+                                const dosageTiers = activeTieredPrices[dosage];
+                                if (dosageTiers) {
+                                    let unitPrice = dosageTiers[1] || Object.values(dosageTiers)[0];
+                                    
+                                    const targetM = clinic.allowCrossDoseTier ? totalSelectedMonths : months;
 
-            if (targetM >= 6 && dosageTiers.tier6 !== undefined) unitPrice = dosageTiers.tier6;
-            else if (targetM >= 3 && dosageTiers.tier3_6 !== undefined) unitPrice = dosageTiers.tier3_6;
-            else if (targetM >= 3 && targetM <= 5 && dosageTiers.tier3_5 !== undefined) unitPrice = dosageTiers.tier3_5;
-            else if (targetM >= 2 && dosageTiers.tier2_5 !== undefined) unitPrice = dosageTiers.tier2_5;
-            else if (targetM === 2 && dosageTiers.tier2 !== undefined) unitPrice = dosageTiers.tier2;
-            else if (targetM <= 2 && dosageTiers.tier1_2 !== undefined) unitPrice = dosageTiers.tier1_2;
+                                    if (targetM >= 6 && dosageTiers.tier6 !== undefined) unitPrice = dosageTiers.tier6;
+                                    else if (targetM >= 3 && dosageTiers.tier3_6 !== undefined) unitPrice = dosageTiers.tier3_6;
+                                    else if (targetM >= 3 && targetM <= 5 && dosageTiers.tier3_5 !== undefined) unitPrice = dosageTiers.tier3_5;
+                                    else if (targetM >= 2 && dosageTiers.tier2_5 !== undefined) unitPrice = dosageTiers.tier2_5;
+                                    else if (targetM === 2 && dosageTiers.tier2 !== undefined) unitPrice = dosageTiers.tier2;
+                                    else if (targetM <= 2 && dosageTiers.tier1_2 !== undefined) unitPrice = dosageTiers.tier1_2;
 
-            if (unitPrice !== undefined) {
-                totalMeds += unitPrice * months;
-                breakdownParts.push(`${dosage} (${months}個月 @ ¥${unitPrice.toLocaleString()}/月)`);
-            } else {
-                possible = false;
-            }
-        } else {
-            possible = false;
-        }
-    }
-});
+                                    if (unitPrice !== undefined) {
+                                        totalMeds += unitPrice * months;
+                                        breakdownParts.push(`${dosage} (${months}個月 @ ¥${unitPrice.toLocaleString()}/月)`);
+                                    } else {
+                                        possible = false;
+                                    }
+                                } else {
+                                    possible = false;
+                                }
+                            }
+                        });
 
                         breakdownStr = breakdownParts.join(' + ');
                         if (totalSelectedMonths >= 2) bundleApplied = true;
 
                     } else {
-                        // 一般診所邏輯
                         let breakdownArr = [];
                         let tempCart = {...cart};
                         
@@ -1763,7 +1803,7 @@
 
                     if (possible) {
                         const isOffline = isOfflineRegion;
-                        let total = totalMeds + getRegFee(clinic) + getShippingFee(clinic, region, totalSelectedMonths);
+                        let total = totalMeds + getRegFee(clinic) + getShippingFee(clinic, region, totalSelectedMonths) + getPrescriptionFee(clinic);
                         
                         if (isOffline && clinic.offlineDiscount) total -= clinic.offlineDiscount;
                         if (!isOffline) total += getOnlineFee(clinic);
@@ -1867,6 +1907,15 @@
                                         </div>
                                     </div>
                                     <div>
+                                        <label className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">{t.rxFilterLabel}</label>
+                                        <div className="custom-select-wrapper">
+                                            <select className="custom-select" value={needPrescription ? 'true' : 'false'} onChange={(e) => setNeedPrescription(e.target.value === 'true')}>
+                                                <option value="false">{t.rxAll}</option>
+                                                <option value="true">{t.rxNeed}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
                                         <label className="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">{t.regionLabel}</label>
                                         <div className="custom-select-wrapper">
                                             <select className="custom-select bg-gold-100/30 border-gold-200 text-stone-700" value={region} onChange={(e) => setRegion(e.target.value)}>
@@ -1944,7 +1993,7 @@
                     {/* Standard Mode - Sticky Bar */}
                     {mode === 'standard' && (
                         <div className="mb-10 sticky top-0 z-30 bg-[#FAFAF9]/95 backdrop-blur-sm py-4 border-b border-stone-200 transition-all shadow-sm max-w-[800px] mx-auto min-w-0">
-                            <div className="hidden md:grid grid-cols-5 gap-4 px-1">
+                            <div className="hidden md:grid grid-cols-6 gap-3 px-1">
                                 <div className="custom-select-wrapper">
                                     <select 
                                         className="custom-select" 
@@ -1963,6 +2012,16 @@
                                     >
                                         <option value="all">{t.filterAll}</option>
                                         <option value="chinese">{t.filterChinese}</option>
+                                    </select>
+                                </div>
+                                <div className="custom-select-wrapper">
+                                    <select 
+                                        className={`custom-select ${needPrescription ? 'bg-gold-50 border-gold-400 font-bold text-stone-900' : ''}`}
+                                        value={needPrescription ? 'true' : 'false'} 
+                                        onChange={(e) => setNeedPrescription(e.target.value === 'true')}
+                                    >
+                                        <option value="false">{t.rxAll}</option>
+                                        <option value="true">{t.rxNeed}</option>
                                     </select>
                                 </div>
                                 <div className="custom-select-wrapper">
@@ -2014,14 +2073,14 @@
 
                             <div className="flex md:hidden items-center justify-between gap-3 px-1 w-full min-w-0">
                                 <div className="flex-1 flex flex-col justify-center min-w-0 pr-2">
-                                     <span className="text-[10px] uppercase text-stone-400 tracking-wider font-bold truncate block w-full">{t.dosage} / {t.durationLabel}</span>
+                                     <span className="text-[10px] uppercase text-stone-400 tracking-wider font-bold truncate block w-full">{t.dosage} / {t.durationLabel} {needPrescription ? '• (需處方)' : ''}</span>
                                      <span className="font-serif text-stone-800 text-lg leading-tight truncate block w-full">
                                         {activeDosage.replace('+',' & ')} • {activeDuration === 'all' ? t.allPlans : getLabel(activeDuration)}
                                      </span>
                                 </div>
                                 <button 
                                     onClick={() => setShowMobileFilters(true)} 
-                                    className="flex items-center gap-2 bg-white border border-stone-300 text-stone-700 px-4 py-2 rounded-lg shadow-sm font-sans font-bold text-sm shrink-0 active:bg-stone-50"
+                                    className={`flex items-center gap-2 border px-4 py-2 rounded-lg shadow-sm font-sans font-bold text-sm shrink-0 active:bg-stone-50 ${needPrescription ? 'bg-gold-50 border-gold-300 text-gold-700' : 'bg-white border-stone-300 text-stone-700'}`}
                                 >
                                     <Icons.Filter size={16}/> {t.mobileFilterBtn}
                                 </button>
@@ -2032,7 +2091,7 @@
                     {/* Calculator Mode Controls */}
                     {mode === 'calculator' && (
                         <div className="mb-8 max-w-[800px] mx-auto min-w-0">
-                            <div className="hidden md:grid grid-cols-3 gap-4 px-1 mb-8">
+                            <div className="hidden md:grid grid-cols-4 gap-4 px-1 mb-8">
                                 <div className="custom-select-wrapper">
                                     <select className="custom-select" value={userType} onChange={(e) => setUserType(e.target.value)}>
                                         <option value="new">{t.userNew}</option>
@@ -2046,6 +2105,16 @@
                                     </select>
                                 </div>
                                 <div className="custom-select-wrapper">
+                                    <select 
+                                        className={`custom-select ${needPrescription ? 'bg-gold-50 border-gold-400 font-bold text-stone-900' : ''}`}
+                                        value={needPrescription ? 'true' : 'false'} 
+                                        onChange={(e) => setNeedPrescription(e.target.value === 'true')}
+                                    >
+                                        <option value="false">{t.rxAll}</option>
+                                        <option value="true">{t.rxNeed}</option>
+                                    </select>
+                                </div>
+                                <div className="custom-select-wrapper">
                                     <select className="custom-select bg-gold-100/30 border-gold-200 text-stone-700" value={region} onChange={(e) => setRegion(e.target.value)}>
                                         {REGIONS.map(r => (<option key={r.id} value={r.id}>{lang === 'zh' ? r.zh : r.en}</option>))}
                                     </select>
@@ -2054,7 +2123,7 @@
                              <div className="md:hidden flex justify-end mb-4 w-full min-w-0">
                                 <button 
                                     onClick={() => setShowMobileFilters(true)} 
-                                    className="flex items-center gap-2 bg-white border border-stone-300 text-stone-700 px-4 py-2 rounded-lg shadow-sm font-sans font-bold text-sm w-full justify-center shrink-0"
+                                    className={`flex items-center gap-2 border px-4 py-2 rounded-lg shadow-sm font-sans font-bold text-sm w-full justify-center shrink-0 ${needPrescription ? 'bg-gold-50 border-gold-300 text-gold-700' : 'bg-white border-stone-300 text-stone-700'}`}
                                 >
                                     <Icons.Filter size={16}/> {t.mobileFilterBtn}
                                 </button>
@@ -2121,6 +2190,7 @@
                             <div className="grid gap-4 md:gap-6 min-w-0">
                                 {calcResults.map((res, idx) => {
                                     const shippingCost = getShippingFee(res.clinic, region, totalSelectedMonths);
+                                    const rxCost = getPrescriptionFee(res.clinic);
                                     const isOffline = shippingCost === 0 && res.clinic.locations && res.clinic.locations.includes(region);
                                     const offlineDiscount = (isOffline && res.clinic.offlineDiscount) ? res.clinic.offlineDiscount : 0;
                                     const onlineFee = ((region === 'all' || !isOffline) && getOnlineFee(res.clinic) > 0) ? getOnlineFee(res.clinic) : 0;
@@ -2148,6 +2218,7 @@
                                                     </a>
                                                     {idx === 0 && <span className="hidden md:inline-block bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">{t.bestValue}</span>}
                                                     {res.isBundle && <span className="hidden md:inline-flex bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 items-center gap-1"><Icons.Star size={10}/> {t.bundleApplied}</span>}
+                                                    {res.clinic.hasPrescription && <span className="hidden md:inline-flex bg-gold-50 text-gold-700 border border-gold-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 items-center gap-1"><Icons.FileText size={10}/> {t.rxAvailable}</span>}
                                                 </div>
                                                 <div className="md:hidden flex items-center justify-end gap-1.5 pt-2 shrink-0 pl-1">
                                                     {!expandedItems[cardId] && (
@@ -2162,6 +2233,7 @@
                                                     <div className="md:hidden flex flex-wrap gap-2 mb-3">
                                                         {idx === 0 && <span className="bg-gold-400 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">{t.bestValue}</span>}
                                                         {res.isBundle && <span className="bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 flex items-center gap-1"><Icons.Star size={10}/> {t.bundleApplied}</span>}
+                                                        {res.clinic.hasPrescription && <span className="bg-gold-50 text-gold-700 border border-gold-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 flex items-center gap-1"><Icons.FileText size={10}/> {t.rxAvailable}</span>}
                                                     </div>
                                                     <p className="text-sm text-stone-500 font-sans mb-3 flex items-start gap-2 min-w-0"><span className="bg-stone-100 px-2 py-1 rounded text-xs break-words whitespace-normal inline-block">{res.breakdown}</span></p>
                                                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-400 font-sans min-w-0">
@@ -2172,6 +2244,7 @@
                                                         ) : (
                                                             (isOffline && !res.clinic.offlineOnly) && <span className="text-gold-600 font-bold flex items-center gap-1"><Icons.MapPin size={10}/> {t.shippingOffline}</span>
                                                         )}
+                                                        {rxCost > 0 && <span className="text-gold-600 font-bold">+ {t.rxFee}: {formatCurrency(rxCost)}</span>}
                                                         {offlineDiscount > 0 && <span className="text-green-600 font-bold"> - {formatCurrency(offlineDiscount)} (Off)</span>}
                                                         {onlineFee > 0 && <span className="text-red-500 font-bold"> + {t.onlineFee}: {formatCurrency(onlineFee)}</span>}
                                                     </div>
@@ -2257,6 +2330,11 @@
                                                                 }
                                                             })()}
                                                             <span className="text-[10px] uppercase tracking-widest border border-stone-200 text-stone-400 px-2 py-1 font-sans shrink-0">{t.regFeeLabel}: {formatCurrency(getRegFee(clinic, region))}</span>
+                                                            {clinic.hasPrescription && (
+                                                                <span className="text-[10px] uppercase tracking-widest border border-gold-200 text-gold-700 bg-gold-50/60 px-2 py-1 flex items-center gap-1 font-sans shrink-0">
+                                                                    <Icons.FileText size={10}/> {clinic.prescriptionFee > 0 ? `處方+¥${clinic.prescriptionFee.toLocaleString()}` : t.rxFree}
+                                                                </span>
+                                                            )}
                                                             {clinic.tags.map((tagObj, idx) => <span key={idx} className="text-[10px] uppercase tracking-widest bg-stone-50 text-stone-400 px-2 py-1 font-sans shrink-0">{tagObj[lang]}</span>)}
                                                         </div>
                                                     </div>
@@ -2280,6 +2358,7 @@
                                                     else isBestPrice = Math.abs(item.totalPrice - bestPrice) < 10;
 
                                                     const shippingCost = getShippingFee(clinic, region, item.months);
+                                                    const rxCost = getPrescriptionFee(clinic);
                                                     const isOffline = shippingCost === 0 && clinic.locations && clinic.locations.includes(region);
                                                     const offlineDiscount = (isOffline && clinic.offlineDiscount) ? clinic.offlineDiscount : 0;
                                                     const onlineFee = (!isOffline && getOnlineFee(clinic) > 0) ? getOnlineFee(clinic) : 0;
@@ -2313,6 +2392,7 @@
                                                                             </div>
                                                                         )
                                                                     )}
+                                                                    {rxCost > 0 && <div className="flex justify-between gap-2 text-gold-600 font-bold"><span>{t.rxFee}</span><span className="text-right whitespace-nowrap">+ {formatCurrency(rxCost)}</span></div>}
                                                                     {onlineFee > 0 && <div className="flex justify-between gap-2 text-red-500 font-bold"><span>{t.onlineFee}</span><span className="text-right whitespace-nowrap">+ {formatCurrency(onlineFee)}</span></div>}
                                                                 </div>
                                                             </div>
