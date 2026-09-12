@@ -654,7 +654,7 @@
                         { zh: '線上/線下診療', en: 'Online/Offline Clinic' },
                         { zh: '全國配送', en: 'Nationwide Delivery' },
                         { zh: '自由混搭計價', en: 'Mix & Match Tier Pricing' },
-                        { zh: '只有購買證明', en: 'Purchase Invoice Only' }
+                        { zh: '處方簽+¥5500', en: 'Prescription available at ¥5500' }
                     ],
                     locations: ['kanto'], 
                     offlineOnly: false,
@@ -666,23 +666,35 @@
                     tieredPrices: {
                         '2.5mg': { 1: 9980, tier2_5: 8980, tier6: 7280 },
                         '5mg':   { 1: 15980, tier2_5: 14980, tier6: 13190 },
-                        '7.5mg': { 1: 23980, tier2_5: 22980, tier6: 20230 }
+                        '7.5mg': { 1: 23980, tier2_5: 22980, tier6: 20230 },
+                        '10mg': { 1: 29500, tier2_5: 28500, tier6: 26380 },
+                        '12.5mg': { 1: 35000, tier2_5: 34000, tier6: 33000 },
+                         '15mg': { 1: 44000, tier2_5: 43000, tier6: 40640 }
                     },
                     prices: {
                         '2.5mg': [{ price: 9980, months: 1 }],
                         '5mg':   [{ price: 15980, months: 1 }],
-                        '7.5mg': [{ price: 23980, months: 1 }]
+                        '7.5mg': [{ price: 23980, months: 1 }],
+                        '10mg': [{ price: 26380, months: 1 }],
+                        '12.5mg': [{ price: 35000, months: 1 }],
+                        '15mg': [{ price: 44000, months: 1 }]
                     },
                     // 線下 Tier 價格表
                     offlineTieredPrices: {
                         '2.5mg': { 1: 8000, tier2_5: 7500, tier6: 7000 },
                         '5mg':   { 1: 14000, tier2_5: 14500, tier6: 13000 },
-                        '7.5mg': { 1: 22000, tier2_5: 21500, tier6: 19900 }
+                        '7.5mg': { 1: 22000, tier2_5: 21500, tier6: 19900 },
+                        '10mg': { 1: 28000, tier2_5: 27000, tier6: 26000 },
+                        '12.5mg': { 1: 34000, tier2_5: 33000, tier6: 32000 },
+                         '15mg': { 1: 42000, tier2_5: 41000, tier6: 40000 },
                     },
                     offlinePrices: {
                         '2.5mg': [{ price: 8000, months: 1 }],
                         '5mg':   [{ price: 14000, months: 1 }],
-                        '7.5mg': [{ price: 22000, months: 1 }]
+                        '7.5mg': [{ price: 22000, months: 1 }],
+                        '10mg': [{ price: 28000, months: 1 }],
+                        '12.5mg': [{ price: 34000, months: 1 }],
+                        '15mg': [{ price: 42000, months: 1 }]
                     }
                 },
                 {
